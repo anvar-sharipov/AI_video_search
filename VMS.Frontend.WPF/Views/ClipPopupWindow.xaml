@@ -1,0 +1,12 @@
+<Window x:Class="VMS.Frontend.WPF.Views.ClipPopupWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vlc="clr-namespace:LibVLCSharp.WPF;assembly=LibVLCSharp.WPF"
+        Title="{Binding Title}" Height="420" Width="560"
+        WindowStartupLocation="CenterOwner">
+    <Grid Background="Black">
+        <vlc:VideoView MediaPlayer="{Binding Player}"/>
+        <TextBlock Text="{Binding StatusMessage}" Foreground="White"
+                    HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16"/>
+    </Grid>
+</Window>

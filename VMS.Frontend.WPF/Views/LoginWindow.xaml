@@ -1,0 +1,31 @@
+<Window x:Class="VMS.Frontend.WPF.Views.LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="VMS — Вход" Height="280" Width="380"
+        WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="16"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="12"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="12"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="12"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Корпоративная система видеонаблюдения" FontSize="16" FontWeight="Bold"/>
+
+        <TextBlock Grid.Row="2" Text="Логин"/>
+        <TextBox Grid.Row="3" Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}"/>
+
+        <TextBlock Grid.Row="4" Text="Пароль"/>
+        <PasswordBox x:Name="PasswordBox" Grid.Row="5"/>
+
+        <TextBlock Grid.Row="6" Text="{Binding ErrorMessage}" Foreground="Red" TextWrapping="Wrap"/>
+
+        <Button Grid.Row="8" Content="Войти" Height="32" Click="OnLoginClick" IsDefault="True"/>
+    </Grid>
+</Window>

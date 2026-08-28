@@ -1,0 +1,9 @@
+<Solution>
+  <Project Path="VMS.Backend.Server/VMS.Backend.Server.csproj" />
+  <Project Path="VMS.Core.Tests/VMS.Core.Tests.csproj" />
+  <Project Path="VMS.Core/VMS.Core.csproj" />
+  <Project Path="VMS.Frontend.WPF/VMS.Frontend.WPF.csproj" />
+  <Project Path="VMS.MediaEngine/VMS.MediaEngine.csproj" />
+  <Project Path="VMS.MetadataIndexer/VMS.MetadataIndexer.csproj" />
+  <Project Path="VMS.StorageEngine/VMS.StorageEngine.csproj" />
+</Solution>

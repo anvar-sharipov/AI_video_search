@@ -1,0 +1,40 @@
+<Window x:Class="VMS.Frontend.WPF.Views.AddCameraWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Добавить камеру" Height="380" Width="360"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+            <RowDefinition Height="16"/><RowDefinition Height="Auto"/>
+            <RowDefinition Height="12"/><RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Код камеры (напр. cam-02)"/>
+        <TextBox Grid.Row="1" Text="{Binding Code, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,8"/>
+
+        <TextBlock Grid.Row="2" Text="Название"/>
+        <TextBox Grid.Row="3" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,8"/>
+
+        <TextBlock Grid.Row="4" Text="IP-адрес"/>
+        <TextBox Grid.Row="5" Text="{Binding IpAddress, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,8"/>
+
+        <TextBlock Grid.Row="6" Text="ONVIF порт"/>
+        <TextBox Grid.Row="7" Text="{Binding OnvifPort, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,8"/>
+
+        <TextBlock Grid.Row="8" Text="Логин ONVIF"/>
+        <TextBox Grid.Row="9" Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,8"/>
+
+        <TextBlock Grid.Row="10" Text="Пароль ONVIF"/>
+        <PasswordBox x:Name="PasswordBox" Grid.Row="11" Margin="0,0,0,8"/>
+
+        <TextBlock Grid.Row="13" Text="{Binding ErrorMessage}" Foreground="Red" TextWrapping="Wrap"/>
+
+        <Button Grid.Row="15" Content="Сохранить и подключить" Height="32" Click="OnSaveClick"/>
+    </Grid>
+</Window>

@@ -1,0 +1,35 @@
+## .NET
+bin/
+obj/
+*.user
+
+## Tooling & models (provisioned by scripts/setup-tools.ps1, not committed)
+tools/ffmpeg/
+models/*.onnx
+models/*.pt
+
+## Runtime data
+Archive/
+Clips/
+Snapshots/
+*.log
+
+## Local secrets/config overrides
+appsettings.local.json
+appsettings.*.local.json
+.env
+.env.*
+
+## Docker volumes
+docker/data/
+
+## IDE
+.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+.DS_Store
+
+## Test results
+TestResults/

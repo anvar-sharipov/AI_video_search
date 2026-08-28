@@ -1,0 +1,90 @@
+<Window x:Class="VMS.Frontend.WPF.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vlc="clr-namespace:LibVLCSharp.WPF;assembly=LibVLCSharp.WPF"
+        xmlns:vm="clr-namespace:VMS.Frontend.WPF.ViewModels"
+        Title="VMS — Живой просмотр" Height="800" Width="1280"
+        WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+
+        <DataTemplate DataType="{x:Type vm:CameraTileViewModel}">
+            <Border BorderBrush="#444" BorderThickness="1" Margin="2" Background="Black">
+                <Grid>
+                    <vlc:VideoView MediaPlayer="{Binding Player}"/>
+                    <TextBlock Text="{Binding Name}" Foreground="White" Background="#80000000"
+                               Padding="4,2" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                </Grid>
+            </Border>
+        </DataTemplate>
+    </Window.Resources>
+
+    <DockPanel>
+        <!-- Top bar -->
+        <Grid DockPanel.Dock="Top" Background="#222" Height="40">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="{Binding StatusMessage}" Foreground="White" VerticalAlignment="Center" Margin="12,0"/>
+            <TextBlock Grid.Column="1" VerticalAlignment="Center" Foreground="#AAA" Margin="12,0">
+                <Run Text="{Binding Session.Username, Mode=OneWay}"/>
+                <Run Text=" ("/>
+                <Run Text="{Binding Session.Role, Mode=OneWay}"/>
+                <Run Text=")"/>
+            </TextBlock>
+            <Button Grid.Column="2" Content="+ Камера" Margin="4,4,12,4"
+                    Command="{Binding AddCameraCommand}"
+                    Visibility="{Binding Session.CanManageCameras, Converter={StaticResource BoolToVis}}"/>
+        </Grid>
+
+        <!-- Search side panel -->
+        <Grid DockPanel.Dock="Right" Width="320" Background="#F0F0F0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" Margin="8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBox Grid.Column="0" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                         VerticalContentAlignment="Center" Height="28"
+                         ToolTip="Например: red car, person"/>
+                <Button Grid.Column="1" Content="Найти" Margin="4,0,0,0" Width="70"
+                        Command="{Binding SearchCommand}"/>
+            </Grid>
+
+            <ListBox Grid.Row="1" Margin="8,0,8,8" ItemsSource="{Binding SearchResults}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate DataType="{x:Type vm:SearchResultViewModel}">
+                        <Border BorderBrush="#DDD" BorderThickness="0,0,0,1" Padding="4">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding Summary}" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                                <Button Grid.Column="1" Content="Клип" Width="50"
+                                        Command="{Binding DataContext.ViewClipCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                        CommandParameter="{Binding}"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
+
+        <!-- Live camera grid -->
+        <ItemsControl ItemsSource="{Binding Cameras}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
+    </DockPanel>
+</Window>

@@ -1,0 +1,121 @@
+Enterprise Video Management System (VMS) — Architectural Specification & Prompt
+Instruksiýa (AI üçin): Sen C# we .NET High-Performance Video Management System (VMS) boýunça uly arhitektor (Principal Systems Architect). Aşakda getirilen ähli talaplary öz içine alýan, 500+ kamera üçin niýetlenen enterprise-derejeli C# Solution gurluşyny, Backend Core serwerini, Media Engine, Hardware Acceleration, Retention Engine, AI Metadata Search we WPF Frontend UI kodlaryny tertipli we doly görnüşde taýýarlap ber.
+
+1. General System Architecture & Requirements
+System Capacity: 500+ IP Kameralar (Zero-Crash Architecture).
+
+Technology Stack:
+
+Backend: C# (.NET 8/9), ASP.NET Core Worker Service, FFmpeg.AutoGen / LibVLCSharp.
+
+Frontend: C# WPF, Direct3D / Silk.NET / LibVLCSharp HW Accelerated Grid Rendering.
+
+Databases: PostgreSQL (System Config & ACL), Elasticsearch / Redis (AI Metadata Indexing).
+
+Core Functionalities:
+
+ONVIF Integration: Multi-brand discovery & RTSP stream negotiation.
+
+GPU HW Acceleration & Multi-streaming: Dual Stream (Main 4K/1080p for Archive/Single View, Sub-stream D1/VGA for Grid View). NVIDIA NVDEC (CUVID) / Intel QuickSync / DXVA2 acceleration.
+
+Auto-retention & Retention Policy: Automated cleanup loop for expired archives.
+
+Write-Protection / Immutable Archive: Windows File Security ACL & Read-Only locking (Admin authorization enforcement).
+
+AI Metadata Indexing & Fast Search: Storing structured JSON payloads for objects instead of indexing raw video.
+
+Role-Based Access Control (RBAC): Admin/SuperAdmin control override, Operator, and Viewer role isolation.
+
+Dynamic 5-Second Video Clip Generation: Fast stream-copy extraction (-c copy) on metadata match with automatic hover/popup looping.
+
+2. Target Project Solution Structure (Visual Studio)
+Plaintext
+VMS_Enterprise_Solution/
+├── VMS.Core/                  (Domain Models, Enums, Contracts, Auth & Access Control)
+├── VMS.MediaEngine/           (ONVIF Management, RTSP Pipelines, GPU Hardware Acceleration)
+├── VMS.StorageEngine/         (Immutable Filesystem ACL, Auto-Retention, Fast 5s Clip Trimming)
+├── VMS.MetadataIndexer/       (Elasticsearch/Redis AI Event Consumer & Search Manager)
+├── VMS.Backend.Server/        (Worker Service / Core Backend Engine)
+└── VMS.Frontend.WPF/          (WPF Client Application, Live Grid, AI Search Panel, 5s Player Popup)
+3. Module-by-Module Technical Implementation Specifications
+STEP 1: Core Domain Models & RBAC Security (VMS.Core)
+User & Roles Definition: User, UserRole (SuperAdmin, Admin, Operator, Viewer).
+
+Security & Hashing: SHA256 + Salt / BCrypt Authentication Service (AuthService).
+
+Access Control Manager: Centralized permission checks (AccessControlManager) enforcing:
+
+Only SuperAdmin can delete write-protected/immutable archives.
+
+Only Admin & SuperAdmin can add/edit cameras and system configurations.
+
+Audit Trailing: Append-only event logging (AuditLogger) tracking all admin actions.
+
+STEP 2: Media Engine & GPU Decoding (VMS.MediaEngine)
+ONVIF Discovery & RTSP Retrieval:
+dotnet run --project VMS.Backend.Server
+
+Нет, обрывается — тот же файл (Microsoft.ML.OnnxRuntime.Gpu.Windows, ~380МБ) уже несколько раз падает с "response ended prematurely". Похоже, сеть просто не тянет такие большие файлы стабильно. NuGet продолжает автоматически ретраить, но шансы low.
+
+
+Automated IP camera discovery via WS-Discovery (Onvif.Core).
+
+RTSP Profile URI fetching logic.
+
+GPU-Accelerated Decoding:
+
+Hardware Device Context setup (AVHWDeviceType.AV_HWDEVICE_TYPE_CUDA or DXVA2).
+
+Intelligent decoding pipeline using FFmpeg.AutoGen.
+
+STEP 3: Storage Engine & Write-Protection (VMS.StorageEngine)
+Immutable Storage Writer:
+
+Windows FileSystem ACL application: Deny Delete permissions for standard users/groups.
+
+File.SetAttributes(ReadOnly) flag enforcement for locked clips.
+
+Auto-Retention Loop:
+
+Background task scanning archive folders based on configured retention policy (e.g., 30 days).
+
+Skipping immutable/protected clips while purging standard expired files.
+
+Fast 5-Second Clip Extractor (VideoClipExtractor):
+
+Pre-roll (2s) and Post-roll (3s) calculation based on detection timestamp.
+
+Native stream-copying via FFmpeg CLI/API (-c copy) without re-encoding for sub-50ms clip generation.
+
+STEP 4: AI Metadata Indexing (VMS.MetadataIndexer)
+Metadata Payload Schema: ObjectMetadata (Timestamp, CameraId, ObjectType, Confidence, BoundingBox, VideoChunkLocation).
+
+Indexing Service: High-speed event ingestion into Elasticsearch / Local Index for lightning-fast queries.
+
+STEP 5: WPF Client Frontend (VMS.Frontend.WPF)
+Login & Role-Aware UI:
+
+Dynamic UI binding hiding/disabling Admin Controls, Camera Settings, and Delete buttons for non-Admin users.
+
+High-Performance Live Grid:
+
+Multi-view Grid Layout (4x4, 8x8) consuming Sub-streams.
+
+Dynamic switching to Main-stream on single-camera expansion.
+
+AI Search Side-Panel & 5-Second Loop Player:
+
+Sidebar search input ("Red Car", "Person", "Face").
+
+Result list showing high-resolution thumbnails and metadata timestamps.
+
+SelectionChanged handler triggering VideoClipExtractor and displaying the 5-second MP4 in a WPF Popup / MediaElement with continuous looping (MediaEnded).
+
+Execution Order for Full Implementation
+Build VMS.Core class library with domain models, RBAC, and hash verification.
+
+Build VMS.MediaEngine and VMS.StorageEngine libraries.
+
+Build VMS.Backend.Server Worker Service orchestrating streams and storage.
+
+Build VMS.Frontend.WPF with MVVM architecture, dynamic side-panel search, and GPU video rendering.
