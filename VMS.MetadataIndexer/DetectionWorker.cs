@@ -14,6 +14,7 @@ namespace VMS.MetadataIndexer;
 public sealed class DetectionWorker(
     string cameraId,
     IObjectDetector detector,
+    IFaceEmbedder faceEmbedder,
     IMetadataIndexer indexer,
     string archiveRoot,
     ILogger logger)
@@ -59,6 +60,11 @@ public sealed class DetectionWorker(
                 VideoChunkLocation = videoChunk
             };
 
+            if (string.Equals(d.ObjectType, "person", StringComparison.OrdinalIgnoreCase))
+            {
+                evt.FaceEmbedding = await TryEmbedFaceAsync(snapshotPath, d.BoundingBox, ct);
+            }
+
             try
             {
                 await indexer.IndexAsync(evt, ct);
@@ -70,6 +76,25 @@ public sealed class DetectionWorker(
             {
                 logger.LogWarning(ex, "Failed to index detection event for {CameraId}", cameraId);
             }
+        }
+    }
+
+    /// <summary>
+    /// Best-effort: a person crop without a usable face (turned away, too small/blurry)
+    /// is common and not an error, so failures here are logged and swallowed the same
+    /// way a failed color tag or a failed index write is — one detection's face embedder
+    /// hiccup must never drop the underlying person/vehicle detection itself.
+    /// </summary>
+    private async Task<float[]?> TryEmbedFaceAsync(string snapshotPath, DetectionBoundingBox personBox, CancellationToken ct)
+    {
+        try
+        {
+            return await faceEmbedder.TryGetEmbeddingAsync(snapshotPath, personBox, ct);
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Face embedding failed for {CameraId} snapshot {Path}", cameraId, snapshotPath);
+            return null;
         }
     }
 

@@ -3,6 +3,7 @@
     One-time provisioning of external tools/models needed by the VMS:
     - ffmpeg/ffprobe (static Windows build) -> tools/ffmpeg/
     - YOLOv8n ONNX detection model (exported via Ultralytics, opset 17) -> models/
+    - Haar cascade face detector + SFace face embedder ONNX model -> models/
 
     Requires internet access. Run once per machine. Everything produced here
     is used fully offline at runtime (AI inference and recording never call out).
@@ -62,6 +63,37 @@ if (Test-Path $modelPath) {
     }
 }
 
+# --- Haar cascade (face detection) + SFace (face embedding, OpenCV Zoo) ---
+# OpenCvSharp4's Face module only wraps the classic (pre-2021) face APIs — no
+# FaceDetectorYN/FaceRecognizerSF binding for the modern YuNet detector — so
+# detection uses OpenCV's bundled Haar cascade via CascadeClassifier instead
+# (a plain XML, not ONNX; simpler, no anchor-decoding to implement by hand).
+$faceDetectorPath = Join-Path $modelsDir "haarcascade_frontalface_default.xml"
+if (Test-Path $faceDetectorPath) {
+    Write-Host "Haar cascade face detector already present at $faceDetectorPath, skipping download."
+} else {
+    $cascadeUrl = "https://raw.githubusercontent.com/opencv/opencv/4.x/data/haarcascades/haarcascade_frontalface_default.xml"
+    Write-Host "Downloading Haar cascade face detector from $cascadeUrl ..."
+    Invoke-WebRequest -Uri $cascadeUrl -OutFile $faceDetectorPath
+    Write-Host "Haar cascade face detector installed to $faceDetectorPath"
+}
+
+# SFace embedding model still comes from opencv_zoo, which tracks .onnx files via Git
+# LFS — raw.githubusercontent.com only serves the LFS pointer text (~130 bytes),
+# media.githubusercontent.com resolves the real blob. Fed through a plain ONNX Runtime
+# session directly (Microsoft.ML.OnnxRuntime), not OpenCvSharp, for the same reason.
+$faceEmbedderPath = Join-Path $modelsDir "face_recognition_sface_2021dec.onnx"
+if (Test-Path $faceEmbedderPath) {
+    Write-Host "SFace face embedder already present at $faceEmbedderPath, skipping download."
+} else {
+    $sfaceUrl = "https://media.githubusercontent.com/media/opencv/opencv_zoo/main/models/face_recognition_sface/face_recognition_sface_2021dec.onnx"
+    Write-Host "Downloading SFace face embedder from $sfaceUrl ..."
+    Invoke-WebRequest -Uri $sfaceUrl -OutFile $faceEmbedderPath
+    Write-Host "SFace face embedder installed to $faceEmbedderPath"
+}
+
 Write-Host "`nSetup complete."
-Write-Host "  ffmpeg:  $toolsDir"
-Write-Host "  model:   $modelPath"
+Write-Host "  ffmpeg:        $toolsDir"
+Write-Host "  YOLO model:    $modelPath"
+Write-Host "  face detector: $faceDetectorPath"
+Write-Host "  face embedder: $faceEmbedderPath"

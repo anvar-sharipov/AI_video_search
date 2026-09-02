@@ -3,9 +3,12 @@ using VMS.Backend.Server.Startup;
 using VMS.Core.Auditing;
 using VMS.Core.Domain;
 using VMS.Core.Security;
+using VMS.StorageEngine.Clips;
 using VMS.StorageEngine.Immutable;
 
 namespace VMS.Backend.Server.Api;
+
+public record ArchiveCoverageSegment(DateTimeOffset Start, DateTimeOffset End, string FileName);
 
 /// <summary>Direct archive file management — protect/unprotect/delete, gated by AccessControlManager.</summary>
 public static class ArchiveEndpoints
@@ -13,6 +16,30 @@ public static class ArchiveEndpoints
     public static void MapArchiveEndpoints(this WebApplication app)
     {
         var group = app.MapGroup("/api/archive").RequireAuthorization();
+
+        // What's actually recorded for a camera on a given day — the Archive browser
+        // (pick camera + date/time, then play) uses this to know which times have
+        // footage before requesting a clip via the existing POST /api/clips.
+        group.MapGet("/coverage", (
+            string cameraId,
+            DateOnly date,
+            HttpContext http,
+            IAccessControlManager accessControl,
+            VideoClipExtractor extractor) =>
+        {
+            try
+            {
+                accessControl.Authorize(http.User.GetRole(), Permission.ViewArchive);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Results.Forbid();
+            }
+
+            var segments = extractor.GetCoverage(cameraId, date)
+                .Select(s => new ArchiveCoverageSegment(s.Start, s.End, s.FileName));
+            return Results.Ok(segments);
+        });
 
         group.MapPost("/protect", (
             string cameraId,

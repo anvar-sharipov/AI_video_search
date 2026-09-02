@@ -25,6 +25,7 @@ public sealed class CameraOrchestrator(
     OnvifCameraDiscoveryService discovery,
     IMetadataIndexer indexer,
     IObjectDetector detector,
+    IFaceEmbedder faceEmbedder,
     IOptions<VmsOptions> vmsOptions,
     ILoggerFactory loggerFactory) : IAsyncDisposable
 {
@@ -77,7 +78,7 @@ public sealed class CameraOrchestrator(
             loggerFactory.CreateLogger($"Sampler:{camera.Code}"), interval: TimeSpan.FromSeconds(5));
 
         var detectionLogger = loggerFactory.CreateLogger($"Detection:{camera.Code}");
-        var detectionWorker = new DetectionWorker(camera.Code, detector, indexer, _options.ArchiveRootPath, detectionLogger);
+        var detectionWorker = new DetectionWorker(camera.Code, detector, faceEmbedder, indexer, _options.ArchiveRootPath, detectionLogger);
         sampler.SnapshotCaptured += path => _ = RunDetectionSafelyAsync(detectionWorker, path, detectionLogger);
         sampler.Start();
 

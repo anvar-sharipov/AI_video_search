@@ -10,6 +10,17 @@ update both `readme_rus.md` and `readme_eng.md` in the same change** — not jus
 not as a follow-up. Treat this as part of the definition of done, the same way you'd update a
 test. Internal refactors with no user-visible effect don't require a README update.
 
+## Mandatory rule: all WPF client text must be localizable (RU/EN/TK)
+
+**Every user-facing string in `VMS.Frontend.WPF`** (window title, label, tooltip, button text,
+status message, error message) **must go through the localization system, never a literal in
+XAML or C#.** Add the string's key to all three dictionaries —
+`VMS.Frontend.WPF/Localization/Strings.ru.xaml`, `Strings.en.xaml`, `Strings.tk.xaml` — with a
+real translation in each (Russian, English, Turkmen), then reference it via
+`{DynamicResource KeyName}` in XAML or `LocalizationService.Get("KeyName", args...)` in C#. This
+is what makes the RU/EN/TM toggle (`LocalizationService.SetLanguage`, in `MainWindow`'s top bar
+and `LoginWindow`) actually cover the whole app instead of silently missing new text.
+
 ## Commands
 
 ```powershell

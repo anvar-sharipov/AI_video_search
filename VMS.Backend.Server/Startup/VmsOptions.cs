@@ -10,6 +10,12 @@ public class VmsOptions
     public string FfmpegPath { get; set; } = "ffmpeg";
     public string FfprobePath { get; set; } = "ffprobe";
     public string YoloModelPath { get; set; } = "models/yolov8n.onnx";
+    // "../models/..." (not "models/..."): OpenCvSharp/OnnxRuntime validate the file at load
+    // time (unlike YoloDotNet, which only touches disk lazily on first inference), and
+    // "dotnet run"'s working directory is this project's own folder — same reasoning as
+    // FfmpegPath above, one level up to the repo root where models/ actually lives.
+    public string FaceDetectorModelPath { get; set; } = "../models/haarcascade_frontalface_default.xml";
+    public string FaceEmbedderModelPath { get; set; } = "../models/face_recognition_sface_2021dec.onnx";
     public string ElasticsearchUri { get; set; } = "http://localhost:9200";
 
     /// <summary>Dev-only symmetric signing key for issued login JWTs — must move to a real secret store before production.</summary>

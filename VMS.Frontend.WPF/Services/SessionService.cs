@@ -25,6 +25,8 @@ public partial class SessionService : ObservableObject
 
     public bool CanManageCameras => _accessControl.HasPermission(Role, Permission.ManageCameras);
     public bool CanExportClip => _accessControl.HasPermission(Role, Permission.ExportClip);
+    public bool CanSearchByFace => _accessControl.HasPermission(Role, Permission.SearchByFace);
+    public bool CanViewAuditLog => _accessControl.HasPermission(Role, Permission.ManageSystemConfig);
     public bool CanDeleteImmutableArchive => _accessControl.HasPermission(Role, Permission.DeleteImmutableArchive);
     public bool CanDeleteStandardArchive => _accessControl.HasPermission(Role, Permission.DeleteStandardArchive);
 
@@ -35,6 +37,8 @@ public partial class SessionService : ObservableObject
         IsLoggedIn = true;
         OnPropertyChanged(nameof(CanManageCameras));
         OnPropertyChanged(nameof(CanExportClip));
+        OnPropertyChanged(nameof(CanSearchByFace));
+        OnPropertyChanged(nameof(CanViewAuditLog));
         OnPropertyChanged(nameof(CanDeleteImmutableArchive));
         OnPropertyChanged(nameof(CanDeleteStandardArchive));
     }

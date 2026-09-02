@@ -6,7 +6,7 @@ using VMS.Frontend.WPF.Services;
 
 namespace VMS.Frontend.WPF.ViewModels;
 
-public partial class LoginViewModel(ApiClient api, SessionService session) : ObservableObject
+public partial class LoginViewModel(ApiClient api, SessionService session, LocalizationService localization) : ObservableObject
 {
     [ObservableProperty]
     private string _username = string.Empty;
@@ -40,11 +40,14 @@ public partial class LoginViewModel(ApiClient api, SessionService session) : Obs
         }
         catch (Exception)
         {
-            ErrorMessage = "Не удалось подключиться к серверу.";
+            ErrorMessage = LocalizationService.Get("Login_ConnectError");
         }
         finally
         {
             IsBusy = false;
         }
     }
+
+    [RelayCommand]
+    private void SetLanguage(string languageCode) => localization.SetLanguage(languageCode);
 }

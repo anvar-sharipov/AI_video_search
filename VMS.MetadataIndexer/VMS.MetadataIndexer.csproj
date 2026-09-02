@@ -9,6 +9,18 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.11" />
     <PackageReference Include="YoloDotNet" Version="4.2.0" />
     <PackageReference Include="YoloDotNet.ExecutionProvider.Cpu" Version="1.1.0" />
+
+    <!--
+      Face search: Haar cascade (OpenCvSharp.CascadeClassifier) finds the face, then
+      SFace's ONNX model (models/face_recognition_sface_2021dec.onnx) embeds it via a
+      plain ONNX Runtime session. OpenCvSharp4's Face module only wraps the classic
+      (pre-2021) recognizers — no FaceDetectorYN/FaceRecognizerSF binding for the
+      newer detector/recognizer pair opencv_zoo ships — hence the split: OpenCvSharp
+      for image IO/cropping/the cascade, raw OnnxRuntime for the embedding model.
+    -->
+    <PackageReference Include="OpenCvSharp4" Version="4.10.0.20241108" />
+    <PackageReference Include="OpenCvSharp4.runtime.win" Version="4.10.0.20241108" />
+    <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.23.0" />
   </ItemGroup>
 
   <PropertyGroup>

@@ -1,0 +1,135 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <sys:String x:Key="Win_Login_Title">VMS — Вход</sys:String>
+    <sys:String x:Key="Win_Main_Title">VMS — Живой просмотр</sys:String>
+    <sys:String x:Key="Win_AddCamera_Title">Добавить камеру</sys:String>
+    <sys:String x:Key="Win_SearchByPhoto_Title">Поиск по фото</sys:String>
+    <sys:String x:Key="Win_OperationLog_Title">Журнал операций</sys:String>
+    <sys:String x:Key="Win_Archive_Title">Архив</sys:String>
+
+    <sys:String x:Key="Login_Heading">Корпоративная система видеонаблюдения</sys:String>
+    <sys:String x:Key="Login_UsernameLabel">Логин</sys:String>
+    <sys:String x:Key="Login_PasswordLabel">Пароль</sys:String>
+    <sys:String x:Key="Login_Submit">Войти</sys:String>
+    <sys:String x:Key="Login_ConnectError">Не удалось подключиться к серверу.</sys:String>
+
+    <sys:String x:Key="AddCamera_Code">Код камеры (напр. cam-02)</sys:String>
+    <sys:String x:Key="AddCamera_Name">Название</sys:String>
+    <sys:String x:Key="AddCamera_IpAddress">IP-адрес</sys:String>
+    <sys:String x:Key="AddCamera_OnvifPort">ONVIF порт</sys:String>
+    <sys:String x:Key="AddCamera_OnvifUsername">Логин ONVIF</sys:String>
+    <sys:String x:Key="AddCamera_OnvifPassword">Пароль ONVIF</sys:String>
+    <sys:String x:Key="AddCamera_Submit">Сохранить и подключить</sys:String>
+    <sys:String x:Key="AddCamera_RequiredError">Код и IP-адрес обязательны.</sys:String>
+
+    <sys:String x:Key="Main_AddCameraButton">+ Камера</sys:String>
+    <sys:String x:Key="Main_LayoutPresetsTooltip">Сохранённые раскладки (пока недоступно)</sys:String>
+    <sys:String x:Key="Main_SequenceTooltip">Циклический просмотр камер (пока недоступно)</sys:String>
+    <sys:String x:Key="Main_LockTooltip">Заблокировать сессию (пока недоступно)</sys:String>
+
+    <sys:String x:Key="Tile_SelectTooltip">Клик — выбрать камеру</sys:String>
+    <sys:String x:Key="Tile_ExpandTooltip">Качественный поток на весь экран в отдельном окне</sys:String>
+
+    <sys:String x:Key="Search_PlaceholderTooltip">Например: red car, person</sys:String>
+    <sys:String x:Key="Search_Button">Найти</sys:String>
+    <sys:String x:Key="Search_ClipButton">Клип</sys:String>
+    <sys:String x:Key="Search_ProtectButton">Защитить</sys:String>
+    <sys:String x:Key="Search_ProtectTooltip">Защитить от удаления (только Admin+)</sys:String>
+    <sys:String x:Key="SearchByPhoto_ButtonTooltip">Искать по фото (только Operator+)</sys:String>
+    <sys:String x:Key="SearchByPhoto_ChooseFileButton">Выбрать файл...</sys:String>
+    <sys:String x:Key="SearchByPhoto_SearchButton">Искать</sys:String>
+    <sys:String x:Key="SearchByPhoto_ChooseFileFirstError">Сначала выберите фотографию.</sys:String>
+    <sys:String x:Key="OperationLog_ColumnTimestamp">Время</sys:String>
+    <sys:String x:Key="OperationLog_ColumnUser">Пользователь</sys:String>
+    <sys:String x:Key="OperationLog_ColumnAction">Действие</sys:String>
+    <sys:String x:Key="OperationLog_ColumnTarget">Объект</sys:String>
+    <sys:String x:Key="OperationLog_ColumnDetails">Детали</sys:String>
+    <sys:String x:Key="OperationLog_ColumnResult">Успех</sys:String>
+    <sys:String x:Key="Archive_CameraLabel">Камера:</sys:String>
+    <sys:String x:Key="Archive_DateLabel">Дата:</sys:String>
+    <sys:String x:Key="Archive_TimeLabel">Время:</sys:String>
+    <sys:String x:Key="Archive_PlayButton">Воспроизвести</sys:String>
+    <sys:String x:Key="Archive_CoverageLabel">Есть запись:</sys:String>
+    <sys:String x:Key="Archive_NoCoverage">нет записей за этот день</sys:String>
+    <sys:String x:Key="Archive_InvalidTimeError">Введите время в формате ЧЧ:ММ.</sys:String>
+    <sys:String x:Key="Archive_PreviousButton">◀ 15 мин</sys:String>
+    <sys:String x:Key="Archive_PauseButton">Пауза</sys:String>
+    <sys:String x:Key="Archive_ResumeButton">Продолжить</sys:String>
+    <sys:String x:Key="Archive_NextButton">15 мин ▶</sys:String>
+
+    <sys:String x:Key="Sidebar_CamerasTooltip">Камеры (пока недоступно)</sys:String>
+    <sys:String x:Key="Sidebar_LayoutsTooltip">Раскладки экрана (пока недоступно)</sys:String>
+    <sys:String x:Key="Sidebar_ArchiveTooltip">Архив по времени (пока недоступно)</sys:String>
+    <sys:String x:Key="Sidebar_SearchPlaceholder">Поиск камер...</sys:String>
+
+    <sys:String x:Key="Bottom_StopAllTooltip">Остановить все камеры</sys:String>
+    <sys:String x:Key="Bottom_SnapshotTooltip">Снимок кадра выбранной камеры</sys:String>
+    <sys:String x:Key="Bottom_RecordTooltip">Ручная запись выбранной камеры на диск</sys:String>
+    <sys:String x:Key="Bottom_PrevTooltip">Предыдущий фрагмент архива (пока недоступно)</sys:String>
+    <sys:String x:Key="Bottom_PlayPauseTooltip">Пауза / воспроизведение выбранной камеры</sys:String>
+    <sys:String x:Key="Bottom_NextTooltip">Следующий фрагмент архива (пока недоступно)</sys:String>
+    <sys:String x:Key="Bottom_FullscreenTooltip">Развернуть выбранную камеру на весь экран</sys:String>
+
+    <sys:String x:Key="Layout_Auto">Авто</sys:String>
+
+    <sys:String x:Key="Expand_CloseButton">✕ Свернуть (Esc)</sys:String>
+
+    <sys:String x:Key="Clip_Loading">Загрузка клипа...</sys:String>
+
+    <sys:String x:Key="Status_LoadingCameras">Загрузка камер...</sys:String>
+    <sys:String x:Key="Status_CamerasCount">Камер: {0}</sys:String>
+    <sys:String x:Key="Status_Searching">Поиск...</sys:String>
+    <sys:String x:Key="Status_FoundCount">Найдено: {0}</sys:String>
+    <sys:String x:Key="Status_ProtectedFile">Файл защищён от удаления: {0}</sys:String>
+    <sys:String x:Key="Status_AllCamerasStopped">Все камеры остановлены.</sys:String>
+    <sys:String x:Key="Status_SnapshotSaved">Снимок сохранён: {0}</sys:String>
+    <sys:String x:Key="Status_SnapshotFailed">Не удалось сделать снимок — нет сигнала с камеры.</sys:String>
+    <sys:String x:Key="Status_RecordingStarted">Запись начата: {0}</sys:String>
+    <sys:String x:Key="Status_RecordingStopped">Запись остановлена.</sys:String>
+    <sys:String x:Key="Status_RecordingFailed">Не удалось начать запись — нет сигнала с камеры.</sys:String>
+
+    <sys:String x:Key="Api_LoginFailed">Неверный логин или пароль.</sys:String>
+    <sys:String x:Key="Api_Forbidden">Недостаточно прав для этого действия.</sys:String>
+    <sys:String x:Key="Api_ServerError">Ошибка сервера: {0}</sys:String>
+
+    <sys:String x:Key="Crash_Title">Ошибка</sys:String>
+    <sys:String x:Key="Crash_MessageFormat">Произошла ошибка (программа продолжит работу):&#10;&#10;{0}&#10;&#10;Подробности записаны в {1}</sys:String>
+
+    <sys:String x:Key="Common_NotAvailableYet">Пока недоступно</sys:String>
+
+    <sys:String x:Key="Tab_ControlPanel">Панель управления</sys:String>
+    <sys:String x:Key="Tab_LiveView">Живой просмотр</sys:String>
+
+    <sys:String x:Key="ControlPanel_CommonHeading">Общее</sys:String>
+
+    <sys:String x:Key="Card_LiveView_Title">Живой просмотр</sys:String>
+    <sys:String x:Key="Card_LiveView_Desc">Просмотр живого видео и управление отображением.</sys:String>
+    <sys:String x:Key="Card_Playback_Title">Архив</sys:String>
+    <sys:String x:Key="Card_Playback_Desc">Поиск и воспроизведение записей.</sys:String>
+    <sys:String x:Key="Card_VideoWall_Title">Видеостена</sys:String>
+    <sys:String x:Key="Card_VideoWall_Desc">Использование и настройка видеостены.</sys:String>
+    <sys:String x:Key="Card_Audio_Title">Аудио</sys:String>
+    <sys:String x:Key="Card_Audio_Desc">Двусторонняя связь и оповещение.</sys:String>
+    <sys:String x:Key="Card_Emap_Title">Электронная карта</sys:String>
+    <sys:String x:Key="Card_Emap_Desc">Добавление, изменение и удаление электронных карт.</sys:String>
+    <sys:String x:Key="Card_PeopleCounting_Title">Подсчёт людей</sys:String>
+    <sys:String x:Key="Card_PeopleCounting_Desc">Подсчёт вошедших и вышедших за период.</sys:String>
+    <sys:String x:Key="Card_AlarmRecords_Title">Журнал тревог</sys:String>
+    <sys:String x:Key="Card_AlarmRecords_Desc">Просмотр тревог в реальном времени при любом событии.</sys:String>
+    <sys:String x:Key="Card_DeviceManagement_Title">Управление устройствами</sys:String>
+    <sys:String x:Key="Card_DeviceManagement_Desc">Добавление, изменение, удаление и настройка устройств.</sys:String>
+    <sys:String x:Key="Card_FaceRecognition_Title">Распознавание лиц</sys:String>
+    <sys:String x:Key="Card_FaceRecognition_Desc">Просмотр видео и снимков с камер распознавания лиц.</sys:String>
+
+    <sys:String x:Key="Sidebar2_BasicHeading">Базовые</sys:String>
+    <sys:String x:Key="Nav_View">Просмотр</sys:String>
+    <sys:String x:Key="Nav_AlarmConfig">Настройка тревог</sys:String>
+    <sys:String x:Key="Nav_SystemConfig">Настройка системы</sys:String>
+    <sys:String x:Key="Nav_SequenceResource">Циклический ресурс</sys:String>
+    <sys:String x:Key="Nav_UserManagement">Управление пользователями</sys:String>
+    <sys:String x:Key="Nav_RecordingSchedule">Расписание записи</sys:String>
+    <sys:String x:Key="Nav_OperationLog">Журнал операций</sys:String>
+
+</ResourceDictionary>

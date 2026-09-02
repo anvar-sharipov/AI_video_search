@@ -55,6 +55,16 @@ STEP 2: Media Engine & GPU Decoding (VMS.MediaEngine)
 ONVIF Discovery & RTSP Retrieval:
 dotnet run --project VMS.Backend.Server
 
+dotnet run --project VMS.Backend.Server --urls http://localhost:5080
+dotnet run --project VMS.Frontend.WPF
+
+superadmin
+9588cd49c331
+
+http://172.16.40.77/doc/page/config.asp
+http://172.16.40.74/doc/page/config.asp
+http://172.16.40.89/doc/page/config.asp
+
 Нет, обрывается — тот же файл (Microsoft.ML.OnnxRuntime.Gpu.Windows, ~380МБ) уже несколько раз падает с "response ended prematurely". Похоже, сеть просто не тянет такие большие файлы стабильно. NuGet продолжает автоматически ретраить, но шансы low.
 
 

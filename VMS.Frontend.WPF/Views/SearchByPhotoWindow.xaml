@@ -1,0 +1,27 @@
+<Window x:Class="VMS.Frontend.WPF.Views.SearchByPhotoWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="{DynamicResource Win_SearchByPhoto_Title}" Height="440" Width="360"
+        Background="{StaticResource BgWindow}"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="220"/>
+            <RowDefinition Height="12"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="12"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Button Grid.Row="0" Content="{DynamicResource SearchByPhoto_ChooseFileButton}" Height="28" HorizontalAlignment="Left" Click="OnChooseFileClick"/>
+
+        <Border Grid.Row="1" Margin="0,8,0,0" BorderBrush="{StaticResource BorderSubtle}" BorderThickness="1">
+            <Image x:Name="Preview" Stretch="Uniform"/>
+        </Border>
+
+        <TextBlock Grid.Row="3" Text="{Binding ErrorMessage}" Foreground="{StaticResource TextError}" TextWrapping="Wrap"/>
+
+        <Button Grid.Row="5" Style="{StaticResource AccentButtonStyle}" Content="{DynamicResource SearchByPhoto_SearchButton}" Height="32" Click="OnSearchClick"/>
+    </Grid>
+</Window>

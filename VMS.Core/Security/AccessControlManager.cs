@@ -16,6 +16,10 @@ public class AccessControlManager : IAccessControlManager
         [Permission.ViewLiveStream] = UserRole.Viewer,
         [Permission.ViewArchive] = UserRole.Viewer,
         [Permission.SearchMetadata] = UserRole.Viewer,
+
+        // Search-by-photo tracks a specific person's movements across the archive —
+        // more sensitive than a plain text/color search, so it's gated like ExportClip.
+        [Permission.SearchByFace] = UserRole.Operator,
         [Permission.ExportClip] = UserRole.Operator,
         [Permission.ManageCameras] = UserRole.Admin,
         [Permission.ManageSystemConfig] = UserRole.Admin,

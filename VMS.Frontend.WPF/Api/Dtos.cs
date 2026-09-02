@@ -17,3 +17,9 @@ public record SearchResultDto(
 public record ClipRequestDto(string CameraId, DateTimeOffset DetectionTime, int? PreRollSeconds, int? PostRollSeconds);
 
 public record ClipResponseDto(string FileName);
+
+public record ArchiveCoverageSegmentDto(DateTimeOffset Start, DateTimeOffset End, string FileName);
+
+public record AuditLogEntryDto(
+    Guid Id, DateTimeOffset Timestamp, Guid? UserId, string Username, string Action,
+    string? TargetType, string? TargetId, string? Details, bool IsSuccess);

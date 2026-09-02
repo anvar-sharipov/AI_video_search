@@ -5,6 +5,7 @@ public enum Permission
     ViewLiveStream,
     ViewArchive,
     SearchMetadata,
+    SearchByFace,
     ExportClip,
     ManageCameras,
     ManageSystemConfig,

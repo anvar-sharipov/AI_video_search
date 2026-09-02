@@ -47,6 +47,9 @@ builder.Services.AddSingleton(sp => new VideoClipExtractor(
 builder.Services.AddSingleton<IObjectDetector>(sp => new SerializedObjectDetector(
     new YoloDotNetDetector(vmsOptions.YoloModelPath, useCuda: false, confidenceThreshold: 0.4,
         sp.GetRequiredService<ILoggerFactory>().CreateLogger<YoloDotNetDetector>())));
+builder.Services.AddSingleton<IFaceEmbedder>(sp => new SerializedFaceEmbedder(
+    new OnnxFaceEmbedder(vmsOptions.FaceDetectorModelPath, vmsOptions.FaceEmbedderModelPath,
+        sp.GetRequiredService<ILoggerFactory>().CreateLogger<OnnxFaceEmbedder>())));
 builder.Services.AddSingleton<IMetadataIndexer>(_ => new ElasticsearchIndexer(vmsOptions.ElasticsearchUri));
 
 // --- Orchestration ---
@@ -99,5 +102,7 @@ app.MapCameraEndpoints();
 app.MapSearchEndpoints();
 app.MapClipEndpoints();
 app.MapArchiveEndpoints();
+app.MapAdminEndpoints();
+app.MapAuditEndpoints();
 
 app.Run();

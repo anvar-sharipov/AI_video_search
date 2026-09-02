@@ -1,3 +1,4 @@
+using System.IO;
 using VMS.Frontend.WPF.Api;
 
 namespace VMS.Frontend.WPF.ViewModels;
@@ -11,6 +12,9 @@ public class SearchResultViewModel(SearchResultDto dto)
     public string? ColorAttribute => dto.ColorAttribute;
     public DateTimeOffset Timestamp => dto.Timestamp;
     public double Confidence => dto.Confidence;
+
+    /// <summary>Just the archive segment's filename (VideoChunkLocation is a full path) — what the protect/delete archive endpoints expect.</summary>
+    public string ArchiveFileName => Path.GetFileName(dto.VideoChunkLocation);
 
     public string Summary =>
         $"{dto.CameraId} — {(dto.ColorAttribute is null ? "" : dto.ColorAttribute + " ")}{dto.ObjectType} " +

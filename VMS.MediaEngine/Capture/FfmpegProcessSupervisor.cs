@@ -74,6 +74,7 @@ public sealed class FfmpegProcessSupervisor(
             try
             {
                 process.Start();
+                FfmpegJobObject.Instance.AddProcess(process.Handle);
                 _currentProcess = process;
                 ProcessStarted?.Invoke(process);
                 logger.LogInformation("ffmpeg[{Label}] started (pid {Pid})", label, process.Id);

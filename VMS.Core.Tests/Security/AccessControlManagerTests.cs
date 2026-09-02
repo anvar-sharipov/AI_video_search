@@ -57,6 +57,16 @@ public class AccessControlManagerTests
         Assert.Equal(expected, _sut.HasPermission(role, Permission.ExportClip));
     }
 
+    [Theory]
+    [InlineData(UserRole.Viewer, false)]
+    [InlineData(UserRole.Operator, true)]
+    [InlineData(UserRole.Admin, true)]
+    [InlineData(UserRole.SuperAdmin, true)]
+    public void Viewer_cannot_search_by_face(UserRole role, bool expected)
+    {
+        Assert.Equal(expected, _sut.HasPermission(role, Permission.SearchByFace));
+    }
+
     [Fact]
     public void Authorize_throws_UnauthorizedAccessException_when_permission_denied()
     {

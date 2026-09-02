@@ -26,6 +26,14 @@ public class ObjectMetadataEvent
 
     /// <summary>Path to the recorded segment this detection falls within, used to drive clip extraction.</summary>
     public required string VideoChunkLocation { get; set; }
+
+    /// <summary>
+    /// 128-dim SFace embedding of the face found inside this detection's bounding box,
+    /// null when ObjectType isn't "person" or no face was found in the crop (e.g. back
+    /// turned to the camera). Powers search-by-photo (cosine similarity kNN in Elasticsearch)
+    /// independently of the text-based SearchQueryParser path.
+    /// </summary>
+    public float[]? FaceEmbedding { get; set; }
 }
 
 public record BoundingBox(double X, double Y, double Width, double Height);

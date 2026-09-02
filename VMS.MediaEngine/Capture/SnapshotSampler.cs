@@ -118,6 +118,7 @@ public sealed class SnapshotSampler : IAsyncDisposable
         };
 
         process.Start();
+        FfmpegJobObject.Instance.AddProcess(process.Handle);
 
         using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
         timeoutCts.CancelAfter(TimeSpan.FromSeconds(10));

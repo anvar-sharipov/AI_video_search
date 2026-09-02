@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using VMS.Frontend.WPF.Api;
+using VMS.Frontend.WPF.Services;
 
 namespace VMS.Frontend.WPF.ViewModels;
 
@@ -25,7 +26,7 @@ public partial class AddCameraViewModel(ApiClient api)
 
         if (string.IsNullOrWhiteSpace(Code) || string.IsNullOrWhiteSpace(IpAddress))
         {
-            ErrorMessage = "Код и IP-адрес обязательны.";
+            ErrorMessage = LocalizationService.Get("AddCamera_RequiredError");
             return;
         }
 

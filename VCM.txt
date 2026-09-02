@@ -1,0 +1,22 @@
+dotnet run --project VMS.Backend.Server --urls http://localhost:5080
+dotnet run --project VMS.Frontend.WPF
+
+
+superadmin
+a85e1075b3c6
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

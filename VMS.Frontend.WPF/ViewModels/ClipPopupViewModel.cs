@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using LibVLCSharp.Shared;
 using VMS.Frontend.WPF.Api;
+using VMS.Frontend.WPF.Services;
 
 namespace VMS.Frontend.WPF.ViewModels;
 
@@ -17,7 +18,7 @@ public partial class ClipPopupViewModel : ObservableObject, IDisposable
     private string _title = string.Empty;
 
     [ObservableProperty]
-    private string _statusMessage = "Загрузка клипа...";
+    private string _statusMessage = LocalizationService.Get("Clip_Loading");
 
     public ClipPopupViewModel(ApiClient api, SearchResultViewModel result)
     {

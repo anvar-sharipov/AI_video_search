@@ -1,0 +1,135 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <sys:String x:Key="Win_Login_Title">VMS — Login</sys:String>
+    <sys:String x:Key="Win_Main_Title">VMS — Live View</sys:String>
+    <sys:String x:Key="Win_AddCamera_Title">Add Camera</sys:String>
+    <sys:String x:Key="Win_SearchByPhoto_Title">Search by Photo</sys:String>
+    <sys:String x:Key="Win_OperationLog_Title">Operation Log</sys:String>
+    <sys:String x:Key="Win_Archive_Title">Archive</sys:String>
+
+    <sys:String x:Key="Login_Heading">Enterprise Video Management System</sys:String>
+    <sys:String x:Key="Login_UsernameLabel">Username</sys:String>
+    <sys:String x:Key="Login_PasswordLabel">Password</sys:String>
+    <sys:String x:Key="Login_Submit">Log in</sys:String>
+    <sys:String x:Key="Login_ConnectError">Could not connect to the server.</sys:String>
+
+    <sys:String x:Key="AddCamera_Code">Camera code (e.g. cam-02)</sys:String>
+    <sys:String x:Key="AddCamera_Name">Name</sys:String>
+    <sys:String x:Key="AddCamera_IpAddress">IP address</sys:String>
+    <sys:String x:Key="AddCamera_OnvifPort">ONVIF port</sys:String>
+    <sys:String x:Key="AddCamera_OnvifUsername">ONVIF username</sys:String>
+    <sys:String x:Key="AddCamera_OnvifPassword">ONVIF password</sys:String>
+    <sys:String x:Key="AddCamera_Submit">Save and connect</sys:String>
+    <sys:String x:Key="AddCamera_RequiredError">Code and IP address are required.</sys:String>
+
+    <sys:String x:Key="Main_AddCameraButton">+ Camera</sys:String>
+    <sys:String x:Key="Main_LayoutPresetsTooltip">Saved layouts (not available yet)</sys:String>
+    <sys:String x:Key="Main_SequenceTooltip">Camera sequence / cycling (not available yet)</sys:String>
+    <sys:String x:Key="Main_LockTooltip">Lock session (not available yet)</sys:String>
+
+    <sys:String x:Key="Tile_SelectTooltip">Click to select this camera</sys:String>
+    <sys:String x:Key="Tile_ExpandTooltip">Open full-quality stream fullscreen in its own window</sys:String>
+
+    <sys:String x:Key="Search_PlaceholderTooltip">E.g.: red car, person</sys:String>
+    <sys:String x:Key="Search_Button">Search</sys:String>
+    <sys:String x:Key="Search_ClipButton">Clip</sys:String>
+    <sys:String x:Key="Search_ProtectButton">Protect</sys:String>
+    <sys:String x:Key="Search_ProtectTooltip">Protect from deletion (Admin+ only)</sys:String>
+    <sys:String x:Key="SearchByPhoto_ButtonTooltip">Search by photo (Operator+ only)</sys:String>
+    <sys:String x:Key="SearchByPhoto_ChooseFileButton">Choose file...</sys:String>
+    <sys:String x:Key="SearchByPhoto_SearchButton">Search</sys:String>
+    <sys:String x:Key="SearchByPhoto_ChooseFileFirstError">Choose a photo first.</sys:String>
+    <sys:String x:Key="OperationLog_ColumnTimestamp">Time</sys:String>
+    <sys:String x:Key="OperationLog_ColumnUser">User</sys:String>
+    <sys:String x:Key="OperationLog_ColumnAction">Action</sys:String>
+    <sys:String x:Key="OperationLog_ColumnTarget">Target</sys:String>
+    <sys:String x:Key="OperationLog_ColumnDetails">Details</sys:String>
+    <sys:String x:Key="OperationLog_ColumnResult">Success</sys:String>
+    <sys:String x:Key="Archive_CameraLabel">Camera:</sys:String>
+    <sys:String x:Key="Archive_DateLabel">Date:</sys:String>
+    <sys:String x:Key="Archive_TimeLabel">Time:</sys:String>
+    <sys:String x:Key="Archive_PlayButton">Play</sys:String>
+    <sys:String x:Key="Archive_CoverageLabel">Recorded:</sys:String>
+    <sys:String x:Key="Archive_NoCoverage">no footage that day</sys:String>
+    <sys:String x:Key="Archive_InvalidTimeError">Enter a time as HH:mm.</sys:String>
+    <sys:String x:Key="Archive_PreviousButton">◀ 15 min</sys:String>
+    <sys:String x:Key="Archive_PauseButton">Pause</sys:String>
+    <sys:String x:Key="Archive_ResumeButton">Resume</sys:String>
+    <sys:String x:Key="Archive_NextButton">15 min ▶</sys:String>
+
+    <sys:String x:Key="Sidebar_CamerasTooltip">Cameras (not available yet)</sys:String>
+    <sys:String x:Key="Sidebar_LayoutsTooltip">Screen layouts (not available yet)</sys:String>
+    <sys:String x:Key="Sidebar_ArchiveTooltip">Archive by time (not available yet)</sys:String>
+    <sys:String x:Key="Sidebar_SearchPlaceholder">Search cameras...</sys:String>
+
+    <sys:String x:Key="Bottom_StopAllTooltip">Stop all cameras</sys:String>
+    <sys:String x:Key="Bottom_SnapshotTooltip">Take a snapshot of the selected camera</sys:String>
+    <sys:String x:Key="Bottom_RecordTooltip">Manually record the selected camera to disk</sys:String>
+    <sys:String x:Key="Bottom_PrevTooltip">Previous archive segment (not available yet)</sys:String>
+    <sys:String x:Key="Bottom_PlayPauseTooltip">Pause / play the selected camera</sys:String>
+    <sys:String x:Key="Bottom_NextTooltip">Next archive segment (not available yet)</sys:String>
+    <sys:String x:Key="Bottom_FullscreenTooltip">Expand the selected camera to fullscreen</sys:String>
+
+    <sys:String x:Key="Layout_Auto">Auto</sys:String>
+
+    <sys:String x:Key="Expand_CloseButton">✕ Collapse (Esc)</sys:String>
+
+    <sys:String x:Key="Clip_Loading">Loading clip...</sys:String>
+
+    <sys:String x:Key="Status_LoadingCameras">Loading cameras...</sys:String>
+    <sys:String x:Key="Status_CamerasCount">Cameras: {0}</sys:String>
+    <sys:String x:Key="Status_Searching">Searching...</sys:String>
+    <sys:String x:Key="Status_FoundCount">Found: {0}</sys:String>
+    <sys:String x:Key="Status_ProtectedFile">File protected from deletion: {0}</sys:String>
+    <sys:String x:Key="Status_AllCamerasStopped">All cameras stopped.</sys:String>
+    <sys:String x:Key="Status_SnapshotSaved">Snapshot saved: {0}</sys:String>
+    <sys:String x:Key="Status_SnapshotFailed">Could not take a snapshot — no signal from the camera.</sys:String>
+    <sys:String x:Key="Status_RecordingStarted">Recording started: {0}</sys:String>
+    <sys:String x:Key="Status_RecordingStopped">Recording stopped.</sys:String>
+    <sys:String x:Key="Status_RecordingFailed">Could not start recording — no signal from the camera.</sys:String>
+
+    <sys:String x:Key="Api_LoginFailed">Incorrect username or password.</sys:String>
+    <sys:String x:Key="Api_Forbidden">You don't have permission for this action.</sys:String>
+    <sys:String x:Key="Api_ServerError">Server error: {0}</sys:String>
+
+    <sys:String x:Key="Crash_Title">Error</sys:String>
+    <sys:String x:Key="Crash_MessageFormat">An error occurred (the app will keep running):&#10;&#10;{0}&#10;&#10;Details were written to {1}</sys:String>
+
+    <sys:String x:Key="Common_NotAvailableYet">Not available yet</sys:String>
+
+    <sys:String x:Key="Tab_ControlPanel">Control Panel</sys:String>
+    <sys:String x:Key="Tab_LiveView">Live View</sys:String>
+
+    <sys:String x:Key="ControlPanel_CommonHeading">Common</sys:String>
+
+    <sys:String x:Key="Card_LiveView_Title">Live View</sys:String>
+    <sys:String x:Key="Card_LiveView_Desc">View live video and manage live view.</sys:String>
+    <sys:String x:Key="Card_Playback_Title">Playback</sys:String>
+    <sys:String x:Key="Card_Playback_Desc">Search for and play back recordings.</sys:String>
+    <sys:String x:Key="Card_VideoWall_Title">Video Wall</sys:String>
+    <sys:String x:Key="Card_VideoWall_Desc">Use and configure the video wall.</sys:String>
+    <sys:String x:Key="Card_Audio_Title">Audio</sys:String>
+    <sys:String x:Key="Card_Audio_Desc">Two-way audio and broadcast.</sys:String>
+    <sys:String x:Key="Card_Emap_Title">E-map</sys:String>
+    <sys:String x:Key="Card_Emap_Desc">Add, edit and delete e-maps.</sys:String>
+    <sys:String x:Key="Card_PeopleCounting_Title">People Counting</sys:String>
+    <sys:String x:Key="Card_PeopleCounting_Desc">Count people that entered/left during a certain period.</sys:String>
+    <sys:String x:Key="Card_AlarmRecords_Title">Alarm Records</sys:String>
+    <sys:String x:Key="Card_AlarmRecords_Desc">View alarms in real time when any exception occurs.</sys:String>
+    <sys:String x:Key="Card_DeviceManagement_Title">Device Management</sys:String>
+    <sys:String x:Key="Card_DeviceManagement_Desc">Add, edit, delete and configure devices.</sys:String>
+    <sys:String x:Key="Card_FaceRecognition_Title">Face Recognition</sys:String>
+    <sys:String x:Key="Card_FaceRecognition_Desc">View live video from face recognition cameras and snapshots.</sys:String>
+
+    <sys:String x:Key="Sidebar2_BasicHeading">Basic</sys:String>
+    <sys:String x:Key="Nav_View">View</sys:String>
+    <sys:String x:Key="Nav_AlarmConfig">Alarm Configuration</sys:String>
+    <sys:String x:Key="Nav_SystemConfig">System Configuration</sys:String>
+    <sys:String x:Key="Nav_SequenceResource">Sequence Resource</sys:String>
+    <sys:String x:Key="Nav_UserManagement">User Management</sys:String>
+    <sys:String x:Key="Nav_RecordingSchedule">Recording Schedule</sys:String>
+    <sys:String x:Key="Nav_OperationLog">Operation Log</sys:String>
+
+</ResourceDictionary>
