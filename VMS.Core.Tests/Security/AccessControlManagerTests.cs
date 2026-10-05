@@ -82,4 +82,60 @@ public class AccessControlManagerTests
 
         Assert.Null(exception);
     }
+
+    [Fact]
+    public void Guard_can_view_live_stream_but_nothing_else()
+    {
+        Assert.True(_sut.HasPermission(UserRole.Guard, Permission.ViewLiveStream));
+        Assert.False(_sut.HasPermission(UserRole.Guard, Permission.ViewArchive));
+        Assert.False(_sut.HasPermission(UserRole.Guard, Permission.SearchMetadata));
+    }
+
+    [Fact]
+    public void Additional_grant_extends_the_role_baseline_for_exactly_that_permission()
+    {
+        var extra = new[] { Permission.SearchByFace };
+
+        Assert.True(_sut.HasPermission(UserRole.Viewer, extra, Permission.SearchByFace));
+    }
+
+    [Fact]
+    public void Additional_grant_does_not_leak_into_unrelated_permissions()
+    {
+        var extra = new[] { Permission.SearchByFace };
+
+        Assert.False(_sut.HasPermission(UserRole.Viewer, extra, Permission.ManageCameras));
+    }
+
+    [Fact]
+    public void No_additional_grants_still_honors_the_role_baseline()
+    {
+        Assert.True(_sut.HasPermission(UserRole.Viewer, [], Permission.ViewArchive));
+    }
+
+    [Fact]
+    public void DeleteImmutableArchive_is_not_individually_grantable()
+    {
+        // The single most destructive permission in the system stays Role-only — see
+        // AccessControlManager.NonGrantablePermissions and UserEndpoints.TryResolveAdditionalPermissions,
+        // which is the thing that actually enforces this at the API boundary. Asserting the set's
+        // contents here catches anyone removing the safeguard without noticing what it protects.
+        Assert.Contains(Permission.DeleteImmutableArchive, AccessControlManager.NonGrantablePermissions);
+    }
+
+    [Fact]
+    public void Authorize_with_additional_grants_throws_when_neither_role_nor_grant_covers_it()
+    {
+        Assert.Throws<UnauthorizedAccessException>(
+            () => _sut.Authorize(UserRole.Viewer, [], Permission.ManageCameras));
+    }
+
+    [Fact]
+    public void Authorize_with_additional_grants_does_not_throw_when_the_grant_covers_it()
+    {
+        var exception = Record.Exception(
+            () => _sut.Authorize(UserRole.Viewer, [Permission.SearchByFace], Permission.SearchByFace));
+
+        Assert.Null(exception);
+    }
 }

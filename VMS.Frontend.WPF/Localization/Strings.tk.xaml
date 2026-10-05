@@ -2,8 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:sys="clr-namespace:System;assembly=mscorlib">
 
-    <sys:String x:Key="Win_Login_Title">VMS — Ulgama giriş</sys:String>
-    <sys:String x:Key="Win_Main_Title">VMS — Göni ýaýlym</sys:String>
+    <sys:String x:Key="Win_Login_Title">Türkmentelekom — Ulgama giriş</sys:String>
+    <sys:String x:Key="Win_Main_Title">Türkmentelekom — Göni ýaýlym</sys:String>
     <sys:String x:Key="Win_AddCamera_Title">Kamera goşmak</sys:String>
     <sys:String x:Key="Win_SearchByPhoto_Title">Surat boýunça gözleg</sys:String>
     <sys:String x:Key="Win_OperationLog_Title">Amallar žurnaly</sys:String>
@@ -23,14 +23,18 @@
     <sys:String x:Key="AddCamera_OnvifPassword">ONVIF paroly</sys:String>
     <sys:String x:Key="AddCamera_Submit">Ýatda sakla we birikdir</sys:String>
     <sys:String x:Key="AddCamera_RequiredError">Kod we IP salgysy hökmanydyr.</sys:String>
+    <sys:String x:Key="Win_EditCamera_Title">Kamerany üýtgetmek</sys:String>
+    <sys:String x:Key="EditCamera_UsernameHint">Üýtgetmek islemeseňiz boş goýuň</sys:String>
+    <sys:String x:Key="EditCamera_PasswordHint">Üýtgetmek islemeseňiz boş goýuň</sys:String>
+    <sys:String x:Key="EditCamera_IsEnabledLabel">Kamera işjeň</sys:String>
+    <sys:String x:Key="EditCamera_Submit">Ýatda sakla</sys:String>
+    <sys:String x:Key="EditCamera_RequiredError">IP salgysy hökmanydyr.</sys:String>
 
     <sys:String x:Key="Main_AddCameraButton">+ Kamera</sys:String>
-    <sys:String x:Key="Main_LayoutPresetsTooltip">Ýatda saklanan ýerleşdirmeler (heniz elýeterli däl)</sys:String>
-    <sys:String x:Key="Main_SequenceTooltip">Kameralaryň aýlawly görkezilişi (heniz elýeterli däl)</sys:String>
-    <sys:String x:Key="Main_LockTooltip">Sessiýany gulplamak (heniz elýeterli däl)</sys:String>
 
     <sys:String x:Key="Tile_SelectTooltip">Basyň — kamerany saýlamak</sys:String>
     <sys:String x:Key="Tile_ExpandTooltip">Ýokary hilli akym — aýratyn äpişgede doly ekran</sys:String>
+    <sys:String x:Key="Tile_ReconnectTooltip">Akym doňdy — täzeden birikmek üçin basyň</sys:String>
 
     <sys:String x:Key="Search_PlaceholderTooltip">Mysal: red car, person</sys:String>
     <sys:String x:Key="Search_Button">Gözle</sys:String>
@@ -41,28 +45,90 @@
     <sys:String x:Key="SearchByPhoto_ChooseFileButton">Faýl saýla...</sys:String>
     <sys:String x:Key="SearchByPhoto_SearchButton">Gözle</sys:String>
     <sys:String x:Key="SearchByPhoto_ChooseFileFirstError">Ilki bilen surat saýlaň.</sys:String>
+    <sys:String x:Key="SearchByPhoto_EnrollLabel">Bu kim bilýäňizmi? Adyny bilmek üçin hasaba alyň, geljekki gabat gelmelerde ady görkeziler. Maslahat: şol bir adamyň 2-3 suratyny (öňden, biraz gapdaldan) şol bir at bilen hasaba alyň — tanamagyň takyklygy has ýokarlanar.</sys:String>
+    <sys:String x:Key="SearchByPhoto_EnrollNamePlaceholder">Adamyň ady</sys:String>
+    <sys:String x:Key="SearchByPhoto_EnrollButton">Hasaba al</sys:String>
+    <sys:String x:Key="SearchByPhoto_EnrollNameRequiredError">Ilki ady ýazyň.</sys:String>
+    <sys:String x:Key="SearchByPhoto_EnrollSuccess">"{0}" hasaba alyndy — indiki gabat gelmelerde bu at görkeziler.</sys:String>
     <sys:String x:Key="OperationLog_ColumnTimestamp">Wagt</sys:String>
     <sys:String x:Key="OperationLog_ColumnUser">Ulanyjy</sys:String>
     <sys:String x:Key="OperationLog_ColumnAction">Amal</sys:String>
     <sys:String x:Key="OperationLog_ColumnTarget">Obýekt</sys:String>
     <sys:String x:Key="OperationLog_ColumnDetails">Jikme-jiklikler</sys:String>
     <sys:String x:Key="OperationLog_ColumnResult">Üstünlik</sys:String>
+
+    <sys:String x:Key="Win_CameraManagement_Title">Enjamlary dolandyrmak</sys:String>
+    <sys:String x:Key="CameraManagement_ColumnCode">Kod</sys:String>
+    <sys:String x:Key="CameraManagement_ColumnName">Ady</sys:String>
+    <sys:String x:Key="CameraManagement_ColumnIp">IP salgysy</sys:String>
+    <sys:String x:Key="CameraManagement_ColumnPort">Port</sys:String>
+    <sys:String x:Key="CameraManagement_ColumnEnabled">Işjeň</sys:String>
+    <sys:String x:Key="CameraManagement_ColumnRunning">Işleýär</sys:String>
+    <sys:String x:Key="CameraManagement_EditButton">Üýtget</sys:String>
+    <sys:String x:Key="CameraManagement_DeleteButton">Poz</sys:String>
+    <sys:String x:Key="CameraManagement_ConfirmDeleteTitle">Pozmagy tassykla</sys:String>
+    <sys:String x:Key="CameraManagement_ConfirmDeleteText">"{0}" kamerasyny pozmalymy? Bu amal yzyna gaýtarylmaz.</sys:String>
+    <sys:String x:Key="CameraManagement_Status_Loading">Kameralar ýüklenýär…</sys:String>
+    <sys:String x:Key="CameraManagement_Status_Loaded">Kameralar: {0}</sys:String>
+    <sys:String x:Key="CameraManagement_Status_Deleted">"{0}" kamerasy pozuldy.</sys:String>
+    <sys:String x:Key="CameraManagement_ColumnStatus">Ýagdaýy</sys:String>
+    <sys:String x:Key="CameraManagement_StatusOnline">Onlaýn</sys:String>
+    <sys:String x:Key="CameraManagement_StatusOffline">Oflaýn</sys:String>
+    <sys:String x:Key="CameraManagement_StatusDisabled">Öçürilen</sys:String>
+    <sys:String x:Key="CameraManagement_SearchTooltip">Kod, ady ýa-da IP salgysy boýunça gözle</sys:String>
+    <sys:String x:Key="CameraManagement_SelectCameraFirst">Ilki kamera saýlaň.</sys:String>
+    <sys:String x:Key="CameraManagement_SelectOneForEdit">Üýtgetmek üçin diňe bir kamera saýlaň.</sys:String>
+    <sys:String x:Key="CameraManagement_ConfirmDeleteMultipleText">{0} kamerany pozmalymy? Bu amal yzyna gaýtarylmaz.</sys:String>
+    <sys:String x:Key="CameraManagement_RefreshButton">Täzele</sys:String>
+    <sys:String x:Key="CameraManagement_ColumnModel">Model</sys:String>
+    <sys:String x:Key="CameraManagement_SelectDeviceFirst">Ilki enjam saýlaň.</sys:String>
+    <sys:String x:Key="CameraManagement_SelectOneDeviceToAdd">Goşmak üçin diňe bir enjam saýlaň.</sys:String>
+    <sys:String x:Key="CameraManagement_Status_Discovering">Ulgamda gözlenýär…</sys:String>
+    <sys:String x:Key="CameraManagement_Status_DiscoveredCount">Ulgamda tapylan enjamlar: {0}</sys:String>
+    <sys:String x:Key="Win_AddDiscoveredCamera_Title">Tapylan kamerany goşmak</sys:String>
+    <sys:String x:Key="AddDiscoveredCamera_RequiredError">Ulanyjy ady we paroly hökmanydyr.</sys:String>
     <sys:String x:Key="Archive_CameraLabel">Kamera:</sys:String>
     <sys:String x:Key="Archive_DateLabel">Sene:</sys:String>
     <sys:String x:Key="Archive_TimeLabel">Wagt:</sys:String>
     <sys:String x:Key="Archive_PlayButton">Oýnat</sys:String>
-    <sys:String x:Key="Archive_CoverageLabel">Ýazgy bar:</sys:String>
-    <sys:String x:Key="Archive_NoCoverage">bu gün üçin ýazgy ýok</sys:String>
     <sys:String x:Key="Archive_InvalidTimeError">Wagty SS:MM görnüşinde giriziň.</sys:String>
-    <sys:String x:Key="Archive_PreviousButton">◀ 15 min</sys:String>
+    <sys:String x:Key="Archive_PreviousButton">◀ 15 sek</sys:String>
     <sys:String x:Key="Archive_PauseButton">Duruz</sys:String>
     <sys:String x:Key="Archive_ResumeButton">Dowam et</sys:String>
-    <sys:String x:Key="Archive_NextButton">15 min ▶</sys:String>
+    <sys:String x:Key="Archive_NextButton">15 sek ▶</sys:String>
+    <sys:String x:Key="Archive_StepFrameButton">Kadr</sys:String>
+    <sys:String x:Key="Archive_SpeedLabel">Tizlik:</sys:String>
+    <sys:String x:Key="Archive_SnapshotButton">Surat al...</sys:String>
+    <sys:String x:Key="Archive_NothingToSnapshotError">Heniz surat alara zat ýok — hiç zat ýüklenmedi.</sys:String>
+    <sys:String x:Key="Archive_Tab_Person">Ady boýunça</sys:String>
+    <sys:String x:Key="Archive_Tab_Attributes">Alamatlar boýunça</sys:String>
+    <sys:String x:Key="Archive_Tab_ReverseImage">Surat boýunça</sys:String>
+    <sys:String x:Key="Archive_PersonNameLabel">Bellige alnan adam:</sys:String>
+    <sys:String x:Key="Archive_ObjectTypeLabel">Obýektiň görnüşi:</sys:String>
+    <sys:String x:Key="Archive_ColorLabel">Reňki:</sys:String>
+    <sys:String x:Key="Archive_PlateLabel">Belgi:</sys:String>
+    <sys:String x:Key="Archive_SearchButton">Gözle</sys:String>
+    <sys:String x:Key="Archive_DropPhotoHint">Bu ýere surat taşlaň, faýl saýlaň ýa-da pleýerden kadr kesiň.</sys:String>
+    <sys:String x:Key="Archive_ChoosePhotoButton">Faýl saýla...</sys:String>
+    <sys:String x:Key="Archive_CropFromPlayerButton">Pleýerden kes</sys:String>
+    <sys:String x:Key="Archive_SimilarityThresholdLabel">Meňzeşlik derejesi:</sys:String>
+    <sys:String x:Key="Archive_Search_EnterNameError">Ilki ady ýazyň ýa-da saýlaň.</sys:String>
+    <sys:String x:Key="Archive_Search_NoFiltersError">Iň azyndan bir filtr saýlaň.</sys:String>
+    <sys:String x:Key="Archive_Search_ChoosePhotoError">Ilki surat saýlaň ýa-da kesiň.</sys:String>
+    <sys:String x:Key="Archive_Search_NoResults">Gabat gelýän zat tapylmady.</sys:String>
+    <sys:String x:Key="Win_ImageCrop_Title">Ýer saýla</sys:String>
+    <sys:String x:Key="ImageCrop_Instructions">Gözlemek üçin adamyň ýa-da ýüzüň daşyny çyzyk bilen belläň, soň "Saýlanany ulan" düwmesine basyň.</sys:String>
+    <sys:String x:Key="ImageCrop_CancelButton">Ýatyr</sys:String>
+    <sys:String x:Key="ImageCrop_UseSelectionButton">Saýlanany ulan</sys:String>
 
-    <sys:String x:Key="Sidebar_CamerasTooltip">Kameralar (heniz elýeterli däl)</sys:String>
-    <sys:String x:Key="Sidebar_LayoutsTooltip">Ekran ýerleşdirmeleri (heniz elýeterli däl)</sys:String>
-    <sys:String x:Key="Sidebar_ArchiveTooltip">Wagt boýunça arhiw (heniz elýeterli däl)</sys:String>
+    <sys:String x:Key="Sidebar_GroupsTooltip">Kamera toparlary</sys:String>
+    <sys:String x:Key="Sidebar_QuickSwitchTooltip">Kamera toparyny çalyş</sys:String>
+    <sys:String x:Key="Sidebar_AlarmFilterTooltip">Diňe duýduryş berýän kameralary görkez (näbelli adam / ulag)</sys:String>
     <sys:String x:Key="Sidebar_SearchPlaceholder">Kameralary gözle...</sys:String>
+    <sys:String x:Key="Tree_AssignHintTooltip">Klik — saýlamak; goşa klik — saýlanan öýjüge ýerleşdirmek</sys:String>
+    <sys:String x:Key="Slot_SelectFirst">Ilki sekedanyň öýjügini saýlaň</sys:String>
+    <sys:String x:Key="Slot_OnlyInFixedLayout">Kamera bellemek diňe berkidilen ýerleşdirmede (1x1–4x4) işleýär</sys:String>
+    <sys:String x:Key="Slot_EmptyPlaceholderHint">Çepden kamera saýlaň</sys:String>
 
     <sys:String x:Key="Bottom_StopAllTooltip">Ähli kameralary duruzmak</sys:String>
     <sys:String x:Key="Bottom_SnapshotTooltip">Saýlanan kameranyň kadr suraty</sys:String>
@@ -73,6 +139,27 @@
     <sys:String x:Key="Bottom_FullscreenTooltip">Saýlanan kamerany doly ekrana ýaýmak</sys:String>
 
     <sys:String x:Key="Layout_Auto">Awto</sys:String>
+    <sys:String x:Key="Layout_GridSizeTooltip">Tor ölçegi</sys:String>
+
+    <!-- Camera Groups -->
+    <sys:String x:Key="Win_CameraGroups_Title">Kamera toparlary</sys:String>
+    <sys:String x:Key="Win_EditCameraGroup_Title">Kamera topary</sys:String>
+    <sys:String x:Key="Win_QuickGroupSwitch_Title">Kamera toparyny çalyş</sys:String>
+    <sys:String x:Key="CameraGroups_AddButton">Goş</sys:String>
+    <sys:String x:Key="CameraGroups_ColumnName">Ady</sys:String>
+    <sys:String x:Key="CameraGroups_ColumnCameras">Kameralar</sys:String>
+    <sys:String x:Key="CameraGroups_Status_Loading">Toparlar ýüklenýär...</sys:String>
+    <sys:String x:Key="CameraGroups_Status_Loaded">{0} topar</sys:String>
+    <sys:String x:Key="CameraGroups_SelectGroupFirst">Ilki topar saýlaň.</sys:String>
+    <sys:String x:Key="CameraGroups_SelectOneForEdit">Üýtgetmek üçin diňe bir topar saýlaň.</sys:String>
+    <sys:String x:Key="CameraGroups_ConfirmDeleteTitle">Topar(lar) pozulsynmy?</sys:String>
+    <sys:String x:Key="CameraGroups_ConfirmDeleteText">Saýlanan {0} topar pozulsynmy?</sys:String>
+    <sys:String x:Key="EditCameraGroup_NameLabel">Toparyň ady</sys:String>
+    <sys:String x:Key="EditCameraGroup_CamerasLabel">Bu topardaky kameralar</sys:String>
+    <sys:String x:Key="EditCameraGroup_Submit">Ýatda sakla</sys:String>
+    <sys:String x:Key="EditCameraGroup_NameRequiredError">Toparyň adyny ýazyň.</sys:String>
+    <sys:String x:Key="QuickGroupSwitch_AllCameras">Ähli kameralar</sys:String>
+    <sys:String x:Key="QuickGroupSwitch_Loading">Toparlar ýüklenýär...</sys:String>
 
     <sys:String x:Key="Expand_CloseButton">✕ Ýapmak (Esc)</sys:String>
 
@@ -91,13 +178,16 @@
     <sys:String x:Key="Status_RecordingFailed">Ýazgyny başlap bolmady — kameradan signal ýok.</sys:String>
 
     <sys:String x:Key="Api_LoginFailed">Ulanyjy ady ýa-da paroly nädogry.</sys:String>
+    <sys:String x:Key="Api_SessionExpired">Ulgama giriş wagty tamamlandy. Täzeden giriň.</sys:String>
     <sys:String x:Key="Api_Forbidden">Bu hereket üçin ýeterlik hukuk ýok.</sys:String>
     <sys:String x:Key="Api_ServerError">Serwer ýalňyşlygy: {0}</sys:String>
 
     <sys:String x:Key="Crash_Title">Ýalňyşlyk</sys:String>
     <sys:String x:Key="Crash_MessageFormat">Ýalňyşlyk ýüze çykdy (programma işlemegini dowam etdirer):&#10;&#10;{0}&#10;&#10;Jikme-jiklikler ýazyldy: {1}</sys:String>
 
-    <sys:String x:Key="Common_NotAvailableYet">Heniz elýeterli däl</sys:String>
+    <sys:String x:Key="Common_LogOut">Çykmak</sys:String>
+    <sys:String x:Key="Theme_SwitchToLight">☀ Açyk</sys:String>
+    <sys:String x:Key="Theme_SwitchToDark">🌙 Garaňky</sys:String>
 
     <sys:String x:Key="Tab_ControlPanel">Dolandyryş paneli</sys:String>
     <sys:String x:Key="Tab_LiveView">Göni ýaýlym</sys:String>
@@ -122,14 +212,177 @@
     <sys:String x:Key="Card_DeviceManagement_Desc">Enjamlary goşmak, üýtgetmek, pozmak we sazlamak.</sys:String>
     <sys:String x:Key="Card_FaceRecognition_Title">Ýüzi tanamak</sys:String>
     <sys:String x:Key="Card_FaceRecognition_Desc">Ýüzi tanaýan kameralardan göni wideony we suratlary görmek.</sys:String>
+    <sys:String x:Key="Card_PersonSightingReport_Title">Adam hasabaty</sys:String>
+    <sys:String x:Key="Card_PersonSightingReport_Desc">Kamerada näçe adam (tanalýan/näbelli) görnendigi — günme-gün.</sys:String>
+    <sys:String x:Key="Card_UserManagement_Desc">Hasaplar, roller we elýeterlilik hukuklary.</sys:String>
+    <sys:String x:Key="Card_OperationLog_Desc">Ulanyjylaryň ulgamdaky hereketleriniň taryhy.</sys:String>
 
-    <sys:String x:Key="Sidebar2_BasicHeading">Esasy</sys:String>
-    <sys:String x:Key="Nav_View">Görnüş</sys:String>
-    <sys:String x:Key="Nav_AlarmConfig">Signal sazlamalary</sys:String>
-    <sys:String x:Key="Nav_SystemConfig">Ulgam sazlamalary</sys:String>
-    <sys:String x:Key="Nav_SequenceResource">Yzygiderlilik serişdesi</sys:String>
     <sys:String x:Key="Nav_UserManagement">Ulanyjylary dolandyrmak</sys:String>
-    <sys:String x:Key="Nav_RecordingSchedule">Ýazgy tertibi</sys:String>
     <sys:String x:Key="Nav_OperationLog">Amallar žurnaly</sys:String>
+
+    <!-- User Management -->
+    <sys:String x:Key="Win_UserManagement_Title">Ulanyjylary dolandyrmak</sys:String>
+    <sys:String x:Key="Win_AddUser_Title">Ulanyjy goş</sys:String>
+    <sys:String x:Key="Win_EditUser_Title">Ulanyjyny üýtget</sys:String>
+    <sys:String x:Key="UserManagement_SearchTooltip">Ulanyjy ady boýunça gözle</sys:String>
+    <sys:String x:Key="UserManagement_AddButton">Goş</sys:String>
+    <sys:String x:Key="UserManagement_EditButton">Üýtget</sys:String>
+    <sys:String x:Key="UserManagement_DeleteButton">Poz</sys:String>
+    <sys:String x:Key="UserManagement_ColumnUsername">Ulanyjy ady</sys:String>
+    <sys:String x:Key="UserManagement_ColumnRole">Wezipesi</sys:String>
+    <sys:String x:Key="UserManagement_ColumnActive">Işjeň</sys:String>
+    <sys:String x:Key="UserManagement_ColumnCreated">Döredilen</sys:String>
+    <sys:String x:Key="UserManagement_ColumnLastLogin">Soňky giriş</sys:String>
+    <sys:String x:Key="UserManagement_Status_Loading">Ulanyjylar ýüklenýär...</sys:String>
+    <sys:String x:Key="UserManagement_Status_Loaded">{0} ulanyjy</sys:String>
+    <sys:String x:Key="UserManagement_SelectUserFirst">Ilki ulanyjy saýlaň.</sys:String>
+    <sys:String x:Key="UserManagement_SelectOneForEdit">Üýtgetmek üçin diňe bir ulanyjy saýlaň.</sys:String>
+    <sys:String x:Key="UserManagement_ConfirmDeleteTitle">Ulanyjy(lar) pozulsynmy?</sys:String>
+    <sys:String x:Key="UserManagement_ConfirmDeleteText">Saýlanan {0} ulanyjy pozulsynmy? Bu yzyna gaýtarylmaýar.</sys:String>
+    <sys:String x:Key="AddUser_Username">Ulanyjy ady</sys:String>
+    <sys:String x:Key="AddUser_Password">Parol</sys:String>
+    <sys:String x:Key="AddUser_Role">Wezipesi</sys:String>
+    <sys:String x:Key="AddUser_Submit">Döret</sys:String>
+    <sys:String x:Key="AddUser_RequiredError">Ulanyjy adyny we paroly ýazyň.</sys:String>
+    <sys:String x:Key="EditUser_NewPassword">Täze parol</sys:String>
+    <sys:String x:Key="EditUser_NewPasswordHint">Häzirki paroly saklamak üçin boş goýuň</sys:String>
+    <sys:String x:Key="EditUser_IsActiveLabel">Işjeň (ulgama girip biler)</sys:String>
+    <sys:String x:Key="EditUser_Submit">Ýatda sakla</sys:String>
+
+    <!-- Ulanyjynyň goşmaça funksiýalary (rolyň üstüne) -->
+    <sys:String x:Key="AddUser_Permissions">Funksiýalar</sys:String>
+    <sys:String x:Key="AddUser_PermissionsHint">Bellenen we öçürilen (çal) gutujyklar eýýäm saýlanan rol arkaly bar. Diňe özüňizde bar bolan funksiýany başga birine berip bilersiňiz.</sys:String>
+    <sys:String x:Key="Permission_ViewLiveStream">Göni ýaýlym</sys:String>
+    <sys:String x:Key="Permission_ViewArchive">Arhiwi görmek</sys:String>
+    <sys:String x:Key="Permission_SearchMetadata">Gözleg</sys:String>
+    <sys:String x:Key="Permission_SearchByFace">Surat boýunça gözleg</sys:String>
+    <sys:String x:Key="Permission_ManageKnownPersons">Ýüz tanamak (adam hasaba almak)</sys:String>
+    <sys:String x:Key="Permission_ExportClip">Klip eksport etmek</sys:String>
+    <sys:String x:Key="Permission_ManageCameras">Kamera dolandyrmak</sys:String>
+    <sys:String x:Key="Permission_ManageRetentionPolicy">Saklama syýasaty</sys:String>
+    <sys:String x:Key="Permission_DeleteStandardArchive">Arhiw faýllaryny pozmak</sys:String>
+    <sys:String x:Key="Permission_ManageSystemConfig">Ulgam sazlamalary / iş žurnaly</sys:String>
+    <sys:String x:Key="Permission_ManageUsers">Ulanyjylary dolandyrmak</sys:String>
+
+    <!-- Adam sanamak -->
+    <sys:String x:Key="Win_PeopleCounting_Title">Adam sanamak</sys:String>
+    <sys:String x:Key="PeopleCounting_CameraLabel">Kamera</sys:String>
+    <sys:String x:Key="PeopleCounting_LineHint">Nokatlary süýräp çyzygyň şeklini üýtgediň (ýaşyl — başlangyç, gök — soňy). Suratyň boş ýerine basmak täze nokat goşýar, nokadyň üstünde sag basmak ony pozýar (iň azyndan 2 nokat galmaly).</sys:String>
+    <sys:String x:Key="PeopleCounting_RemovePointTooltip">Bu nokady pozmak üçin sag basyň</sys:String>
+    <sys:String x:Key="PeopleCounting_LeftToRightIsIn">Çepden saga geçmek "Girdi" hasaplansyn</sys:String>
+    <sys:String x:Key="PeopleCounting_SaveLineButton">Çyzygy ýatda sakla</sys:String>
+    <sys:String x:Key="PeopleCounting_DeleteLineButton">Çyzygy poz</sys:String>
+    <sys:String x:Key="PeopleCounting_QueryButton">Soraş</sys:String>
+    <sys:String x:Key="PeopleCounting_InLabel">Girdi: </sys:String>
+    <sys:String x:Key="PeopleCounting_OutLabel">Çykdy: </sys:String>
+    <sys:String x:Key="PeopleCounting_LineSaved">Sanama çyzygy ýatda saklandy.</sys:String>
+    <sys:String x:Key="PeopleCounting_LineDeleted">Sanama çyzygy pozuldy.</sys:String>
+
+    <!-- Adam hasabaty ("kadrda görnen HÄR bir adamy sanamak + skrinşot bilen ýatda saklamak") -->
+    <sys:String x:Key="Win_PersonSightingReport_Title">Adam hasabaty</sys:String>
+    <sys:String x:Key="Overlay_UnknownPerson">Näbelli</sys:String>
+    <sys:String x:Key="PersonSightingReport_CamerasLabel">Kameralar</sys:String>
+    <sys:String x:Key="PersonSightingReport_CameraColumn">Kamera</sys:String>
+    <sys:String x:Key="PersonSightingReport_DateColumn">Sene</sys:String>
+    <sys:String x:Key="PersonSightingReport_TotalColumn">Jemi</sys:String>
+    <sys:String x:Key="PersonSightingReport_KnownColumn">Tanalýan</sys:String>
+    <sys:String x:Key="PersonSightingReport_UnknownColumn">Näbelli</sys:String>
+    <sys:String x:Key="PersonSightingReport_DrillDownHint">Şol gün+kamera üçin saklanan skrinşotlary görmek üçin setire iki gezek basyň.</sys:String>
+    <sys:String x:Key="PersonSightingReport_NoCameraSelected">Iň azyndan bir kamera saýlaň.</sys:String>
+    <sys:String x:Key="PersonSightingReport_NoData">Saýlanan kameralar/senneler üçin maglumat ýok.</sys:String>
+    <sys:String x:Key="PersonSightingReport_SelectAll">Ählisini saýlamak</sys:String>
+    <sys:String x:Key="PersonSightingReport_CamerasHint">Maslahat: köp kamera + uzyn senne aralygy ret ediler — çalt hasabat üçin gerimi kiçeldiň.</sys:String>
+    <sys:String x:Key="PersonSightingReport_Loading">Soralýar...</sys:String>
+    <sys:String x:Key="PersonSightingGallery_Loading">Skrinşotlar ýüklenýär...</sys:String>
+    <sys:String x:Key="PersonSightingGallery_NoImage">Surat ýok</sys:String>
+    <sys:String x:Key="PersonSightingGallery_DownloadButton">Ýükläp almak</sys:String>
+    <sys:String x:Key="PersonSightingGallery_ChooseFolderTitle">Skrinşotlary saklamak üçin papka saýlaň</sys:String>
+    <sys:String x:Key="PersonSightingGallery_ExportSuccess">{0} skrinşot {1} ýoluna saklandy (Known/&lt;at&gt; we Unknown papkalaryna bölünip).</sys:String>
+    <sys:String x:Key="PersonSightingGallery_DeleteTooltip">Bu görnüşi poz</sys:String>
+    <sys:String x:Key="PersonSightingGallery_ConfirmDeleteTitle">Ýazgyny pozmalymy?</sys:String>
+    <sys:String x:Key="PersonSightingGallery_ConfirmDeleteText">Bu saklanan skrinşoty pozmalymy? Bu yzyna gaýtarylmaz.</sys:String>
+
+    <!-- E-karta -->
+    <sys:String x:Key="Win_EMap_Title">E-karta</sys:String>
+    <sys:String x:Key="EMap_MapsLabel">Kartalar</sys:String>
+    <sys:String x:Key="EMap_DeleteMapButton">Saýlanan kartany poz</sys:String>
+    <sys:String x:Key="EMap_NewMapNameLabel">Täze kartanyň ady</sys:String>
+    <sys:String x:Key="EMap_ChooseImageButton">Surat saýla...</sys:String>
+    <sys:String x:Key="EMap_UploadButton">Kartany ýükle</sys:String>
+    <sys:String x:Key="EMap_CameraToPinLabel">Bellenjek kamera</sys:String>
+    <sys:String x:Key="EMap_PlacePinButton">Belgi goý</sys:String>
+    <sys:String x:Key="EMap_PlacePinHint">Belgi goýmak üçin kartanyň islendik ýerine basyň. Belga çep basyp kamera geçiň; sag basyp aýyryň.</sys:String>
+    <sys:String x:Key="EMap_NameAndImageRequired">Ilki ady ýazyň we surat saýlaň.</sys:String>
+    <sys:String x:Key="EMap_ChooseCameraFirst">Ilki bellenjek kamerany saýlaň.</sys:String>
+
+    <!-- Signal ýazgylary -->
+    <sys:String x:Key="Win_AlarmRecords_Title">Signal ýazgylary</sys:String>
+    <sys:String x:Key="AlarmRecords_RefreshButton">Täzele</sys:String>
+    <sys:String x:Key="AlarmRecords_AcknowledgeButton">Tassykla</sys:String>
+    <sys:String x:Key="AlarmRecords_AcknowledgedLabel">Tassyklandy</sys:String>
+
+    <!-- Ýüzi tanamak -->
+    <sys:String x:Key="Win_FaceRecognition_Title">Ýüzi tanamak</sys:String>
+    <sys:String x:Key="FaceRecognition_KnownPersonsHeading">Tanalýan adamlar</sys:String>
+    <sys:String x:Key="FaceRecognition_RecognizedHeading">Soňky tapylan gabat gelmeler</sys:String>
+
+    <!-- Sesli aragatnaşyk -->
+    <sys:String x:Key="Win_Audio_Title">Sesli aragatnaşyk</sys:String>
+    <sys:String x:Key="Audio_CameraLabel">Kamera</sys:String>
+    <sys:String x:Key="Audio_ListenButton">Diňle</sys:String>
+    <sys:String x:Key="Audio_StopButton">Duruz</sys:String>
+    <sys:String x:Key="Audio_TalkButton">Geple</sys:String>
+    <sys:String x:Key="Audio_TalkNotSupportedTooltip">Iki taraplaýyn aragatnaşyk kameranyň öz protokolyny talap edýär (mysal üçin, Hikvision ISAPI) — bu taslama heniz muny goldamaýar, hiç bir kamera üçin elýeterli däl.</sys:String>
+    <sys:String x:Key="Audio_CameraNotRunning">Bu kamera häzir işlänok.</sys:String>
+    <sys:String x:Key="Audio_ArchiveHeading">Arhiw</sys:String>
+    <sys:String x:Key="Audio_ArchiveHint">Arhiw ýazgysyndan sesi diňlemek ýa-da ýüklemek üçin sene we wagt aralygyny saýlaň.</sys:String>
+    <sys:String x:Key="Audio_ArchiveDateLabel">Sene</sys:String>
+    <sys:String x:Key="Audio_ArchiveFromLabel">Başlangyç (SS:MM)</sys:String>
+    <sys:String x:Key="Audio_ArchiveToLabel">Ahyry (SS:MM)</sys:String>
+    <sys:String x:Key="Audio_ListenArchiveButton">Diňle</sys:String>
+    <sys:String x:Key="Audio_DownloadButton">Ýükle</sys:String>
+    <sys:String x:Key="Audio_SelectCameraError">Ilki kamerany saýlaň.</sys:String>
+    <sys:String x:Key="Audio_ArchiveRangeInvalid">"Ahyry" wagty "Başlangyç" wagtyndan giç bolmaly.</sys:String>
+    <sys:String x:Key="Audio_DownloadSaved">Faýl saklandy: {0}</sys:String>
+
+    <!-- Wideo diwary -->
+    <sys:String x:Key="Win_VideoWall_Title">Wideo diwary</sys:String>
+    <sys:String x:Key="VideoWall_MonitorLabel">Monitor</sys:String>
+    <sys:String x:Key="VideoWall_Hint">Göni ýaýlymyň şol bir kamera setkasyny saýlanan monitoryň tutuş ekranynda açýar. Ýapmak üçin Esc basyň.</sys:String>
+    <sys:String x:Key="VideoWall_OpenButton">Aç</sys:String>
+    <sys:String x:Key="VideoWall_LayoutLabel">Ýerleşiş</sys:String>
+    <sys:String x:Key="VideoWall_MirrorLiveView">Göni ýaýlymyň aýnasy</sys:String>
+    <sys:String x:Key="VideoWall_ManageLayoutsButton">Ýerleşişleri dolandyrmak…</sys:String>
+
+    <!-- Wideo diwarynyň ýerleşişleri -->
+    <sys:String x:Key="Win_VideoWallLayouts_Title">Wideo diwarynyň ýerleşişleri</sys:String>
+    <sys:String x:Key="VideoWallLayouts_AddButton">Goşmak</sys:String>
+    <sys:String x:Key="VideoWallLayouts_ColumnName">Ady</sys:String>
+    <sys:String x:Key="VideoWallLayouts_ColumnSize">Ölçegi</sys:String>
+    <sys:String x:Key="VideoWallLayouts_ColumnCameras">Kameralar</sys:String>
+    <sys:String x:Key="VideoWallLayouts_Status_Loading">Ýerleşişler ýüklenýär...</sys:String>
+    <sys:String x:Key="VideoWallLayouts_Status_Loaded">Ýerleşişler: {0}</sys:String>
+    <sys:String x:Key="VideoWallLayouts_SelectLayoutFirst">Ilki ýerleşişi saýlaň.</sys:String>
+    <sys:String x:Key="VideoWallLayouts_SelectOneForEdit">Üýtgetmek üçin diňe bir ýerleşişi saýlaň.</sys:String>
+    <sys:String x:Key="VideoWallLayouts_ConfirmDeleteTitle">Ýerleşiş(ler) pozulsynmy?</sys:String>
+    <sys:String x:Key="VideoWallLayouts_ConfirmDeleteText">Saýlanan ýerleşişler ({0}) pozulsynmy?</sys:String>
+
+    <sys:String x:Key="Win_EditVideoWallLayout_Title">Wideo diwarynyň ýerleşişi</sys:String>
+    <sys:String x:Key="VideoWallLayout_NameLabel">Ýerleşişiň ady</sys:String>
+    <sys:String x:Key="VideoWallLayout_RowsLabel">Hatarlar</sys:String>
+    <sys:String x:Key="VideoWallLayout_ColumnsLabel">Sütünler</sys:String>
+    <sys:String x:Key="VideoWallLayout_ApplySizeButton">Ölçegi ulanmak</sys:String>
+    <sys:String x:Key="VideoWallLayout_MergeRightButton">Saga birleşdirmek</sys:String>
+    <sys:String x:Key="VideoWallLayout_MergeDownButton">Aşak birleşdirmek</sys:String>
+    <sys:String x:Key="VideoWallLayout_SplitButton">Bölmek</sys:String>
+    <sys:String x:Key="VideoWallLayout_SplitTooltip">Öýjügi aýry-aýry 1x1 öýjüklere gaýtaryp bölýär. Bellenen kamera aýrylar.</sys:String>
+    <sys:String x:Key="VideoWallLayout_ResetGridConfirm">Hatar/sütün sanyny üýtgetmek tutuş tory arassalar — birleşdirmeler we bellenen kameralar ýitiriler. Dowam etmelimi?</sys:String>
+    <sys:String x:Key="VideoWallLayout_InvalidSizeError">Hatarlaryň we sütünleriň sany nolden uly bolmaly.</sys:String>
+    <sys:String x:Key="VideoWallLayout_SelectCellFirstError">Ilki tordaky öýjügi saýlaň.</sys:String>
+    <sys:String x:Key="VideoWallLayout_NameRequiredError">Ýerleşişiň adyny giriziň.</sys:String>
+    <sys:String x:Key="VideoWallLayout_CamerasLabel">Kameralar</sys:String>
+    <sys:String x:Key="VideoWallLayout_AssignHint">Çepdäki öýjügi saýlaň, soňra ony bellemek üçin kamera iki gezek basyň.</sys:String>
+    <sys:String x:Key="VideoWallLayout_CancelButton">Ýatyr</sys:String>
+    <sys:String x:Key="VideoWallLayout_SaveButton">Ýatda sakla</sys:String>
 
 </ResourceDictionary>

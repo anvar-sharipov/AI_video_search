@@ -23,17 +23,25 @@ public partial class SessionService : ObservableObject
     [ObservableProperty]
     private bool _isLoggedIn;
 
-    public bool CanManageCameras => _accessControl.HasPermission(Role, Permission.ManageCameras);
-    public bool CanExportClip => _accessControl.HasPermission(Role, Permission.ExportClip);
-    public bool CanSearchByFace => _accessControl.HasPermission(Role, Permission.SearchByFace);
-    public bool CanViewAuditLog => _accessControl.HasPermission(Role, Permission.ManageSystemConfig);
-    public bool CanDeleteImmutableArchive => _accessControl.HasPermission(Role, Permission.DeleteImmutableArchive);
-    public bool CanDeleteStandardArchive => _accessControl.HasPermission(Role, Permission.DeleteStandardArchive);
+    /// <summary>Individual permissions granted to this user on top of their Role — see User.AdditionalPermissionsCsv/AccessControlManager's additive-grant overloads. Empty until SetLoggedIn.</summary>
+    public List<Permission> AdditionalPermissions { get; private set; } = [];
 
-    public void SetLoggedIn(string username, UserRole role)
+    public bool CanManageCameras => HasPermission(Permission.ManageCameras);
+    public bool CanExportClip => HasPermission(Permission.ExportClip);
+    public bool CanSearchByFace => HasPermission(Permission.SearchByFace);
+    public bool CanViewAuditLog => HasPermission(Permission.ManageSystemConfig);
+    public bool CanDeleteImmutableArchive => HasPermission(Permission.DeleteImmutableArchive);
+    public bool CanDeleteStandardArchive => HasPermission(Permission.DeleteStandardArchive);
+    public bool CanManageUsers => HasPermission(Permission.ManageUsers);
+
+    /// <summary>Effective check (Role baseline OR an additional grant) — the same rule AccessControlManager enforces server-side, so UI gating never disagrees with what the server will actually allow.</summary>
+    public bool HasPermission(Permission permission) => _accessControl.HasPermission(Role, AdditionalPermissions, permission);
+
+    public void SetLoggedIn(string username, UserRole role, IEnumerable<Permission>? additionalPermissions = null)
     {
         Username = username;
         Role = role;
+        AdditionalPermissions = additionalPermissions?.ToList() ?? [];
         IsLoggedIn = true;
         OnPropertyChanged(nameof(CanManageCameras));
         OnPropertyChanged(nameof(CanExportClip));
@@ -41,12 +49,14 @@ public partial class SessionService : ObservableObject
         OnPropertyChanged(nameof(CanViewAuditLog));
         OnPropertyChanged(nameof(CanDeleteImmutableArchive));
         OnPropertyChanged(nameof(CanDeleteStandardArchive));
+        OnPropertyChanged(nameof(CanManageUsers));
     }
 
     public void LogOut()
     {
         Username = string.Empty;
         Role = UserRole.Viewer;
+        AdditionalPermissions = [];
         IsLoggedIn = false;
     }
 }

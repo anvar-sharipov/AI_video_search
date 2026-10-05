@@ -1,0 +1,33 @@
+<Window x:Class="VMS.Frontend.WPF.Views.AddDiscoveredCameraWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="{DynamicResource Win_AddDiscoveredCamera_Title}" Height="380" Width="360"
+        Background="{StaticResource BgWindow}"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize" Loaded="OnLoaded">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+            <RowDefinition Height="16"/><RowDefinition Height="Auto"/>
+            <RowDefinition Height="12"/><RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="{DynamicResource CameraManagement_ColumnIp}" Foreground="{StaticResource TextSecondary}"/>
+        <TextBlock Grid.Row="1" Text="{Binding IpAddress}" Margin="0,0,0,8" Foreground="{StaticResource TextDisabled}"/>
+
+        <TextBlock Grid.Row="2" Text="{DynamicResource AddCamera_Name}" Foreground="{StaticResource TextSecondary}"/>
+        <TextBox x:Name="NameBox" Grid.Row="3" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,8"/>
+
+        <TextBlock Grid.Row="4" Text="{DynamicResource AddCamera_OnvifUsername}" Foreground="{StaticResource TextSecondary}"/>
+        <TextBox Grid.Row="5" Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,8"/>
+
+        <TextBlock Grid.Row="6" Text="{DynamicResource AddCamera_OnvifPassword}" Foreground="{StaticResource TextSecondary}"/>
+        <PasswordBox x:Name="PasswordBox" Grid.Row="7" Margin="0,0,0,8"/>
+
+        <TextBlock Grid.Row="9" Text="{Binding ErrorMessage}" Foreground="{StaticResource TextError}" TextWrapping="Wrap"/>
+
+        <Button Grid.Row="11" Style="{StaticResource AccentButtonStyle}" Content="{DynamicResource AddCamera_Submit}" Height="32" Click="OnSaveClick"/>
+    </Grid>
+</Window>

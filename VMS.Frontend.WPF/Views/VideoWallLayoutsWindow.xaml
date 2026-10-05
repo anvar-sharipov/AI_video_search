@@ -1,0 +1,47 @@
+<Window x:Class="VMS.Frontend.WPF.Views.VideoWallLayoutsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="{DynamicResource Win_VideoWallLayouts_Title}" Height="500" Width="640"
+        Background="{StaticResource BgWindow}"
+        WindowStartupLocation="CenterOwner" Loaded="OnLoaded">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+    </Window.Resources>
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Foreground="{StaticResource TextSecondary}" Text="{Binding StatusMessage}" TextWrapping="Wrap" Margin="0,0,0,8"/>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,8" Visibility="{Binding Session.CanManageCameras, Converter={StaticResource BoolToVis}}">
+            <Button Padding="10,6" Margin="0,0,4,0" Content="{DynamicResource VideoWallLayouts_AddButton}" Click="OnAddClick"/>
+            <Button Padding="10,6" Margin="0,0,4,0" Command="{Binding EditSelectedCommand}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="✏" Margin="0,0,6,0"/>
+                    <TextBlock Text="{DynamicResource UserManagement_EditButton}"/>
+                </StackPanel>
+            </Button>
+            <Button Padding="10,6" Command="{Binding DeleteSelectedCommand}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="🗑" Margin="0,0,6,0"/>
+                    <TextBlock Text="{DynamicResource UserManagement_DeleteButton}"/>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+
+        <DataGrid Grid.Row="2" ItemsSource="{Binding Layouts}" AutoGenerateColumns="False"
+                  GridLinesVisibility="Horizontal" HeadersVisibility="Column"
+                  CanUserAddRows="False" CanUserDeleteRows="False"
+                  PreviewMouseLeftButtonDown="OnCheckBoxCellPreviewMouseLeftButtonDown">
+            <DataGrid.Columns>
+                <DataGridCheckBoxColumn Binding="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}" Width="32" IsReadOnly="False"/>
+                <DataGridTextColumn Header="{DynamicResource VideoWallLayouts_ColumnName}" Binding="{Binding Layout.Name}" Width="160" IsReadOnly="True"/>
+                <DataGridTextColumn Header="{DynamicResource VideoWallLayouts_ColumnSize}" Binding="{Binding SizeSummary}" Width="80" IsReadOnly="True"/>
+                <DataGridTextColumn Header="{DynamicResource VideoWallLayouts_ColumnCameras}" Binding="{Binding CameraSummary}" Width="*" IsReadOnly="True"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Window>

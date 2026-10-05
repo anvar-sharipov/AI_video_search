@@ -1,0 +1,51 @@
+<Window x:Class="VMS.Frontend.WPF.Views.AlarmRecordsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:VMS.Frontend.WPF.ViewModels"
+        Title="{DynamicResource Win_AlarmRecords_Title}" Height="640" Width="820"
+        Background="{StaticResource BgWindow}"
+        WindowStartupLocation="CenterOwner">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Button Grid.Row="0" Content="{DynamicResource AlarmRecords_RefreshButton}" Height="28" HorizontalAlignment="Left"
+                Command="{Binding RefreshCommand}" Margin="0,0,0,8"/>
+
+        <ListBox Grid.Row="1" ItemsSource="{Binding Records}">
+            <ListBox.ItemTemplate>
+                <DataTemplate DataType="{x:Type vm:AlarmRecordViewModel}">
+                    <Border BorderBrush="{StaticResource BorderSubtle}" BorderThickness="0,0,0,1" Padding="6">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="{Binding Summary}" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                            <Button Grid.Column="1" Width="100"
+                                    Command="{Binding DataContext.AcknowledgeCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                    CommandParameter="{Binding}">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource FlatDarkButtonStyle}">
+                                        <Setter Property="Content" Value="{DynamicResource AlarmRecords_AcknowledgeButton}"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsAcknowledged}" Value="True">
+                                                <Setter Property="Content" Value="{DynamicResource AlarmRecords_AcknowledgedLabel}"/>
+                                                <Setter Property="IsEnabled" Value="False"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <TextBlock Grid.Row="2" Text="{Binding StatusMessage}" Foreground="{StaticResource TextError}" TextWrapping="Wrap" Margin="0,8,0,0"/>
+    </Grid>
+</Window>

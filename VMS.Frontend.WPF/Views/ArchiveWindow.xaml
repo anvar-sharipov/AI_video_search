@@ -2,90 +2,186 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vlc="clr-namespace:LibVLCSharp.WPF;assembly=LibVLCSharp.WPF"
-        Title="{DynamicResource Win_Archive_Title}" Height="780" Width="950"
+        xmlns:vm="clr-namespace:VMS.Frontend.WPF.ViewModels"
+        xmlns:conv="clr-namespace:VMS.Frontend.WPF.Converters"
+        Title="{DynamicResource Win_Archive_Title}" Height="900" Width="1400" MinHeight="640" MinWidth="1000"
         Background="{StaticResource BgWindow}"
-        WindowStartupLocation="CenterOwner" ResizeMode="NoResize" Loaded="OnLoaded">
+        WindowStartupLocation="CenterOwner" Loaded="OnLoaded">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <conv:ByteArrayToBitmapImageConverter x:Key="BytesToImage"/>
+    </Window.Resources>
     <Grid Margin="16">
-        <!-- Video (a native HwndHost surface via vlc:VideoView) always paints on top of any WPF
-             content, ignoring Grid clipping/ordering — the classic WPF "airspace" limitation. It
-             has to be the last/bottom-most row with nothing WPF-rendered below it, which is why
-             the timeline and transport controls sit above it here instead of below like a typical
-             NVR layout. -->
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="300"/>
+            <ColumnDefinition Width="16"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
 
-        <!-- Controls card — same bordered-panel look as the sidebar/search panels elsewhere in the client. -->
-        <Border Grid.Row="0" Background="{StaticResource BgPanel}" BorderBrush="{StaticResource BorderSubtle}" BorderThickness="1" Padding="12" Margin="0,0,0,12">
-            <StackPanel>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="200"/>
-                        <ColumnDefinition Width="16"/>
-                        <ColumnDefinition Width="140"/>
-                        <ColumnDefinition Width="16"/>
-                        <ColumnDefinition Width="90"/>
-                        <ColumnDefinition Width="16"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="4"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
+        <!-- AI search drawer: Named Person / Attributes / Reverse Image -->
+        <Border Grid.Column="0" Background="{StaticResource BgPanel}" BorderBrush="{StaticResource BorderSubtle}" BorderThickness="1" Padding="10">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Bottom" Text="{Binding SearchStatusMessage}" Foreground="{StaticResource TextError}"
+                           TextWrapping="Wrap" Margin="0,10,0,0"/>
+                <TabControl>
+                    <TabItem Width="92" Header="{DynamicResource Archive_Tab_Person}">
+                        <StackPanel Margin="0,10,0,0">
+                            <TextBlock Text="{DynamicResource Archive_PersonNameLabel}" Foreground="{StaticResource TextSecondary}" FontSize="11" Margin="0,0,0,4"/>
+                            <!-- Local ControlTemplate, not the app's shared dark ComboBox style: that
+                                 shared template has no "PART_EditableTextBox" part (it was never built
+                                 for an editable combo), so IsEditable="True" against it renders an
+                                 empty box with nowhere for typed text to show. Always-editable here, so
+                                 the text box is simply always visible — no trigger/part-timing to get
+                                 wrong. -->
+                            <ComboBox IsEditable="True" IsTextSearchEnabled="True" Height="30"
+                                      Background="{StaticResource BgTree}" Foreground="{StaticResource TextPrimary}" BorderBrush="{StaticResource BorderSubtle}"
+                                      ItemsSource="{Binding KnownPersons}" DisplayMemberPath="Name"
+                                      Text="{Binding PersonSearchText, UpdateSourceTrigger=PropertyChanged}">
+                                <ComboBox.Template>
+                                    <ControlTemplate TargetType="ComboBox">
+                                        <Grid>
+                                            <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1"/>
+                                            <ToggleButton Focusable="False" ClickMode="Press" HorizontalAlignment="Right" Width="22"
+                                                          Background="Transparent" BorderThickness="0"
+                                                          IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}">
+                                                <ToggleButton.Template>
+                                                    <ControlTemplate TargetType="ToggleButton">
+                                                        <Path Data="M0,0 L4,4 L8,0 Z" Fill="{StaticResource TextSecondary}"
+                                                              HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    </ControlTemplate>
+                                                </ToggleButton.Template>
+                                            </ToggleButton>
+                                            <TextBox x:Name="PART_EditableTextBox" Background="Transparent" BorderThickness="0"
+                                                     Foreground="{TemplateBinding Foreground}" CaretBrush="{TemplateBinding Foreground}"
+                                                     Margin="8,0,26,0" Padding="0" Focusable="True"
+                                                     HorizontalContentAlignment="Left" VerticalContentAlignment="Center"/>
+                                            <Popup IsOpen="{TemplateBinding IsDropDownOpen}" Placement="Bottom"
+                                                   AllowsTransparency="True" Focusable="False" PopupAnimation="Slide">
+                                                <Border Background="{StaticResource BgTree}" BorderBrush="{StaticResource BorderSubtle}" BorderThickness="1"
+                                                        MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ComboBox}}" MaxHeight="300">
+                                                    <ScrollViewer>
+                                                        <ItemsPresenter/>
+                                                    </ScrollViewer>
+                                                </Border>
+                                            </Popup>
+                                        </Grid>
+                                    </ControlTemplate>
+                                </ComboBox.Template>
+                            </ComboBox>
+                            <Button Content="{DynamicResource Archive_SearchButton}" Style="{StaticResource AccentButtonStyle}"
+                                    Height="32" Margin="0,12,0,0" Command="{Binding SearchByPersonCommand}"/>
+                        </StackPanel>
+                    </TabItem>
 
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource Archive_CameraLabel}" Foreground="{StaticResource TextSecondary}" FontSize="11"/>
-                    <TextBlock Grid.Row="0" Grid.Column="2" Text="{DynamicResource Archive_DateLabel}" Foreground="{StaticResource TextSecondary}" FontSize="11"/>
-                    <TextBlock Grid.Row="0" Grid.Column="4" Text="{DynamicResource Archive_TimeLabel}" Foreground="{StaticResource TextSecondary}" FontSize="11"/>
+                    <TabItem Width="92" Header="{DynamicResource Archive_Tab_Attributes}">
+                        <StackPanel Margin="0,10,0,0">
+                            <TextBlock Text="{DynamicResource Archive_ObjectTypeLabel}" Foreground="{StaticResource TextSecondary}" FontSize="11" Margin="0,0,0,4"/>
+                            <ComboBox Height="30" ItemsSource="{Binding ObjectTypeOptions}" SelectedItem="{Binding SelectedObjectType}"/>
 
-                    <ComboBox Grid.Row="2" Grid.Column="0" Height="30" ItemsSource="{Binding Cameras}" SelectedItem="{Binding SelectedCamera}">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Name}"/>
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
-                    <TextBox Grid.Row="2" Grid.Column="2" Height="30" Text="{Binding DateText, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" ToolTip="yyyy-MM-dd"/>
-                    <TextBox Grid.Row="2" Grid.Column="4" Height="30" Text="{Binding TimeText, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" ToolTip="HH:mm"/>
-                    <Button Grid.Row="2" Grid.Column="6" Style="{StaticResource AccentButtonStyle}" Width="110" Height="30" Content="{DynamicResource Archive_PlayButton}" Command="{Binding PlayCommand}"/>
-                </Grid>
+                            <TextBlock Text="{DynamicResource Archive_ColorLabel}" Foreground="{StaticResource TextSecondary}" FontSize="11" Margin="0,10,0,4"/>
+                            <ComboBox Height="30" ItemsSource="{Binding ColorOptions}" SelectedItem="{Binding SelectedColorOption}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate DataType="{x:Type vm:ColorOption}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Rectangle Width="14" Height="14" Fill="{Binding Hex}" Stroke="{StaticResource BorderSubtle}" StrokeThickness="1" Margin="0,0,8,0"/>
+                                            <TextBlock Text="{Binding Name}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
 
-                <TextBlock Margin="0,10,0,0" Foreground="{StaticResource TextSecondary}" TextWrapping="Wrap" FontSize="11">
-                    <Run Text="{DynamicResource Archive_CoverageLabel}"/>
-                    <Run Text=" "/>
-                    <Run Text="{Binding CoverageSummary, Mode=OneWay}"/>
-                </TextBlock>
-            </StackPanel>
+                            <TextBlock Text="{DynamicResource Archive_PlateLabel}" Foreground="{StaticResource TextSecondary}" FontSize="11" Margin="0,10,0,4"/>
+                            <TextBox Height="30" VerticalContentAlignment="Center" Text="{Binding PlateText, UpdateSourceTrigger=PropertyChanged}"/>
+
+                            <Button Content="{DynamicResource Archive_SearchButton}" Style="{StaticResource AccentButtonStyle}"
+                                    Height="32" Margin="0,12,0,0" Command="{Binding SearchByAttributesCommand}"/>
+                        </StackPanel>
+                    </TabItem>
+
+                    <TabItem Width="92" Header="{DynamicResource Archive_Tab_ReverseImage}">
+                        <StackPanel Margin="0,10,0,0">
+                            <Border Height="140" Background="{StaticResource BgTree}" BorderBrush="{StaticResource BorderSubtle}" BorderThickness="1"
+                                    AllowDrop="True" Drop="OnPhotoDrop" DragOver="OnPhotoDragOver">
+                                <Image x:Name="PhotoPreview" Stretch="Uniform" Margin="4"/>
+                            </Border>
+                            <TextBlock Text="{DynamicResource Archive_DropPhotoHint}" Foreground="{StaticResource TextSecondary}" FontSize="10"
+                                       Margin="0,4,0,0" TextWrapping="Wrap"/>
+
+                            <Button Content="{DynamicResource Archive_ChoosePhotoButton}" Height="30" Margin="0,10,0,0" Click="OnChoosePhotoClick"/>
+                            <Button Content="{DynamicResource Archive_CropFromPlayerButton}" Height="30" Margin="0,6,0,0" Click="OnCropFromPlayerClick"/>
+
+                            <TextBlock Text="{DynamicResource Archive_SimilarityThresholdLabel}" Foreground="{StaticResource TextSecondary}" FontSize="11" Margin="0,12,0,4"/>
+                            <Slider Minimum="0" Maximum="100" Value="{Binding SimilarityThreshold}"/>
+                            <TextBlock Text="{Binding SimilarityThreshold, StringFormat={}{0:F0}%}" Foreground="{StaticResource TextSecondary}" FontSize="11" HorizontalAlignment="Right"/>
+
+                            <Button Content="{DynamicResource Archive_SearchButton}" Style="{StaticResource AccentButtonStyle}"
+                                    Height="32" Margin="0,12,0,0" Command="{Binding SearchByPhotoCommand}"/>
+                        </StackPanel>
+                    </TabItem>
+                </TabControl>
+            </DockPanel>
         </Border>
 
-        <!-- Day timeline — click anywhere to jump playback there, like a typical NVR's recording timeline. Coverage
-             segments (from ArchiveViewModel.TimelineSegments) show where footage actually exists on the selected day. -->
-        <Border Grid.Row="1" Background="{StaticResource BgPanel}" BorderBrush="{StaticResource BorderSubtle}" BorderThickness="1" Padding="8" Margin="0,0,0,12">
-            <StackPanel>
-                <Canvas Height="16" Width="880">
-                    <ItemsControl ItemsSource="{Binding HourMarks}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <Canvas/>
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Label}" Foreground="{StaticResource TextSecondary}" FontSize="10"
-                                           Canvas.Left="{Binding Left}"/>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </Canvas>
+        <!-- Main content: player + timeline + results grid -->
+        <Grid Grid.Column="2">
+            <!-- Video (a native HwndHost surface via vlc:VideoView) always paints on top of any WPF
+                 content, ignoring Grid clipping/ordering — the classic WPF "airspace" limitation. It
+                 has to be the last/bottom-most row with nothing WPF-rendered below it, which is why
+                 the timeline/transport controls sit above it and the results grid sits in its own row
+                 below (a different row never overlaps, so no airspace conflict there). -->
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-                <Border x:Name="TimelineTrack" Width="880" Height="28" Margin="0,4,0,0"
-                        Background="{StaticResource BgTree}" BorderBrush="{StaticResource BorderSubtle}" BorderThickness="1"
-                        Cursor="Hand" MouseLeftButtonDown="OnTimelineClick">
-                    <Canvas ClipToBounds="True">
-                        <ItemsControl ItemsSource="{Binding TimelineSegments}">
+            <!-- Controls card -->
+            <Border Grid.Row="0" Background="{StaticResource BgPanel}" BorderBrush="{StaticResource BorderSubtle}" BorderThickness="1" Padding="12" Margin="0,0,0,8">
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="16"/>
+                            <ColumnDefinition Width="140"/>
+                            <ColumnDefinition Width="16"/>
+                            <ColumnDefinition Width="90"/>
+                            <ColumnDefinition Width="16"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="4"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource Archive_CameraLabel}" Foreground="{StaticResource TextSecondary}" FontSize="11"/>
+                        <TextBlock Grid.Row="0" Grid.Column="2" Text="{DynamicResource Archive_DateLabel}" Foreground="{StaticResource TextSecondary}" FontSize="11"/>
+                        <TextBlock Grid.Row="0" Grid.Column="4" Text="{DynamicResource Archive_TimeLabel}" Foreground="{StaticResource TextSecondary}" FontSize="11"/>
+
+                        <ComboBox Grid.Row="2" Grid.Column="0" Height="30" ItemsSource="{Binding Cameras}" SelectedItem="{Binding SelectedCamera}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <TextBox Grid.Row="2" Grid.Column="2" Height="30" Text="{Binding DateText, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" ToolTip="yyyy-MM-dd"/>
+                        <TextBox Grid.Row="2" Grid.Column="4" Height="30" Text="{Binding TimeText, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" ToolTip="HH:mm"/>
+                        <Button Grid.Row="2" Grid.Column="6" Style="{StaticResource AccentButtonStyle}" Width="110" Height="30" Content="{DynamicResource Archive_PlayButton}" Command="{Binding PlayCommand}"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Day timeline — click anywhere to jump playback there, like a typical NVR's recording timeline.
+                 Blue segments (TimelineSegments) show where footage actually exists on the selected day;
+                 purple/gold ticks (EventMarks) show person/vehicle search hits on that day for this camera. -->
+            <Border Grid.Row="1" Background="{StaticResource BgPanel}" BorderBrush="{StaticResource BorderSubtle}" BorderThickness="1"
+                    Padding="8" Margin="0,0,0,8" SizeChanged="OnTimelineSizeChanged">
+                <StackPanel>
+                    <Canvas Height="16" Width="{Binding TimelineWidth}">
+                        <ItemsControl ItemsSource="{Binding HourMarks}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <Canvas/>
@@ -93,40 +189,125 @@
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Rectangle Fill="{StaticResource AccentBlue}" Height="26"
-                                               Canvas.Left="{Binding Left}" Width="{Binding Width}"/>
+                                    <TextBlock Text="{Binding Label}" Foreground="{StaticResource TextSecondary}" FontSize="10"
+                                               Canvas.Left="{Binding Left}"/>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
-                        <Rectangle Fill="{StaticResource AccentAmber}" Width="2" Height="26" Canvas.Left="{Binding CursorLeft}"/>
                     </Canvas>
-                </Border>
-            </StackPanel>
-        </Border>
 
-        <Border Grid.Row="2" Background="{StaticResource BgPanel}" BorderBrush="{StaticResource BorderSubtle}" BorderThickness="1" Padding="8" Margin="0,0,0,12">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <Button Content="{DynamicResource Archive_PreviousButton}" Width="110" Margin="0,0,8,0" Command="{Binding PreviousCommand}"/>
-                <Button Width="90" Margin="0,0,8,0" Command="{Binding TogglePauseCommand}">
-                    <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource FlatDarkButtonStyle}">
-                            <Setter Property="Content" Value="{DynamicResource Archive_PauseButton}"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsPaused}" Value="True">
-                                    <Setter Property="Content" Value="{DynamicResource Archive_ResumeButton}"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
-                </Button>
-                <Button Content="{DynamicResource Archive_NextButton}" Width="110" Command="{Binding NextCommand}"/>
-            </StackPanel>
-        </Border>
+                    <Border x:Name="TimelineTrack" Width="{Binding TimelineWidth}" Height="28" Margin="0,4,0,0"
+                            Background="{StaticResource BgTree}" BorderBrush="{StaticResource BorderSubtle}" BorderThickness="1"
+                            Cursor="Hand" MouseLeftButtonDown="OnTimelineClick">
+                        <Canvas ClipToBounds="True">
+                            <ItemsControl ItemsSource="{Binding TimelineSegments}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <Canvas/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Rectangle Fill="{StaticResource AccentBlue}" Height="26"
+                                                   Canvas.Left="{Binding Left}" Width="{Binding Width}"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <ItemsControl ItemsSource="{Binding EventMarks}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <Canvas/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Rectangle Fill="{Binding MarkBrush}" Width="3" Height="26" Canvas.Left="{Binding Left}"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <Rectangle Fill="{StaticResource AccentAmber}" Width="2" Height="26" Canvas.Left="{Binding CursorLeft}"/>
+                        </Canvas>
+                    </Border>
+                </StackPanel>
+            </Border>
 
-        <Grid Grid.Row="3" Background="Black">
-            <vlc:VideoView MediaPlayer="{Binding Player}"/>
-            <TextBlock Text="{Binding StatusMessage}" Foreground="{StaticResource TextError}"
-                       HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="14" TextWrapping="Wrap" MaxWidth="500"/>
+            <!-- Transport: play/pause/step, speed, snapshot/crop -->
+            <Border Grid.Row="2" Background="{StaticResource BgPanel}" BorderBrush="{StaticResource BorderSubtle}" BorderThickness="1" Padding="8" Margin="0,0,0,8">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Content="{DynamicResource Archive_PreviousButton}" Width="110" Margin="0,0,8,0" Command="{Binding PreviousCommand}"/>
+                    <Button Width="90" Margin="0,0,8,0" Command="{Binding TogglePauseCommand}">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource FlatDarkButtonStyle}">
+                                <Setter Property="Content" Value="{DynamicResource Archive_PauseButton}"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsPaused}" Value="True">
+                                        <Setter Property="Content" Value="{DynamicResource Archive_ResumeButton}"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                    <Button Content="{DynamicResource Archive_NextButton}" Width="110" Margin="0,0,16,0" Command="{Binding NextCommand}"/>
+
+                    <Button Content="{DynamicResource Archive_StepFrameButton}" Width="60" Margin="0,0,16,0"
+                            IsEnabled="{Binding IsPaused}" Command="{Binding StepFrameCommand}"/>
+
+                    <TextBlock Text="{DynamicResource Archive_SpeedLabel}" Foreground="{StaticResource TextSecondary}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    <Button Content="1x" Width="44" Margin="0,0,4,0" Command="{Binding SetSpeed1xCommand}"/>
+                    <Button Content="2x" Width="44" Margin="0,0,4,0" Command="{Binding SetSpeed2xCommand}"/>
+                    <Button Content="4x" Width="44" Margin="0,0,4,0" Command="{Binding SetSpeed4xCommand}"/>
+                    <Button Content="16x" Width="44" Margin="0,0,16,0" Command="{Binding SetSpeed16xCommand}"/>
+
+                    <Button Content="{DynamicResource Archive_SnapshotButton}" Width="110" Click="OnTakeSnapshotClick"/>
+                </StackPanel>
+            </Border>
+
+            <!-- StatusMessage in its own row, not layered over the VideoView: a native video surface
+                 always wins airspace over WPF content in the same cell regardless of Z-order, so an
+                 error message drawn "on top" of it would never actually be visible (see the same fix
+                 in ClipPopupWindow). -->
+            <Grid Grid.Row="3" Background="Black">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Text="{Binding StatusMessage}" Foreground="{StaticResource TextError}"
+                           HorizontalAlignment="Center" Margin="8" FontSize="14" TextWrapping="Wrap" MaxWidth="500"/>
+                <vlc:VideoView Grid.Row="1" MediaPlayer="{Binding Player}" Loaded="VideoView_Loaded"/>
+            </Grid>
+
+            <!-- Search results grid: visual cards, double-click jumps the player to that exact moment.
+                 Collapsed (Auto row shrinks to 0) until there's actually something to show — an empty
+                 fixed-height panel under the video looked like a second, pointless box when just
+                 browsing the timeline without having searched for anything. -->
+            <Border Grid.Row="4" Background="{StaticResource BgPanel}" BorderBrush="{StaticResource BorderSubtle}" BorderThickness="1" Padding="8" Margin="0,8,0,0"
+                    Visibility="{Binding HasSearchResults, Converter={StaticResource BoolToVis}}">
+                <ScrollViewer Height="200" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding ResultsView}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="{x:Type vm:SearchResultCardViewModel}">
+                                <Border Width="160" Margin="0,0,8,0" Background="{StaticResource BgTree}" BorderBrush="{StaticResource BorderSubtle}"
+                                        BorderThickness="1" Cursor="Hand" MouseLeftButtonDown="OnResultCardMouseDown">
+                                    <StackPanel Margin="6">
+                                        <Border Height="90" Background="Black">
+                                            <Image Source="{Binding Thumbnail, Converter={StaticResource BytesToImage}}" Stretch="Uniform"/>
+                                        </Border>
+                                        <TextBlock Text="{Binding Summary}" Foreground="{StaticResource TextPrimary}" FontSize="10"
+                                                   TextWrapping="Wrap" Margin="0,4,0,0"/>
+                                        <TextBlock Text="{Binding MatchScoreText}" Foreground="{StaticResource AccentAmber}" FontSize="10"
+                                                   Visibility="{Binding HasMatchScore, Converter={StaticResource BoolToVis}}"/>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Border>
         </Grid>
     </Grid>
 </Window>

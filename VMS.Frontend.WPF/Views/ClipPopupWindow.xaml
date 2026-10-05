@@ -4,9 +4,18 @@
         xmlns:vlc="clr-namespace:LibVLCSharp.WPF;assembly=LibVLCSharp.WPF"
         Title="{Binding Title}" Height="420" Width="560"
         WindowStartupLocation="CenterOwner">
+    <!-- StatusMessage lives in its own row, not layered over the VideoView: a native HwndHost
+         video surface always wins the "airspace" over any WPF element drawn on top of it in the
+         same cell, no matter the Z-order — a failed clip request (e.g. footage already rotated
+         out of retention) would set StatusMessage correctly but it would never actually be
+         visible, leaving what looks like a silently blank window instead of the real error. -->
     <Grid Background="Black">
-        <vlc:VideoView MediaPlayer="{Binding Player}"/>
-        <TextBlock Text="{Binding StatusMessage}" Foreground="White"
-                    HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" Text="{Binding StatusMessage}" Foreground="White"
+                    HorizontalAlignment="Center" Margin="8" FontSize="16" TextWrapping="Wrap"/>
+        <vlc:VideoView Grid.Row="1" MediaPlayer="{Binding Player}" Loaded="VideoView_Loaded"/>
     </Grid>
 </Window>

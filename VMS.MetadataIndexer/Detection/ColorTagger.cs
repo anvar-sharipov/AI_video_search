@@ -15,7 +15,8 @@ public static class ColorTagger
         "car", "truck", "bus", "motorcycle", "bicycle"
     };
 
-    private static readonly (string Name, byte R, byte G, byte B)[] NamedColors =
+    /// <summary>The exact 9 color names TagColor can ever return — the Attribute Search UI's color dropdown must offer these same names, since ColorAttribute filtering is an exact string match.</summary>
+    public static readonly (string Name, byte R, byte G, byte B)[] NamedColors =
     [
         ("black", 0, 0, 0),
         ("white", 255, 255, 255),

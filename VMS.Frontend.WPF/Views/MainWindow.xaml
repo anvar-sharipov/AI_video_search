@@ -6,11 +6,15 @@
         xmlns:conv="clr-namespace:VMS.Frontend.WPF.Converters"
         Title="{DynamicResource Win_Main_Title}" Height="800" Width="1280"
         Background="{StaticResource BgWindow}"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen"
+        PreviewMouseDown="Window_PreviewMouseDown">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <conv:InverseBoolToVisibilityConverter x:Key="BoolToVisInverse"/>
         <conv:BoolToTileBorderBrushConverter x:Key="TileBorderBrush"/>
         <conv:BoolToTileBorderThicknessConverter x:Key="TileBorderThickness"/>
+        <conv:GridSizeToLabelConverter x:Key="GridSizeToLabel"/>
+        <conv:FractionToPixelConverter x:Key="FractionToPixel"/>
 
         <!-- Flat header-bar button style — used for the clickable strip above each video tile,
              and for the layout-switcher toolbar buttons. -->
@@ -80,14 +84,116 @@
                         </Button>
                     </Grid>
 
-                    <vlc:VideoView Grid.Row="1" MediaPlayer="{Binding Player}"/>
+                    <!-- Hidden (not just covered) while frozen: LibVLC's D3D surface can be left
+                         showing a torn/stale last frame after the freeze watchdog's Stop() call
+                         (see CameraTileViewModel.CheckFrozen), and a native HwndHost always wins
+                         airspace over anything WPF draws on top of it — so the only way to
+                         actually get rid of that stray frame is to collapse the VideoView itself,
+                         not layer something over it. -->
+                    <vlc:VideoView Grid.Row="1" MediaPlayer="{Binding Player}" Loaded="TileVideoView_Loaded"
+                                   MouseLeftButtonDown="CameraTileVideo_MouseLeftButtonDown"
+                                   Visibility="{Binding IsFrozen, Converter={StaticResource BoolToVisInverse}}"/>
+
+                    <!-- Reconnect button: left side of the tile, only while frozen (see IsFrozen doc
+                         comment on CameraTileViewModel). No airspace conflict with the VideoView
+                         here since it's collapsed, not just hidden-behind, whenever this is visible. -->
+                    <Button Grid.Row="1" Style="{StaticResource TileHeaderButtonStyle}"
+                            HorizontalAlignment="Left" VerticalAlignment="Center" Margin="8,0,0,0"
+                            Background="#CC1E1E1E" Cursor="Hand"
+                            Visibility="{Binding IsFrozen, Converter={StaticResource BoolToVis}}"
+                            ToolTip="{DynamicResource Tile_ReconnectTooltip}"
+                            Command="{Binding ReconnectCommand}">
+                        <TextBlock Text="⟳" Foreground="White" FontSize="20"/>
+                    </Button>
+
+                    <!-- Live known/unknown overlay (see CameraTileViewModel.DetectionBoxes) — a
+                         purely visual layer (IsHitTestVisible=False): the VideoView beneath it is
+                         a native HwndHost and always wins mouse input regardless of z-order (see
+                         the click-target note above), so this never needs to be clickable. -->
+                    <Canvas Grid.Row="1" x:Name="DetectionOverlay" Background="Transparent" IsHitTestVisible="False">
+                        <ItemsControl ItemsSource="{Binding DetectionBoxes}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <Canvas/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="{x:Type vm:LiveDetectionBoxViewModel}">
+                                    <Grid>
+                                        <Canvas.Left>
+                                            <MultiBinding Converter="{StaticResource FractionToPixel}">
+                                                <Binding Path="X"/>
+                                                <Binding ElementName="DetectionOverlay" Path="ActualWidth"/>
+                                            </MultiBinding>
+                                        </Canvas.Left>
+                                        <Canvas.Top>
+                                            <MultiBinding Converter="{StaticResource FractionToPixel}">
+                                                <Binding Path="Y"/>
+                                                <Binding ElementName="DetectionOverlay" Path="ActualHeight"/>
+                                            </MultiBinding>
+                                        </Canvas.Top>
+                                        <Rectangle Stroke="{Binding StrokeBrush}" StrokeThickness="2">
+                                            <Rectangle.Width>
+                                                <MultiBinding Converter="{StaticResource FractionToPixel}">
+                                                    <Binding Path="Width"/>
+                                                    <Binding ElementName="DetectionOverlay" Path="ActualWidth"/>
+                                                </MultiBinding>
+                                            </Rectangle.Width>
+                                            <Rectangle.Height>
+                                                <MultiBinding Converter="{StaticResource FractionToPixel}">
+                                                    <Binding Path="Height"/>
+                                                    <Binding ElementName="DetectionOverlay" Path="ActualHeight"/>
+                                                </MultiBinding>
+                                            </Rectangle.Height>
+                                        </Rectangle>
+                                        <Border Background="#CC000000" Padding="3,0" Margin="0,-16,0,0"
+                                                VerticalAlignment="Top" HorizontalAlignment="Left">
+                                            <TextBlock Text="{Binding Label}" Foreground="{Binding StrokeBrush}" FontSize="10" FontWeight="Bold"/>
+                                        </Border>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Canvas>
                 </Grid>
             </Border>
+        </DataTemplate>
+
+        <!-- One grid cell. Tile != null reuses the CameraTileViewModel template above verbatim via
+             ContentPresenter; an empty cell (fixed layouts only — Auto never has one) shows a
+             clickable placeholder that becomes the assignment target for a tree double-click. -->
+        <DataTemplate DataType="{x:Type vm:GridSlotViewModel}">
+            <Grid>
+                <ContentPresenter Content="{Binding Tile}" Visibility="{Binding IsEmpty, Converter={StaticResource BoolToVisInverse}}"/>
+                <Button Visibility="{Binding IsEmpty, Converter={StaticResource BoolToVis}}"
+                        Command="{Binding DataContext.SelectSlotCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                        CommandParameter="{Binding}">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border BorderBrush="{Binding IsSelected, Converter={StaticResource TileBorderBrush}}"
+                                                BorderThickness="{Binding IsSelected, Converter={StaticResource TileBorderThickness}}"
+                                                Margin="2" Background="{StaticResource BgTileEmpty}">
+                                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                <TextBlock Text="📹" FontSize="28" HorizontalAlignment="Center" Foreground="{StaticResource TextDisabled}"/>
+                                                <TextBlock Text="{DynamicResource Slot_EmptyPlaceholderHint}" Foreground="{StaticResource TextDisabled}"
+                                                           HorizontalAlignment="Center" Margin="0,6,0,0"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </Grid>
         </DataTemplate>
     </Window.Resources>
 
     <DockPanel>
-        <!-- Top bar: screen tabs (Control Panel / Live View) + language toggle + reserved icons + user + add-camera -->
+        <!-- Top bar: screen tabs (Control Panel / Live View) + language toggle + user -->
         <Grid DockPanel.Dock="Top" Background="{StaticResource BgPanel}" Height="40">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
@@ -125,8 +231,6 @@
                 </Button>
             </StackPanel>
 
-            <TextBlock Grid.Column="1" Text="{Binding StatusMessage}" VerticalAlignment="Center" Margin="12,0"/>
-
             <!-- Language toggle -->
             <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
                 <Button Content="RU" Padding="8,4" Margin="0,0,2,0" Command="{Binding SetLanguageCommand}" CommandParameter="ru"/>
@@ -134,12 +238,20 @@
                 <Button Content="TM" Padding="8,4" Command="{Binding SetLanguageCommand}" CommandParameter="tk"/>
             </StackPanel>
 
-            <!-- Reserved for later: view-layout presets, camera sequence/cycling, session lock. -->
-            <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center">
-                <Button Style="{StaticResource IconButtonStyle}" Content="⊞" IsEnabled="False" ToolTip="{DynamicResource Main_LayoutPresetsTooltip}"/>
-                <Button Style="{StaticResource IconButtonStyle}" Content="⟳" IsEnabled="False" ToolTip="{DynamicResource Main_SequenceTooltip}"/>
-                <Button Style="{StaticResource IconButtonStyle}" Content="🔒" IsEnabled="False" ToolTip="{DynamicResource Main_LockTooltip}"/>
-            </StackPanel>
+            <!-- Light/Dark toggle -->
+            <Button Grid.Column="3" Padding="8,4" VerticalAlignment="Center" Command="{Binding ToggleThemeCommand}"
+                    AutomationProperties.AutomationId="ThemeToggleButton"
+                    Content="{DynamicResource Theme_SwitchToLight}">
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource FlatDarkButtonStyle}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Theme.IsDarkTheme}" Value="False">
+                                <Setter Property="Content" Value="{DynamicResource Theme_SwitchToDark}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
 
             <TextBlock Grid.Column="4" VerticalAlignment="Center" Foreground="{StaticResource TextSecondary}" Margin="12,0">
                 <Run Text="{Binding Session.Username, Mode=OneWay}"/>
@@ -147,170 +259,140 @@
                 <Run Text="{Binding Session.Role, Mode=OneWay}"/>
                 <Run Text=")"/>
             </TextBlock>
-            <Button Grid.Column="5" Content="{DynamicResource Main_AddCameraButton}" Margin="4,4,12,4"
-                    Command="{Binding AddCameraCommand}"
-                    Visibility="{Binding Session.CanManageCameras, Converter={StaticResource BoolToVis}}"/>
+
+            <Button Grid.Column="5" Content="{DynamicResource Common_LogOut}" Padding="10,4" Margin="0,0,8,0"
+                    VerticalAlignment="Center" Command="{Binding LogOutCommand}"/>
         </Grid>
 
         <!-- The two top-level screens occupy the same area; only one is visible at a time. -->
         <Grid>
-            <!-- Control Panel: dashboard of feature cards + a "Basic" shortcuts sidebar, matching a
-                 typical VMS client's landing screen. Only the Live View card is wired up (it just
-                 switches tabs); everything else is UI scaffolding (IsEnabled="False") for features
-                 this project doesn't implement (video wall, e-map, people counting, etc.). -->
+            <!-- Control Panel: a dashboard grid of feature cards, matching a typical VMS client's
+                 landing screen. Every card here is wired to a real command. -->
             <Grid Visibility="{Binding IsControlPanelActive, Converter={StaticResource BoolToVis}}"
                   Background="{StaticResource BgWindow}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="260"/>
-                </Grid.ColumnDefinitions>
-
                 <StackPanel Grid.Column="0" Margin="16">
-                    <TextBlock Text="{DynamicResource ControlPanel_CommonHeading}" FontWeight="Bold" Margin="0,0,0,8"/>
+                    <TextBlock Text="{DynamicResource ControlPanel_CommonHeading}" FontFamily="Georgia" FontSize="20" FontWeight="Bold" Margin="0,0,0,12"/>
                     <UniformGrid Columns="4">
                         <Button Style="{StaticResource DashboardCardStyle}" Command="{Binding ShowLiveViewCommand}">
                             <StackPanel>
-                                <TextBlock Text="📹" FontSize="28" HorizontalAlignment="Center"/>
+                                <Border Width="56" Height="56" CornerRadius="14" Background="{StaticResource BgIconRail}" HorizontalAlignment="Center">
+                                    <TextBlock Text="📹" FontSize="26" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
                                 <TextBlock Text="{DynamicResource Card_LiveView_Title}" FontWeight="Bold" Margin="0,8,0,4" TextWrapping="Wrap"/>
                                 <TextBlock Text="{DynamicResource Card_LiveView_Desc}" Foreground="{StaticResource TextSecondary}" TextWrapping="Wrap" FontSize="11"/>
                             </StackPanel>
                         </Button>
                         <Button Style="{StaticResource DashboardCardStyle}" Command="{Binding ShowArchiveCommand}">
                             <StackPanel>
-                                <TextBlock Text="▶" FontSize="28" HorizontalAlignment="Center"/>
+                                <Border Width="56" Height="56" CornerRadius="14" Background="{StaticResource BgIconRail}" HorizontalAlignment="Center">
+                                    <TextBlock Text="▶" FontSize="26" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
                                 <TextBlock Text="{DynamicResource Card_Playback_Title}" FontWeight="Bold" Margin="0,8,0,4" TextWrapping="Wrap"/>
                                 <TextBlock Text="{DynamicResource Card_Playback_Desc}" Foreground="{StaticResource TextSecondary}" TextWrapping="Wrap" FontSize="11"/>
                             </StackPanel>
                         </Button>
-                        <Button Style="{StaticResource DashboardCardStyle}" IsEnabled="False" ToolTip="{DynamicResource Common_NotAvailableYet}">
+                        <Button Style="{StaticResource DashboardCardStyle}" Command="{Binding ShowVideoWallCommand}">
                             <StackPanel>
-                                <TextBlock Text="⊞" FontSize="28" HorizontalAlignment="Center"/>
+                                <Border Width="56" Height="56" CornerRadius="14" Background="{StaticResource BgIconRail}" HorizontalAlignment="Center">
+                                    <TextBlock Text="⊞" FontSize="26" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
                                 <TextBlock Text="{DynamicResource Card_VideoWall_Title}" FontWeight="Bold" Margin="0,8,0,4" TextWrapping="Wrap"/>
                                 <TextBlock Text="{DynamicResource Card_VideoWall_Desc}" Foreground="{StaticResource TextSecondary}" TextWrapping="Wrap" FontSize="11"/>
                             </StackPanel>
                         </Button>
-                        <Button Style="{StaticResource DashboardCardStyle}" IsEnabled="False" ToolTip="{DynamicResource Common_NotAvailableYet}">
+                        <Button Style="{StaticResource DashboardCardStyle}" Command="{Binding ShowAudioCommand}">
                             <StackPanel>
-                                <TextBlock Text="🎙" FontSize="28" HorizontalAlignment="Center"/>
+                                <Border Width="56" Height="56" CornerRadius="14" Background="{StaticResource BgIconRail}" HorizontalAlignment="Center">
+                                    <TextBlock Text="🎙" FontSize="26" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
                                 <TextBlock Text="{DynamicResource Card_Audio_Title}" FontWeight="Bold" Margin="0,8,0,4" TextWrapping="Wrap"/>
                                 <TextBlock Text="{DynamicResource Card_Audio_Desc}" Foreground="{StaticResource TextSecondary}" TextWrapping="Wrap" FontSize="11"/>
                             </StackPanel>
                         </Button>
-                        <Button Style="{StaticResource DashboardCardStyle}" IsEnabled="False" ToolTip="{DynamicResource Common_NotAvailableYet}">
+                        <Button Style="{StaticResource DashboardCardStyle}" Command="{Binding ShowEMapCommand}">
                             <StackPanel>
-                                <TextBlock Text="📍" FontSize="28" HorizontalAlignment="Center"/>
+                                <Border Width="56" Height="56" CornerRadius="14" Background="{StaticResource BgIconRail}" HorizontalAlignment="Center">
+                                    <TextBlock Text="📍" FontSize="26" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
                                 <TextBlock Text="{DynamicResource Card_Emap_Title}" FontWeight="Bold" Margin="0,8,0,4" TextWrapping="Wrap"/>
                                 <TextBlock Text="{DynamicResource Card_Emap_Desc}" Foreground="{StaticResource TextSecondary}" TextWrapping="Wrap" FontSize="11"/>
                             </StackPanel>
                         </Button>
-                        <Button Style="{StaticResource DashboardCardStyle}" IsEnabled="False" ToolTip="{DynamicResource Common_NotAvailableYet}">
+                        <Button Style="{StaticResource DashboardCardStyle}" Command="{Binding ShowPeopleCountingCommand}">
                             <StackPanel>
-                                <TextBlock Text="📊" FontSize="28" HorizontalAlignment="Center"/>
+                                <Border Width="56" Height="56" CornerRadius="14" Background="{StaticResource BgIconRail}" HorizontalAlignment="Center">
+                                    <TextBlock Text="📊" FontSize="26" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
                                 <TextBlock Text="{DynamicResource Card_PeopleCounting_Title}" FontWeight="Bold" Margin="0,8,0,4" TextWrapping="Wrap"/>
                                 <TextBlock Text="{DynamicResource Card_PeopleCounting_Desc}" Foreground="{StaticResource TextSecondary}" TextWrapping="Wrap" FontSize="11"/>
                             </StackPanel>
                         </Button>
-                        <Button Style="{StaticResource DashboardCardStyle}" IsEnabled="False" ToolTip="{DynamicResource Common_NotAvailableYet}">
+                        <Button Style="{StaticResource DashboardCardStyle}" Command="{Binding ShowFaceRecognitionCommand}">
                             <StackPanel>
-                                <TextBlock Text="🚨" FontSize="28" HorizontalAlignment="Center"/>
-                                <TextBlock Text="{DynamicResource Card_AlarmRecords_Title}" FontWeight="Bold" Margin="0,8,0,4" TextWrapping="Wrap"/>
-                                <TextBlock Text="{DynamicResource Card_AlarmRecords_Desc}" Foreground="{StaticResource TextSecondary}" TextWrapping="Wrap" FontSize="11"/>
-                            </StackPanel>
-                        </Button>
-                        <Button Style="{StaticResource DashboardCardStyle}" IsEnabled="False" ToolTip="{DynamicResource Common_NotAvailableYet}">
-                            <StackPanel>
-                                <TextBlock Text="🖧" FontSize="28" HorizontalAlignment="Center"/>
-                                <TextBlock Text="{DynamicResource Card_DeviceManagement_Title}" FontWeight="Bold" Margin="0,8,0,4" TextWrapping="Wrap"/>
-                                <TextBlock Text="{DynamicResource Card_DeviceManagement_Desc}" Foreground="{StaticResource TextSecondary}" TextWrapping="Wrap" FontSize="11"/>
-                            </StackPanel>
-                        </Button>
-                        <Button Style="{StaticResource DashboardCardStyle}" IsEnabled="False" ToolTip="{DynamicResource Common_NotAvailableYet}">
-                            <StackPanel>
-                                <TextBlock Text="🙂" FontSize="28" HorizontalAlignment="Center"/>
+                                <Border Width="56" Height="56" CornerRadius="14" Background="{StaticResource BgIconRail}" HorizontalAlignment="Center">
+                                    <TextBlock Text="🙂" FontSize="26" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
                                 <TextBlock Text="{DynamicResource Card_FaceRecognition_Title}" FontWeight="Bold" Margin="0,8,0,4" TextWrapping="Wrap"/>
                                 <TextBlock Text="{DynamicResource Card_FaceRecognition_Desc}" Foreground="{StaticResource TextSecondary}" TextWrapping="Wrap" FontSize="11"/>
                             </StackPanel>
                         </Button>
+                        <Button Style="{StaticResource DashboardCardStyle}" Command="{Binding ShowPersonSightingReportCommand}">
+                            <StackPanel>
+                                <Border Width="56" Height="56" CornerRadius="14" Background="{StaticResource BgIconRail}" HorizontalAlignment="Center">
+                                    <TextBlock Text="🧾" FontSize="26" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="{DynamicResource Card_PersonSightingReport_Title}" FontWeight="Bold" Margin="0,8,0,4" TextWrapping="Wrap"/>
+                                <TextBlock Text="{DynamicResource Card_PersonSightingReport_Desc}" Foreground="{StaticResource TextSecondary}" TextWrapping="Wrap" FontSize="11"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Style="{StaticResource DashboardCardStyle}" Command="{Binding ShowAlarmRecordsCommand}">
+                            <StackPanel>
+                                <Border Width="56" Height="56" CornerRadius="14" Background="{StaticResource BgIconRail}" HorizontalAlignment="Center">
+                                    <TextBlock Text="🚨" FontSize="26" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="{DynamicResource Card_AlarmRecords_Title}" FontWeight="Bold" Margin="0,8,0,4" TextWrapping="Wrap"/>
+                                <TextBlock Text="{DynamicResource Card_AlarmRecords_Desc}" Foreground="{StaticResource TextSecondary}" TextWrapping="Wrap" FontSize="11"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Style="{StaticResource DashboardCardStyle}" Command="{Binding ShowCameraManagementCommand}"
+                                Visibility="{Binding Session.CanManageCameras, Converter={StaticResource BoolToVis}}">
+                            <StackPanel>
+                                <Border Width="56" Height="56" CornerRadius="14" Background="{StaticResource BgIconRail}" HorizontalAlignment="Center">
+                                    <TextBlock Text="🖧" FontSize="26" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="{DynamicResource Card_DeviceManagement_Title}" FontWeight="Bold" Margin="0,8,0,4" TextWrapping="Wrap"/>
+                                <TextBlock Text="{DynamicResource Card_DeviceManagement_Desc}" Foreground="{StaticResource TextSecondary}" TextWrapping="Wrap" FontSize="11"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Style="{StaticResource DashboardCardStyle}" Command="{Binding ShowUserManagementCommand}"
+                                Visibility="{Binding Session.CanManageUsers, Converter={StaticResource BoolToVis}}">
+                            <StackPanel>
+                                <Border Width="56" Height="56" CornerRadius="14" Background="{StaticResource BgIconRail}" HorizontalAlignment="Center">
+                                    <TextBlock Text="👥" FontSize="26" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="{DynamicResource Nav_UserManagement}" FontWeight="Bold" Margin="0,8,0,4" TextWrapping="Wrap"/>
+                                <TextBlock Text="{DynamicResource Card_UserManagement_Desc}" Foreground="{StaticResource TextSecondary}" TextWrapping="Wrap" FontSize="11"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Style="{StaticResource DashboardCardStyle}" Command="{Binding ShowOperationLogCommand}"
+                                Visibility="{Binding Session.CanViewAuditLog, Converter={StaticResource BoolToVis}}">
+                            <StackPanel>
+                                <Border Width="56" Height="56" CornerRadius="14" Background="{StaticResource BgIconRail}" HorizontalAlignment="Center">
+                                    <TextBlock Text="📜" FontSize="26" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="{DynamicResource Nav_OperationLog}" FontWeight="Bold" Margin="0,8,0,4" TextWrapping="Wrap"/>
+                                <TextBlock Text="{DynamicResource Card_OperationLog_Desc}" Foreground="{StaticResource TextSecondary}" TextWrapping="Wrap" FontSize="11"/>
+                            </StackPanel>
+                        </Button>
                     </UniformGrid>
                 </StackPanel>
-
-                <Border Grid.Column="1" Background="{StaticResource BgPanel}">
-                    <StackPanel Margin="12">
-                        <TextBlock Text="{DynamicResource Sidebar2_BasicHeading}" FontWeight="Bold" Foreground="{StaticResource TextSecondary}" Margin="0,0,0,8"/>
-                        <Button Style="{StaticResource FlatDarkButtonStyle}" Background="Transparent" HorizontalContentAlignment="Left"
-                                IsEnabled="False" ToolTip="{DynamicResource Common_NotAvailableYet}" Content="{DynamicResource Nav_View}" Margin="0,0,0,2"/>
-                        <Button Style="{StaticResource FlatDarkButtonStyle}" Background="Transparent" HorizontalContentAlignment="Left"
-                                IsEnabled="False" ToolTip="{DynamicResource Common_NotAvailableYet}" Content="{DynamicResource Nav_AlarmConfig}" Margin="0,0,0,2"/>
-                        <Button Style="{StaticResource FlatDarkButtonStyle}" Background="Transparent" HorizontalContentAlignment="Left"
-                                IsEnabled="False" ToolTip="{DynamicResource Common_NotAvailableYet}" Content="{DynamicResource Nav_SystemConfig}" Margin="0,0,0,2"/>
-                        <Button Style="{StaticResource FlatDarkButtonStyle}" Background="Transparent" HorizontalContentAlignment="Left"
-                                IsEnabled="False" ToolTip="{DynamicResource Common_NotAvailableYet}" Content="{DynamicResource Nav_SequenceResource}" Margin="0,0,0,2"/>
-                        <Button Style="{StaticResource FlatDarkButtonStyle}" Background="Transparent" HorizontalContentAlignment="Left"
-                                IsEnabled="False" ToolTip="{DynamicResource Common_NotAvailableYet}" Content="{DynamicResource Nav_UserManagement}" Margin="0,0,0,2"/>
-                        <Button Style="{StaticResource FlatDarkButtonStyle}" Background="Transparent" HorizontalContentAlignment="Left"
-                                IsEnabled="False" ToolTip="{DynamicResource Common_NotAvailableYet}" Content="{DynamicResource Nav_RecordingSchedule}" Margin="0,0,0,2"/>
-                        <Button Style="{StaticResource FlatDarkButtonStyle}" Background="Transparent" HorizontalContentAlignment="Left"
-                                Command="{Binding ShowOperationLogCommand}" Content="{DynamicResource Nav_OperationLog}"
-                                Visibility="{Binding Session.CanViewAuditLog, Converter={StaticResource BoolToVis}}"/>
-                    </StackPanel>
-                </Border>
             </Grid>
 
             <!-- Live View: the camera grid screen (everything that existed before Control Panel was added). -->
             <DockPanel Visibility="{Binding IsLiveViewActive, Converter={StaticResource BoolToVis}}">
-                <!-- Search side panel -->
-                <Grid DockPanel.Dock="Right" Width="320" Background="{StaticResource BgTree}">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-
-                    <Grid Grid.Row="0" Margin="8">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBox Grid.Column="0" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
-                                 VerticalContentAlignment="Center" Height="28"
-                                 ToolTip="{DynamicResource Search_PlaceholderTooltip}"/>
-                        <Button Grid.Column="1" Style="{StaticResource AccentButtonStyle}" Content="{DynamicResource Search_Button}" Margin="4,0,0,0" Width="70"
-                                Command="{Binding SearchCommand}"/>
-                        <Button Grid.Column="2" Content="📷" Width="28" Height="28" Margin="4,0,0,0"
-                                ToolTip="{DynamicResource SearchByPhoto_ButtonTooltip}"
-                                Command="{Binding SearchByPhotoCommand}"
-                                Visibility="{Binding Session.CanSearchByFace, Converter={StaticResource BoolToVis}}"/>
-                    </Grid>
-
-                    <ListBox Grid.Row="1" Margin="8,0,8,8" ItemsSource="{Binding SearchResults}">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate DataType="{x:Type vm:SearchResultViewModel}">
-                                <Border BorderBrush="{StaticResource BorderSubtle}" BorderThickness="0,0,0,1" Padding="4">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Column="0" Text="{Binding Summary}" TextWrapping="Wrap" VerticalAlignment="Center"/>
-                                        <Button Grid.Column="1" Content="{DynamicResource Search_ClipButton}" Width="50" Margin="0,0,4,0"
-                                                Command="{Binding DataContext.ViewClipCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
-                                                CommandParameter="{Binding}"/>
-                                        <Button Grid.Column="2" Content="{DynamicResource Search_ProtectButton}" Width="70"
-                                                ToolTip="{DynamicResource Search_ProtectTooltip}"
-                                                Command="{Binding DataContext.ProtectCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
-                                                CommandParameter="{Binding}"
-                                                Visibility="{Binding DataContext.Session.CanManageCameras, RelativeSource={RelativeSource AncestorType=ListBox}, Converter={StaticResource BoolToVis}}"/>
-                                    </Grid>
-                                </Border>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </Grid>
-
-                <!-- Left sidebar: icon rail + camera tree. Structure only for now (IsEnabled="False") —
-                     double-click-to-assign-into-a-grid-slot is a later exercise; today the main grid
-                     still auto-populates with every camera via the ItemsControl below. -->
+                <!-- Left sidebar: icon rail + camera tree. Single-click a camera to highlight its
+                     tile (if shown); double-click assigns it into the currently-selected grid
+                     cell — only meaningful in a fixed NxN layout (see AssignCameraToSelectedSlot). -->
                 <Grid DockPanel.Dock="Left">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
@@ -318,9 +400,22 @@
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Grid.Column="0" Background="{StaticResource BgIconRail}">
-                        <Button Style="{StaticResource IconButtonStyle}" Content="📹" IsEnabled="False" ToolTip="{DynamicResource Sidebar_CamerasTooltip}"/>
-                        <Button Style="{StaticResource IconButtonStyle}" Content="⊞" IsEnabled="False" ToolTip="{DynamicResource Sidebar_LayoutsTooltip}"/>
-                        <Button Style="{StaticResource IconButtonStyle}" Content="🕐" IsEnabled="False" ToolTip="{DynamicResource Sidebar_ArchiveTooltip}"/>
+                        <Button Style="{StaticResource IconButtonStyle}" Content="📹"
+                                Command="{Binding ShowCameraGroupsCommand}" ToolTip="{DynamicResource Sidebar_GroupsTooltip}"/>
+                        <Button Style="{StaticResource IconButtonStyle}" Content="⊞"
+                                Command="{Binding ShowQuickGroupSwitchCommand}" ToolTip="{DynamicResource Sidebar_QuickSwitchTooltip}"/>
+                        <Button Content="🕐"
+                                Command="{Binding ToggleAlarmFilterCommand}" ToolTip="{DynamicResource Sidebar_AlarmFilterTooltip}">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource IconButtonStyle}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsAlarmFilterActive}" Value="True">
+                                            <Setter Property="Background" Value="{StaticResource AccentAmber}"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
                     </StackPanel>
 
                     <Grid Grid.Column="1" Background="{StaticResource BgTree}">
@@ -329,18 +424,35 @@
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
 
-                        <TextBox Grid.Row="0" Margin="8" Text="{DynamicResource Sidebar_SearchPlaceholder}" IsEnabled="False"/>
+                        <TextBox Grid.Row="0" Margin="8" Height="28" VerticalContentAlignment="Center"
+                                 Text="{Binding TreeSearchText, UpdateSourceTrigger=PropertyChanged}"
+                                 ToolTip="{DynamicResource Sidebar_SearchPlaceholder}"/>
 
                         <!-- Plain ItemsControl, not ListBox: the themed ListBox/ListBoxItem control
-                             templates force their own disabled-state background (light gray) that a
-                             Background setter can't override, since this list is a static read-only
-                             placeholder (IsEnabled everywhere below is False) and never needs selection
-                             behavior anyway. -->
+                             templates force their own disabled-state background that a Background
+                             setter can't override, and rows here are plain Buttons anyway (no need
+                             for ListBox's own selection machinery). -->
                         <Border Grid.Row="1" Margin="8,0,8,8" Background="{StaticResource BgTree}">
-                            <ItemsControl ItemsSource="{Binding Cameras}">
+                            <ItemsControl ItemsSource="{Binding TreeCamerasView}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate DataType="{x:Type vm:CameraTileViewModel}">
-                                        <TextBlock Text="{Binding Name}" Padding="4,6" Foreground="{StaticResource TextDisabled}"/>
+                                        <Button HorizontalContentAlignment="Left" Cursor="Hand"
+                                                ToolTip="{DynamicResource Tree_AssignHintTooltip}"
+                                                Command="{Binding DataContext.SelectTileFromTreeCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                CommandParameter="{Binding}"
+                                                MouseDoubleClick="TreeCameraItem_MouseDoubleClick">
+                                            <Button.Style>
+                                                <Style TargetType="Button" BasedOn="{StaticResource TileHeaderButtonStyle}">
+                                                    <Setter Property="Background" Value="Transparent"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                            <Setter Property="Background" Value="{StaticResource BgToolbar}"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                            <TextBlock Text="{Binding Name}" Padding="4,6" Foreground="{StaticResource TextPrimary}"/>
+                                        </Button>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
@@ -393,22 +505,81 @@
                             ToolTip="{DynamicResource Bottom_FullscreenTooltip}"/>
                 </Grid>
 
-                <!-- Layout-switcher toolbar (1x1/2x2/3x3/4x4) -->
-                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Background="{StaticResource BgIconRail}">
-                    <Button Style="{StaticResource TileHeaderButtonStyle}" Background="Transparent" Foreground="{StaticResource TextPrimary}" Content="{DynamicResource Layout_Auto}"
-                            Command="{Binding SetGridSizeCommand}" CommandParameter="0"/>
-                    <Button Style="{StaticResource TileHeaderButtonStyle}" Background="Transparent" Foreground="{StaticResource TextPrimary}" Content="1x1"
-                            Command="{Binding SetGridSizeCommand}" CommandParameter="1"/>
-                    <Button Style="{StaticResource TileHeaderButtonStyle}" Background="Transparent" Foreground="{StaticResource TextPrimary}" Content="2x2"
-                            Command="{Binding SetGridSizeCommand}" CommandParameter="2"/>
-                    <Button Style="{StaticResource TileHeaderButtonStyle}" Background="Transparent" Foreground="{StaticResource TextPrimary}" Content="3x3"
-                            Command="{Binding SetGridSizeCommand}" CommandParameter="3"/>
-                    <Button Style="{StaticResource TileHeaderButtonStyle}" Background="Transparent" Foreground="{StaticResource TextPrimary}" Content="4x4"
-                            Command="{Binding SetGridSizeCommand}" CommandParameter="4"/>
-                </StackPanel>
+                <!-- Layout-switcher toolbar (1x1/2x2/3x3/4x4) + text/photo search, centered in the
+                     space to the right of the layout buttons. Search results drop down from the
+                     search box (Popup) instead of reserving a permanent side panel, so the camera
+                     grid gets the full width. -->
+                <Grid DockPanel.Dock="Top" Background="{StaticResource BgIconRail}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Orientation="Horizontal">
+                        <ComboBox Width="90" ItemsSource="{Binding GridSizeOptions}" SelectedItem="{Binding GridSize}"
+                                  ToolTip="{DynamicResource Layout_GridSizeTooltip}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Converter={StaticResource GridSizeToLabel}}"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <StackPanel x:Name="SearchAreaPanel" Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="8,0">
+                        <TextBox x:Name="LiveSearchBox" Width="260" Height="28" VerticalContentAlignment="Center"
+                                 Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                                 ToolTip="{DynamicResource Search_PlaceholderTooltip}"/>
+                        <Button Style="{StaticResource AccentButtonStyle}" Content="{DynamicResource Search_Button}" Margin="4,0,0,0" Width="70"
+                                Command="{Binding SearchCommand}"/>
+                        <Button Content="📷" Width="28" Height="28" Margin="4,0,0,0"
+                                ToolTip="{DynamicResource SearchByPhoto_ButtonTooltip}"
+                                Command="{Binding SearchByPhotoCommand}"
+                                Visibility="{Binding Session.CanSearchByFace, Converter={StaticResource BoolToVis}}"/>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Search-results dropdown: a plain in-layout element, not a WPF Popup. This app
+                     is explicitly built to be watched/operated over RDP (see App.xaml.cs's
+                     SoftwareOnly render mode) — a Popup is its own separate top-level window, and
+                     that class of window is a known weak point for real mouse input over RDP
+                     (works fine for locally-injected clicks, which is why automated testing here
+                     never caught it). A plain element in the main window's own visual tree has no
+                     such problem. This does push the camera grid down slightly while open —
+                     accepted trade-off for something that reliably responds to a real click. -->
+                <Border x:Name="SearchResultsPanel" DockPanel.Dock="Top"
+                        Background="{StaticResource BgTree}" BorderBrush="{StaticResource BorderSubtle}" BorderThickness="1"
+                        Visibility="{Binding IsSearchResultsOpen, Converter={StaticResource BoolToVis}}">
+                    <ListBox ItemsSource="{Binding SearchResults}" MaxHeight="400">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate DataType="{x:Type vm:SearchResultViewModel}">
+                                <Border BorderBrush="{StaticResource BorderSubtle}" BorderThickness="0,0,0,1" Padding="4">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="{Binding Summary}" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                                        <Button Grid.Column="1" Content="{DynamicResource Search_ClipButton}" Width="50" Margin="0,0,4,0"
+                                                Command="{Binding DataContext.ViewClipCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                                CommandParameter="{Binding}"/>
+                                        <Button Grid.Column="2" Content="{DynamicResource Search_ProtectButton}" Width="70"
+                                                ToolTip="{DynamicResource Search_ProtectTooltip}"
+                                                Command="{Binding DataContext.ProtectCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                                CommandParameter="{Binding}"
+                                                Visibility="{Binding DataContext.Session.CanManageCameras, RelativeSource={RelativeSource AncestorType=ListBox}, Converter={StaticResource BoolToVis}}"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Border>
 
                 <!-- Live camera grid -->
-                <ItemsControl x:Name="CameraGrid" Background="{StaticResource BgWindow}" ItemsSource="{Binding Cameras}">
+                <ItemsControl x:Name="CameraGrid" Background="{StaticResource BgWindow}" ItemsSource="{Binding GridSlots}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <UniformGrid Rows="{Binding DataContext.GridSize, RelativeSource={RelativeSource AncestorType=ItemsControl}}"

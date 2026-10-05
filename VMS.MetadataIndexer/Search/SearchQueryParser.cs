@@ -1,9 +1,11 @@
 namespace VMS.MetadataIndexer.Search;
 
 /// <summary>
-/// Maps free-text search ("red car", "person") to structured filters. Deliberately
-/// simple keyword matching, not NLP — the AI search box only ever needs to express
-/// "object type" and "color", both closed vocabularies.
+/// Maps free-text search ("red car", "person", "Alice", "34ABC777") to structured filters.
+/// Deliberately simple keyword matching, not NLP: "object type" and "color" are closed
+/// vocabularies matched by lookup; anything left over is passed through as FreeTextQuery for
+/// ElasticsearchIndexer to match against personName/plateNumber, since names and plates are
+/// open vocabularies with nothing to look up here.
 /// </summary>
 public static class SearchQueryParser
 {
@@ -34,6 +36,7 @@ public static class SearchQueryParser
     {
         string? objectType = null;
         string? color = null;
+        var leftover = new List<string>();
 
         foreach (var token in freeText.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
         {
@@ -46,9 +49,17 @@ public static class SearchQueryParser
             if (objectType is null && ObjectTypeSynonyms.TryGetValue(token, out var mapped))
             {
                 objectType = mapped;
+                continue;
             }
+
+            leftover.Add(token);
         }
 
-        return new SearchQuery(objectType, color, cameraId, from, to, size);
+        // A leftover token might be a person's name or a plate number — both open vocabularies,
+        // so unlike color/object-type there's nothing to map here; ElasticsearchIndexer matches
+        // it against personName/plateNumber directly.
+        var freeTextQuery = leftover.Count > 0 ? string.Join(' ', leftover) : null;
+
+        return new SearchQuery(objectType, color, cameraId, from, to, size, freeTextQuery);
     }
 }

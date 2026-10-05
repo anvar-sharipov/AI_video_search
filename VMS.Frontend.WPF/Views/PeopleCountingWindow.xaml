@@ -1,0 +1,65 @@
+<Window x:Class="VMS.Frontend.WPF.Views.PeopleCountingWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="{DynamicResource Win_PeopleCounting_Title}" Height="720" Width="1000"
+        Background="{StaticResource BgWindow}"
+        WindowStartupLocation="CenterOwner">
+    <Grid Margin="16">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="280"/>
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0" Background="Black" BorderBrush="{StaticResource BorderSubtle}" BorderThickness="1">
+            <Grid x:Name="PreviewGrid" ClipToBounds="True">
+                <Image x:Name="PreviewImage" Stretch="Uniform"/>
+                <Canvas x:Name="LineCanvas" Background="Transparent"
+                        MouseLeftButtonDown="LineCanvas_MouseLeftButtonDown"
+                        MouseMove="LineCanvas_MouseMove" MouseLeftButtonUp="LineCanvas_MouseLeftButtonUp"/>
+            </Grid>
+        </Border>
+
+        <StackPanel Grid.Column="1" Margin="12,0,0,0">
+            <TextBlock Text="{DynamicResource PeopleCounting_CameraLabel}" Foreground="{StaticResource TextSecondary}" FontSize="11" Margin="0,0,0,4"/>
+            <ComboBox Height="30" ItemsSource="{Binding Cameras}" SelectedItem="{Binding SelectedCamera}" Margin="0,0,0,12">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Name}"/>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+
+            <TextBlock Text="{DynamicResource PeopleCounting_LineHint}" Foreground="{StaticResource TextSecondary}" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,8"/>
+
+            <CheckBox Content="{DynamicResource PeopleCounting_LeftToRightIsIn}" IsChecked="{Binding LeftToRightIsIn}" Margin="0,0,0,8" Foreground="{StaticResource TextPrimary}"/>
+
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                <Button Content="{DynamicResource PeopleCounting_SaveLineButton}" Width="120" Margin="0,0,8,0" Command="{Binding SaveLineCommand}"/>
+                <Button Content="{DynamicResource PeopleCounting_DeleteLineButton}" Width="120" Command="{Binding DeleteLineCommand}" IsEnabled="{Binding HasLine}"/>
+            </StackPanel>
+
+            <Separator Margin="0,8"/>
+
+            <TextBlock Text="{DynamicResource Archive_DateLabel}" Foreground="{StaticResource TextSecondary}" FontSize="11" Margin="0,0,0,4"/>
+            <DatePicker SelectedDate="{Binding FromDate}" Margin="0,0,0,8"/>
+            <DatePicker SelectedDate="{Binding ToDate}" Margin="0,0,0,8"/>
+
+            <Button Content="{DynamicResource PeopleCounting_QueryButton}" Height="30" Command="{Binding QueryCountCommand}" Margin="0,0,0,12"/>
+
+            <Border Background="{StaticResource BgPanel}" BorderBrush="{StaticResource BorderSubtle}" BorderThickness="1" Padding="12">
+                <StackPanel>
+                    <TextBlock Margin="0,0,0,4">
+                        <Run Text="{DynamicResource PeopleCounting_InLabel}" Foreground="{StaticResource TextSecondary}"/>
+                        <Run Text="{Binding InCount, Mode=OneWay}" FontWeight="Bold" Foreground="{StaticResource TextPrimary}"/>
+                    </TextBlock>
+                    <TextBlock>
+                        <Run Text="{DynamicResource PeopleCounting_OutLabel}" Foreground="{StaticResource TextSecondary}"/>
+                        <Run Text="{Binding OutCount, Mode=OneWay}" FontWeight="Bold" Foreground="{StaticResource TextPrimary}"/>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+
+            <TextBlock Text="{Binding StatusMessage}" Foreground="{StaticResource TextError}" TextWrapping="Wrap" Margin="0,12,0,0"/>
+        </StackPanel>
+    </Grid>
+</Window>

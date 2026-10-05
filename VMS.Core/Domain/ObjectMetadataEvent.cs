@@ -34,6 +34,22 @@ public class ObjectMetadataEvent
     /// independently of the text-based SearchQueryParser path.
     /// </summary>
     public float[]? FaceEmbedding { get; set; }
+
+    /// <summary>
+    /// Set when this "person" detection's face embedding matched an enrolled KnownPerson
+    /// above the similarity threshold (see KnownPersonMatcher) — null when unmatched or not
+    /// a person. Makes "search by name" possible without a face-similarity photo upload.
+    /// </summary>
+    public string? PersonName { get; set; }
+
+    /// <summary>
+    /// Best-effort OCR read of a vehicle detection's plate (see PlateOcrReader) — normalized
+    /// to uppercase alphanumeric only. Null when ObjectType isn't a vehicle class, no
+    /// plate-like region was found, or the OCR result was too short/noisy to trust. There is
+    /// no dedicated plate-localizer model in this project, so accuracy is modest; documented
+    /// as a known limitation in the READMEs.
+    /// </summary>
+    public string? PlateNumber { get; set; }
 }
 
 public record BoundingBox(double X, double Y, double Width, double Height);

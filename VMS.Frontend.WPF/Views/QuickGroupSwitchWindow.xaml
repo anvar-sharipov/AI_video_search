@@ -1,0 +1,15 @@
+<Window x:Class="VMS.Frontend.WPF.Views.QuickGroupSwitchWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="{DynamicResource Win_QuickGroupSwitch_Title}" Height="360" Width="280"
+        Background="{StaticResource BgWindow}"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <TextBlock x:Name="StatusText" Grid.Row="0" Foreground="{StaticResource TextSecondary}" Margin="0,0,0,8" TextWrapping="Wrap"/>
+        <ListBox x:Name="GroupsListBox" Grid.Row="1" SelectionChanged="OnSelectionChanged" DisplayMemberPath="Label"/>
+    </Grid>
+</Window>

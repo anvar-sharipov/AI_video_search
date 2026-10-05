@@ -23,7 +23,7 @@ public static class AdminEndpoints
         {
             try
             {
-                accessControl.Authorize(http.User.GetRole(), Permission.ManageSystemConfig);
+                accessControl.Authorize(http.User, Permission.ManageSystemConfig);
             }
             catch (UnauthorizedAccessException)
             {

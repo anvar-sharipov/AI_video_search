@@ -2,8 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:sys="clr-namespace:System;assembly=mscorlib">
 
-    <sys:String x:Key="Win_Login_Title">VMS — Login</sys:String>
-    <sys:String x:Key="Win_Main_Title">VMS — Live View</sys:String>
+    <sys:String x:Key="Win_Login_Title">Turkmentelecom — Login</sys:String>
+    <sys:String x:Key="Win_Main_Title">Turkmentelecom — Live View</sys:String>
     <sys:String x:Key="Win_AddCamera_Title">Add Camera</sys:String>
     <sys:String x:Key="Win_SearchByPhoto_Title">Search by Photo</sys:String>
     <sys:String x:Key="Win_OperationLog_Title">Operation Log</sys:String>
@@ -23,14 +23,18 @@
     <sys:String x:Key="AddCamera_OnvifPassword">ONVIF password</sys:String>
     <sys:String x:Key="AddCamera_Submit">Save and connect</sys:String>
     <sys:String x:Key="AddCamera_RequiredError">Code and IP address are required.</sys:String>
+    <sys:String x:Key="Win_EditCamera_Title">Edit Camera</sys:String>
+    <sys:String x:Key="EditCamera_UsernameHint">Leave blank to keep current</sys:String>
+    <sys:String x:Key="EditCamera_PasswordHint">Leave blank to keep current</sys:String>
+    <sys:String x:Key="EditCamera_IsEnabledLabel">Camera enabled</sys:String>
+    <sys:String x:Key="EditCamera_Submit">Save</sys:String>
+    <sys:String x:Key="EditCamera_RequiredError">IP address is required.</sys:String>
 
     <sys:String x:Key="Main_AddCameraButton">+ Camera</sys:String>
-    <sys:String x:Key="Main_LayoutPresetsTooltip">Saved layouts (not available yet)</sys:String>
-    <sys:String x:Key="Main_SequenceTooltip">Camera sequence / cycling (not available yet)</sys:String>
-    <sys:String x:Key="Main_LockTooltip">Lock session (not available yet)</sys:String>
 
     <sys:String x:Key="Tile_SelectTooltip">Click to select this camera</sys:String>
     <sys:String x:Key="Tile_ExpandTooltip">Open full-quality stream fullscreen in its own window</sys:String>
+    <sys:String x:Key="Tile_ReconnectTooltip">Stream stalled — click to reconnect</sys:String>
 
     <sys:String x:Key="Search_PlaceholderTooltip">E.g.: red car, person</sys:String>
     <sys:String x:Key="Search_Button">Search</sys:String>
@@ -41,28 +45,90 @@
     <sys:String x:Key="SearchByPhoto_ChooseFileButton">Choose file...</sys:String>
     <sys:String x:Key="SearchByPhoto_SearchButton">Search</sys:String>
     <sys:String x:Key="SearchByPhoto_ChooseFileFirstError">Choose a photo first.</sys:String>
+    <sys:String x:Key="SearchByPhoto_EnrollLabel">Know who this is? Register them so future matches show their name. Tip: enroll 2-3 photos of the same person (facing forward, slightly angled) under the same name — recognition accuracy improves noticeably.</sys:String>
+    <sys:String x:Key="SearchByPhoto_EnrollNamePlaceholder">Person's name</sys:String>
+    <sys:String x:Key="SearchByPhoto_EnrollButton">Register</sys:String>
+    <sys:String x:Key="SearchByPhoto_EnrollNameRequiredError">Enter a name first.</sys:String>
+    <sys:String x:Key="SearchByPhoto_EnrollSuccess">Registered "{0}" — future matches will show this name.</sys:String>
     <sys:String x:Key="OperationLog_ColumnTimestamp">Time</sys:String>
     <sys:String x:Key="OperationLog_ColumnUser">User</sys:String>
     <sys:String x:Key="OperationLog_ColumnAction">Action</sys:String>
     <sys:String x:Key="OperationLog_ColumnTarget">Target</sys:String>
     <sys:String x:Key="OperationLog_ColumnDetails">Details</sys:String>
     <sys:String x:Key="OperationLog_ColumnResult">Success</sys:String>
+
+    <sys:String x:Key="Win_CameraManagement_Title">Device Management</sys:String>
+    <sys:String x:Key="CameraManagement_ColumnCode">Code</sys:String>
+    <sys:String x:Key="CameraManagement_ColumnName">Name</sys:String>
+    <sys:String x:Key="CameraManagement_ColumnIp">IP address</sys:String>
+    <sys:String x:Key="CameraManagement_ColumnPort">Port</sys:String>
+    <sys:String x:Key="CameraManagement_ColumnEnabled">Enabled</sys:String>
+    <sys:String x:Key="CameraManagement_ColumnRunning">Running</sys:String>
+    <sys:String x:Key="CameraManagement_EditButton">Edit</sys:String>
+    <sys:String x:Key="CameraManagement_DeleteButton">Delete</sys:String>
+    <sys:String x:Key="CameraManagement_ConfirmDeleteTitle">Confirm delete</sys:String>
+    <sys:String x:Key="CameraManagement_ConfirmDeleteText">Delete camera "{0}"? This cannot be undone.</sys:String>
+    <sys:String x:Key="CameraManagement_Status_Loading">Loading cameras…</sys:String>
+    <sys:String x:Key="CameraManagement_Status_Loaded">Cameras: {0}</sys:String>
+    <sys:String x:Key="CameraManagement_Status_Deleted">Camera "{0}" deleted.</sys:String>
+    <sys:String x:Key="CameraManagement_ColumnStatus">Status</sys:String>
+    <sys:String x:Key="CameraManagement_StatusOnline">Online</sys:String>
+    <sys:String x:Key="CameraManagement_StatusOffline">Offline</sys:String>
+    <sys:String x:Key="CameraManagement_StatusDisabled">Disabled</sys:String>
+    <sys:String x:Key="CameraManagement_SearchTooltip">Search by code, name or IP address</sys:String>
+    <sys:String x:Key="CameraManagement_SelectCameraFirst">Select a camera first.</sys:String>
+    <sys:String x:Key="CameraManagement_SelectOneForEdit">Select exactly one camera to edit.</sys:String>
+    <sys:String x:Key="CameraManagement_ConfirmDeleteMultipleText">Delete {0} camera(s)? This cannot be undone.</sys:String>
+    <sys:String x:Key="CameraManagement_RefreshButton">Refresh</sys:String>
+    <sys:String x:Key="CameraManagement_ColumnModel">Model</sys:String>
+    <sys:String x:Key="CameraManagement_SelectDeviceFirst">Select a device first.</sys:String>
+    <sys:String x:Key="CameraManagement_SelectOneDeviceToAdd">Select exactly one device to add.</sys:String>
+    <sys:String x:Key="CameraManagement_Status_Discovering">Searching the network…</sys:String>
+    <sys:String x:Key="CameraManagement_Status_DiscoveredCount">Online devices found: {0}</sys:String>
+    <sys:String x:Key="Win_AddDiscoveredCamera_Title">Add Discovered Camera</sys:String>
+    <sys:String x:Key="AddDiscoveredCamera_RequiredError">Username and password are required.</sys:String>
     <sys:String x:Key="Archive_CameraLabel">Camera:</sys:String>
     <sys:String x:Key="Archive_DateLabel">Date:</sys:String>
     <sys:String x:Key="Archive_TimeLabel">Time:</sys:String>
     <sys:String x:Key="Archive_PlayButton">Play</sys:String>
-    <sys:String x:Key="Archive_CoverageLabel">Recorded:</sys:String>
-    <sys:String x:Key="Archive_NoCoverage">no footage that day</sys:String>
     <sys:String x:Key="Archive_InvalidTimeError">Enter a time as HH:mm.</sys:String>
-    <sys:String x:Key="Archive_PreviousButton">◀ 15 min</sys:String>
+    <sys:String x:Key="Archive_PreviousButton">◀ 15 sec</sys:String>
     <sys:String x:Key="Archive_PauseButton">Pause</sys:String>
     <sys:String x:Key="Archive_ResumeButton">Resume</sys:String>
-    <sys:String x:Key="Archive_NextButton">15 min ▶</sys:String>
+    <sys:String x:Key="Archive_NextButton">15 sec ▶</sys:String>
+    <sys:String x:Key="Archive_StepFrameButton">Step</sys:String>
+    <sys:String x:Key="Archive_SpeedLabel">Speed:</sys:String>
+    <sys:String x:Key="Archive_SnapshotButton">Snapshot...</sys:String>
+    <sys:String x:Key="Archive_NothingToSnapshotError">Nothing loaded to snapshot yet.</sys:String>
+    <sys:String x:Key="Archive_Tab_Person">Named Person</sys:String>
+    <sys:String x:Key="Archive_Tab_Attributes">Attributes</sys:String>
+    <sys:String x:Key="Archive_Tab_ReverseImage">Reverse Image</sys:String>
+    <sys:String x:Key="Archive_PersonNameLabel">Enrolled person:</sys:String>
+    <sys:String x:Key="Archive_ObjectTypeLabel">Object type:</sys:String>
+    <sys:String x:Key="Archive_ColorLabel">Color:</sys:String>
+    <sys:String x:Key="Archive_PlateLabel">License plate:</sys:String>
+    <sys:String x:Key="Archive_SearchButton">Search</sys:String>
+    <sys:String x:Key="Archive_DropPhotoHint">Drop a photo here, choose a file, or crop one from the player.</sys:String>
+    <sys:String x:Key="Archive_ChoosePhotoButton">Choose file...</sys:String>
+    <sys:String x:Key="Archive_CropFromPlayerButton">Crop from player</sys:String>
+    <sys:String x:Key="Archive_SimilarityThresholdLabel">Similarity threshold:</sys:String>
+    <sys:String x:Key="Archive_Search_EnterNameError">Enter or pick a name first.</sys:String>
+    <sys:String x:Key="Archive_Search_NoFiltersError">Pick at least one filter first.</sys:String>
+    <sys:String x:Key="Archive_Search_ChoosePhotoError">Choose or crop a photo first.</sys:String>
+    <sys:String x:Key="Archive_Search_NoResults">No matches found.</sys:String>
+    <sys:String x:Key="Win_ImageCrop_Title">Select Area</sys:String>
+    <sys:String x:Key="ImageCrop_Instructions">Drag a rectangle around the person or face to search for, then click "Use selection".</sys:String>
+    <sys:String x:Key="ImageCrop_CancelButton">Cancel</sys:String>
+    <sys:String x:Key="ImageCrop_UseSelectionButton">Use selection</sys:String>
 
-    <sys:String x:Key="Sidebar_CamerasTooltip">Cameras (not available yet)</sys:String>
-    <sys:String x:Key="Sidebar_LayoutsTooltip">Screen layouts (not available yet)</sys:String>
-    <sys:String x:Key="Sidebar_ArchiveTooltip">Archive by time (not available yet)</sys:String>
+    <sys:String x:Key="Sidebar_GroupsTooltip">Camera groups</sys:String>
+    <sys:String x:Key="Sidebar_QuickSwitchTooltip">Switch camera group</sys:String>
+    <sys:String x:Key="Sidebar_AlarmFilterTooltip">Show only alarming cameras (unknown person / vehicle)</sys:String>
     <sys:String x:Key="Sidebar_SearchPlaceholder">Search cameras...</sys:String>
+    <sys:String x:Key="Tree_AssignHintTooltip">Click to select; double-click to place in the selected grid cell</sys:String>
+    <sys:String x:Key="Slot_SelectFirst">Select a grid cell first.</sys:String>
+    <sys:String x:Key="Slot_OnlyInFixedLayout">Assigning a camera only works in a fixed layout (1x1–4x4).</sys:String>
+    <sys:String x:Key="Slot_EmptyPlaceholderHint">Pick a camera on the left</sys:String>
 
     <sys:String x:Key="Bottom_StopAllTooltip">Stop all cameras</sys:String>
     <sys:String x:Key="Bottom_SnapshotTooltip">Take a snapshot of the selected camera</sys:String>
@@ -73,6 +139,27 @@
     <sys:String x:Key="Bottom_FullscreenTooltip">Expand the selected camera to fullscreen</sys:String>
 
     <sys:String x:Key="Layout_Auto">Auto</sys:String>
+    <sys:String x:Key="Layout_GridSizeTooltip">Grid size</sys:String>
+
+    <!-- Camera Groups -->
+    <sys:String x:Key="Win_CameraGroups_Title">Camera Groups</sys:String>
+    <sys:String x:Key="Win_EditCameraGroup_Title">Camera Group</sys:String>
+    <sys:String x:Key="Win_QuickGroupSwitch_Title">Switch Camera Group</sys:String>
+    <sys:String x:Key="CameraGroups_AddButton">Add</sys:String>
+    <sys:String x:Key="CameraGroups_ColumnName">Name</sys:String>
+    <sys:String x:Key="CameraGroups_ColumnCameras">Cameras</sys:String>
+    <sys:String x:Key="CameraGroups_Status_Loading">Loading groups...</sys:String>
+    <sys:String x:Key="CameraGroups_Status_Loaded">{0} group(s)</sys:String>
+    <sys:String x:Key="CameraGroups_SelectGroupFirst">Select a group first.</sys:String>
+    <sys:String x:Key="CameraGroups_SelectOneForEdit">Select exactly one group to edit.</sys:String>
+    <sys:String x:Key="CameraGroups_ConfirmDeleteTitle">Delete group(s)?</sys:String>
+    <sys:String x:Key="CameraGroups_ConfirmDeleteText">Delete {0} selected group(s)?</sys:String>
+    <sys:String x:Key="EditCameraGroup_NameLabel">Group name</sys:String>
+    <sys:String x:Key="EditCameraGroup_CamerasLabel">Cameras in this group</sys:String>
+    <sys:String x:Key="EditCameraGroup_Submit">Save</sys:String>
+    <sys:String x:Key="EditCameraGroup_NameRequiredError">Enter a group name.</sys:String>
+    <sys:String x:Key="QuickGroupSwitch_AllCameras">All cameras</sys:String>
+    <sys:String x:Key="QuickGroupSwitch_Loading">Loading groups...</sys:String>
 
     <sys:String x:Key="Expand_CloseButton">✕ Collapse (Esc)</sys:String>
 
@@ -91,13 +178,16 @@
     <sys:String x:Key="Status_RecordingFailed">Could not start recording — no signal from the camera.</sys:String>
 
     <sys:String x:Key="Api_LoginFailed">Incorrect username or password.</sys:String>
+    <sys:String x:Key="Api_SessionExpired">Your session has expired. Please log in again.</sys:String>
     <sys:String x:Key="Api_Forbidden">You don't have permission for this action.</sys:String>
     <sys:String x:Key="Api_ServerError">Server error: {0}</sys:String>
 
     <sys:String x:Key="Crash_Title">Error</sys:String>
     <sys:String x:Key="Crash_MessageFormat">An error occurred (the app will keep running):&#10;&#10;{0}&#10;&#10;Details were written to {1}</sys:String>
 
-    <sys:String x:Key="Common_NotAvailableYet">Not available yet</sys:String>
+    <sys:String x:Key="Common_LogOut">Log out</sys:String>
+    <sys:String x:Key="Theme_SwitchToLight">☀ Light</sys:String>
+    <sys:String x:Key="Theme_SwitchToDark">🌙 Dark</sys:String>
 
     <sys:String x:Key="Tab_ControlPanel">Control Panel</sys:String>
     <sys:String x:Key="Tab_LiveView">Live View</sys:String>
@@ -122,14 +212,177 @@
     <sys:String x:Key="Card_DeviceManagement_Desc">Add, edit, delete and configure devices.</sys:String>
     <sys:String x:Key="Card_FaceRecognition_Title">Face Recognition</sys:String>
     <sys:String x:Key="Card_FaceRecognition_Desc">View live video from face recognition cameras and snapshots.</sys:String>
+    <sys:String x:Key="Card_PersonSightingReport_Title">People Seen Report</sys:String>
+    <sys:String x:Key="Card_PersonSightingReport_Desc">How many people (known/unknown) were seen, per camera and day.</sys:String>
+    <sys:String x:Key="Card_UserManagement_Desc">Accounts, roles, and access permissions.</sys:String>
+    <sys:String x:Key="Card_OperationLog_Desc">History of user actions in the system.</sys:String>
 
-    <sys:String x:Key="Sidebar2_BasicHeading">Basic</sys:String>
-    <sys:String x:Key="Nav_View">View</sys:String>
-    <sys:String x:Key="Nav_AlarmConfig">Alarm Configuration</sys:String>
-    <sys:String x:Key="Nav_SystemConfig">System Configuration</sys:String>
-    <sys:String x:Key="Nav_SequenceResource">Sequence Resource</sys:String>
     <sys:String x:Key="Nav_UserManagement">User Management</sys:String>
-    <sys:String x:Key="Nav_RecordingSchedule">Recording Schedule</sys:String>
     <sys:String x:Key="Nav_OperationLog">Operation Log</sys:String>
+
+    <!-- User Management -->
+    <sys:String x:Key="Win_UserManagement_Title">User Management</sys:String>
+    <sys:String x:Key="Win_AddUser_Title">Add User</sys:String>
+    <sys:String x:Key="Win_EditUser_Title">Edit User</sys:String>
+    <sys:String x:Key="UserManagement_SearchTooltip">Search by username</sys:String>
+    <sys:String x:Key="UserManagement_AddButton">Add</sys:String>
+    <sys:String x:Key="UserManagement_EditButton">Edit</sys:String>
+    <sys:String x:Key="UserManagement_DeleteButton">Delete</sys:String>
+    <sys:String x:Key="UserManagement_ColumnUsername">Username</sys:String>
+    <sys:String x:Key="UserManagement_ColumnRole">Role</sys:String>
+    <sys:String x:Key="UserManagement_ColumnActive">Active</sys:String>
+    <sys:String x:Key="UserManagement_ColumnCreated">Created</sys:String>
+    <sys:String x:Key="UserManagement_ColumnLastLogin">Last Login</sys:String>
+    <sys:String x:Key="UserManagement_Status_Loading">Loading users...</sys:String>
+    <sys:String x:Key="UserManagement_Status_Loaded">{0} user(s)</sys:String>
+    <sys:String x:Key="UserManagement_SelectUserFirst">Select a user first.</sys:String>
+    <sys:String x:Key="UserManagement_SelectOneForEdit">Select exactly one user to edit.</sys:String>
+    <sys:String x:Key="UserManagement_ConfirmDeleteTitle">Delete user(s)?</sys:String>
+    <sys:String x:Key="UserManagement_ConfirmDeleteText">Delete {0} selected user(s)? This cannot be undone.</sys:String>
+    <sys:String x:Key="AddUser_Username">Username</sys:String>
+    <sys:String x:Key="AddUser_Password">Password</sys:String>
+    <sys:String x:Key="AddUser_Role">Role</sys:String>
+    <sys:String x:Key="AddUser_Submit">Create</sys:String>
+    <sys:String x:Key="AddUser_RequiredError">Username and password are required.</sys:String>
+    <sys:String x:Key="EditUser_NewPassword">New password</sys:String>
+    <sys:String x:Key="EditUser_NewPasswordHint">Leave blank to keep the current password</sys:String>
+    <sys:String x:Key="EditUser_IsActiveLabel">Active (can log in)</sys:String>
+    <sys:String x:Key="EditUser_Submit">Save</sys:String>
+
+    <!-- Per-user additional permissions (on top of Role) -->
+    <sys:String x:Key="AddUser_Permissions">Functions</sys:String>
+    <sys:String x:Key="AddUser_PermissionsHint">Checked-and-greyed-out boxes are already included by the selected Role. You can only grant a function you have yourself.</sys:String>
+    <sys:String x:Key="Permission_ViewLiveStream">Live view</sys:String>
+    <sys:String x:Key="Permission_ViewArchive">Archive playback</sys:String>
+    <sys:String x:Key="Permission_SearchMetadata">Search</sys:String>
+    <sys:String x:Key="Permission_SearchByFace">Search by photo</sys:String>
+    <sys:String x:Key="Permission_ManageKnownPersons">Face recognition (enroll people)</sys:String>
+    <sys:String x:Key="Permission_ExportClip">Export clips</sys:String>
+    <sys:String x:Key="Permission_ManageCameras">Camera management</sys:String>
+    <sys:String x:Key="Permission_ManageRetentionPolicy">Retention policy</sys:String>
+    <sys:String x:Key="Permission_DeleteStandardArchive">Delete archive files</sys:String>
+    <sys:String x:Key="Permission_ManageSystemConfig">System configuration / audit log</sys:String>
+    <sys:String x:Key="Permission_ManageUsers">User management</sys:String>
+
+    <!-- People Counting -->
+    <sys:String x:Key="Win_PeopleCounting_Title">People Counting</sys:String>
+    <sys:String x:Key="PeopleCounting_CameraLabel">Camera</sys:String>
+    <sys:String x:Key="PeopleCounting_LineHint">Drag the handles to reshape the counting line (green = start, blue = end). Click empty space on the image to add a new point; right-click a handle to remove it (at least 2 points required).</sys:String>
+    <sys:String x:Key="PeopleCounting_RemovePointTooltip">Right-click to remove this point</sys:String>
+    <sys:String x:Key="PeopleCounting_LeftToRightIsIn">Left-to-right crossing counts as "In"</sys:String>
+    <sys:String x:Key="PeopleCounting_SaveLineButton">Save Line</sys:String>
+    <sys:String x:Key="PeopleCounting_DeleteLineButton">Delete Line</sys:String>
+    <sys:String x:Key="PeopleCounting_QueryButton">Query</sys:String>
+    <sys:String x:Key="PeopleCounting_InLabel">In: </sys:String>
+    <sys:String x:Key="PeopleCounting_OutLabel">Out: </sys:String>
+    <sys:String x:Key="PeopleCounting_LineSaved">Counting line saved.</sys:String>
+    <sys:String x:Key="PeopleCounting_LineDeleted">Counting line removed.</sys:String>
+
+    <!-- Person Sighting Report ("count every person seen + remember with a screenshot") -->
+    <sys:String x:Key="Win_PersonSightingReport_Title">People Seen Report</sys:String>
+    <sys:String x:Key="Overlay_UnknownPerson">Unknown</sys:String>
+    <sys:String x:Key="PersonSightingReport_CamerasLabel">Cameras</sys:String>
+    <sys:String x:Key="PersonSightingReport_CameraColumn">Camera</sys:String>
+    <sys:String x:Key="PersonSightingReport_DateColumn">Date</sys:String>
+    <sys:String x:Key="PersonSightingReport_TotalColumn">Total</sys:String>
+    <sys:String x:Key="PersonSightingReport_KnownColumn">Known</sys:String>
+    <sys:String x:Key="PersonSightingReport_UnknownColumn">Unknown</sys:String>
+    <sys:String x:Key="PersonSightingReport_DrillDownHint">Double-click a row to see the saved screenshots for that camera and day.</sys:String>
+    <sys:String x:Key="PersonSightingReport_NoCameraSelected">Select at least one camera.</sys:String>
+    <sys:String x:Key="PersonSightingReport_NoData">No sightings for the selected cameras/dates.</sys:String>
+    <sys:String x:Key="PersonSightingReport_SelectAll">Select all</sys:String>
+    <sys:String x:Key="PersonSightingReport_CamerasHint">Tip: a very wide date range across many cameras will be rejected — narrow it down for a faster report.</sys:String>
+    <sys:String x:Key="PersonSightingReport_Loading">Querying…</sys:String>
+    <sys:String x:Key="PersonSightingGallery_Loading">Loading screenshots…</sys:String>
+    <sys:String x:Key="PersonSightingGallery_NoImage">No image</sys:String>
+    <sys:String x:Key="PersonSightingGallery_DownloadButton">Download</sys:String>
+    <sys:String x:Key="PersonSightingGallery_ChooseFolderTitle">Choose a folder to save screenshots into</sys:String>
+    <sys:String x:Key="PersonSightingGallery_ExportSuccess">Saved {0} screenshot(s) to {1} (split into Known/&lt;name&gt; and Unknown folders).</sys:String>
+    <sys:String x:Key="PersonSightingGallery_DeleteTooltip">Delete this sighting</sys:String>
+    <sys:String x:Key="PersonSightingGallery_ConfirmDeleteTitle">Delete sighting?</sys:String>
+    <sys:String x:Key="PersonSightingGallery_ConfirmDeleteText">Delete this saved screenshot? This cannot be undone.</sys:String>
+
+    <!-- E-map -->
+    <sys:String x:Key="Win_EMap_Title">E-map</sys:String>
+    <sys:String x:Key="EMap_MapsLabel">Maps</sys:String>
+    <sys:String x:Key="EMap_DeleteMapButton">Delete Selected Map</sys:String>
+    <sys:String x:Key="EMap_NewMapNameLabel">New Map Name</sys:String>
+    <sys:String x:Key="EMap_ChooseImageButton">Choose Image...</sys:String>
+    <sys:String x:Key="EMap_UploadButton">Upload Map</sys:String>
+    <sys:String x:Key="EMap_CameraToPinLabel">Camera to Pin</sys:String>
+    <sys:String x:Key="EMap_PlacePinButton">Place Pin</sys:String>
+    <sys:String x:Key="EMap_PlacePinHint">Click anywhere on the map to place the pin. Left-click a pin to jump to that camera; right-click a pin to remove it.</sys:String>
+    <sys:String x:Key="EMap_NameAndImageRequired">Enter a name and choose an image first.</sys:String>
+    <sys:String x:Key="EMap_ChooseCameraFirst">Choose a camera to pin first.</sys:String>
+
+    <!-- Alarm Records -->
+    <sys:String x:Key="Win_AlarmRecords_Title">Alarm Records</sys:String>
+    <sys:String x:Key="AlarmRecords_RefreshButton">Refresh</sys:String>
+    <sys:String x:Key="AlarmRecords_AcknowledgeButton">Acknowledge</sys:String>
+    <sys:String x:Key="AlarmRecords_AcknowledgedLabel">Acknowledged</sys:String>
+
+    <!-- Face Recognition -->
+    <sys:String x:Key="Win_FaceRecognition_Title">Face Recognition</sys:String>
+    <sys:String x:Key="FaceRecognition_KnownPersonsHeading">Known Persons</sys:String>
+    <sys:String x:Key="FaceRecognition_RecognizedHeading">Recent Recognized Hits</sys:String>
+
+    <!-- Audio -->
+    <sys:String x:Key="Win_Audio_Title">Audio</sys:String>
+    <sys:String x:Key="Audio_CameraLabel">Camera</sys:String>
+    <sys:String x:Key="Audio_ListenButton">Listen</sys:String>
+    <sys:String x:Key="Audio_StopButton">Stop</sys:String>
+    <sys:String x:Key="Audio_TalkButton">Talk</sys:String>
+    <sys:String x:Key="Audio_TalkNotSupportedTooltip">Two-way broadcast needs a camera-specific protocol (e.g. Hikvision ISAPI) this project doesn't speak yet — not available for any camera right now.</sys:String>
+    <sys:String x:Key="Audio_CameraNotRunning">This camera isn't currently running.</sys:String>
+    <sys:String x:Key="Audio_ArchiveHeading">Archive</sys:String>
+    <sys:String x:Key="Audio_ArchiveHint">Pick a date and time range to listen to or download the audio from an archived recording.</sys:String>
+    <sys:String x:Key="Audio_ArchiveDateLabel">Date</sys:String>
+    <sys:String x:Key="Audio_ArchiveFromLabel">From (HH:mm)</sys:String>
+    <sys:String x:Key="Audio_ArchiveToLabel">To (HH:mm)</sys:String>
+    <sys:String x:Key="Audio_ListenArchiveButton">Listen</sys:String>
+    <sys:String x:Key="Audio_DownloadButton">Download</sys:String>
+    <sys:String x:Key="Audio_SelectCameraError">Select a camera first.</sys:String>
+    <sys:String x:Key="Audio_ArchiveRangeInvalid">"To" must be later than "From".</sys:String>
+    <sys:String x:Key="Audio_DownloadSaved">File saved: {0}</sys:String>
+
+    <!-- Video Wall -->
+    <sys:String x:Key="Win_VideoWall_Title">Video Wall</sys:String>
+    <sys:String x:Key="VideoWall_MonitorLabel">Monitor</sys:String>
+    <sys:String x:Key="VideoWall_Hint">Opens the same live camera grid Live View shows, full-screen on the chosen monitor. Press Esc to close it.</sys:String>
+    <sys:String x:Key="VideoWall_OpenButton">Open</sys:String>
+    <sys:String x:Key="VideoWall_LayoutLabel">Layout</sys:String>
+    <sys:String x:Key="VideoWall_MirrorLiveView">Mirror Live View</sys:String>
+    <sys:String x:Key="VideoWall_ManageLayoutsButton">Manage layouts...</sys:String>
+
+    <!-- Video Wall Layouts -->
+    <sys:String x:Key="Win_VideoWallLayouts_Title">Video Wall Layouts</sys:String>
+    <sys:String x:Key="VideoWallLayouts_AddButton">Add</sys:String>
+    <sys:String x:Key="VideoWallLayouts_ColumnName">Name</sys:String>
+    <sys:String x:Key="VideoWallLayouts_ColumnSize">Size</sys:String>
+    <sys:String x:Key="VideoWallLayouts_ColumnCameras">Cameras</sys:String>
+    <sys:String x:Key="VideoWallLayouts_Status_Loading">Loading layouts...</sys:String>
+    <sys:String x:Key="VideoWallLayouts_Status_Loaded">Layouts: {0}</sys:String>
+    <sys:String x:Key="VideoWallLayouts_SelectLayoutFirst">Select a layout first.</sys:String>
+    <sys:String x:Key="VideoWallLayouts_SelectOneForEdit">Select exactly one layout to edit.</sys:String>
+    <sys:String x:Key="VideoWallLayouts_ConfirmDeleteTitle">Delete layout(s)?</sys:String>
+    <sys:String x:Key="VideoWallLayouts_ConfirmDeleteText">Delete the selected layouts ({0})?</sys:String>
+
+    <sys:String x:Key="Win_EditVideoWallLayout_Title">Video Wall Layout</sys:String>
+    <sys:String x:Key="VideoWallLayout_NameLabel">Layout name</sys:String>
+    <sys:String x:Key="VideoWallLayout_RowsLabel">Rows</sys:String>
+    <sys:String x:Key="VideoWallLayout_ColumnsLabel">Columns</sys:String>
+    <sys:String x:Key="VideoWallLayout_ApplySizeButton">Apply size</sys:String>
+    <sys:String x:Key="VideoWallLayout_MergeRightButton">Merge right</sys:String>
+    <sys:String x:Key="VideoWallLayout_MergeDownButton">Merge down</sys:String>
+    <sys:String x:Key="VideoWallLayout_SplitButton">Split</sys:String>
+    <sys:String x:Key="VideoWallLayout_SplitTooltip">Break the cell back into separate 1x1 cells. Its assigned camera will be cleared.</sys:String>
+    <sys:String x:Key="VideoWallLayout_ResetGridConfirm">Changing the number of rows/columns resets the whole grid — merges and assigned cameras will be lost. Continue?</sys:String>
+    <sys:String x:Key="VideoWallLayout_InvalidSizeError">Rows and columns must be greater than zero.</sys:String>
+    <sys:String x:Key="VideoWallLayout_SelectCellFirstError">Select a cell in the grid first.</sys:String>
+    <sys:String x:Key="VideoWallLayout_NameRequiredError">Enter a layout name.</sys:String>
+    <sys:String x:Key="VideoWallLayout_CamerasLabel">Cameras</sys:String>
+    <sys:String x:Key="VideoWallLayout_AssignHint">Select a cell on the left, then double-click a camera to assign it to that cell.</sys:String>
+    <sys:String x:Key="VideoWallLayout_CancelButton">Cancel</sys:String>
+    <sys:String x:Key="VideoWallLayout_SaveButton">Save</sys:String>
 
 </ResourceDictionary>

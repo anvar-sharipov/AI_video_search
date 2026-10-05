@@ -19,7 +19,7 @@ public static class ClipEndpoints
         {
             try
             {
-                accessControl.Authorize(http.User.GetRole(), Permission.ExportClip);
+                accessControl.Authorize(http.User, Permission.ExportClip);
             }
             catch (UnauthorizedAccessException)
             {

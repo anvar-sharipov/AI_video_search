@@ -27,8 +27,16 @@ public partial class ExpandedCameraViewModel : ObservableObject, IDisposable
         Player = new MediaPlayer(libVlc);
         _media = new Media(libVlc, mainStreamUri, FromType.FromLocation);
         _media.AddOption(":avcodec-hw=none");
-        Player.Play(_media);
     }
+
+    /// <summary>
+    /// Must run only once the window's VideoView has actually built its native surface (its own
+    /// Loaded event, not the constructor) — starting playback before then leaves LibVLC with no
+    /// target Hwnd to attach to, so it falls back to popping open its own top-level
+    /// "VLC (Direct3D11 output)" window instead of rendering into ours (and that stray window
+    /// isn't wired to this ViewModel's Close at all, so closing this window doesn't close it).
+    /// </summary>
+    public void StartPlayback() => Player.Play(_media);
 
     [RelayCommand]
     private void Close() => CloseRequested?.Invoke();

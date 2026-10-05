@@ -12,6 +12,13 @@ public partial class ClipPopupViewModel : ObservableObject, IDisposable
     private readonly LibVLC _libVlc;
     private Media? _media;
 
+    /// <summary>True once this window's VideoView is realized (native Hwnd exists) — playing
+    /// before that leaves LibVLC with nowhere to render, showing a blank window instead of video
+    /// (same root cause as the grid-tile/fullscreen-popup stray-window bug elsewhere in this
+    /// client). The clip fetch is a network round-trip so it usually finishes after the window
+    /// has loaded anyway, but "usually" isn't "always" — hence still gating on this explicitly.</summary>
+    private bool _viewReady;
+
     public MediaPlayer Player { get; }
 
     [ObservableProperty]
@@ -39,12 +46,30 @@ public partial class ClipPopupViewModel : ObservableObject, IDisposable
             var uri = _api.GetClipDownloadUri(fileName);
 
             _media = new Media(_libVlc, uri);
-            Player.Play(_media);
             StatusMessage = string.Empty;
+            if (_viewReady)
+            {
+                Player.Play(_media);
+            }
         }
         catch (ApiException ex)
         {
             StatusMessage = ex.Message;
+        }
+    }
+
+    /// <summary>Called from the window's VideoView.Loaded — see the _viewReady field comment.</summary>
+    public void NotifyViewLoaded()
+    {
+        if (_viewReady)
+        {
+            return;
+        }
+
+        _viewReady = true;
+        if (_media is not null)
+        {
+            Player.Play(_media);
         }
     }
 

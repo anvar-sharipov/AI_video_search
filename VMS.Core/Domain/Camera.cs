@@ -24,6 +24,14 @@ public class Camera
 
     public string? OnvifUsername { get; set; }
 
+    /// <summary>
+    /// Which ONVIF VideoSourceConfiguration/SourceToken this row maps to — null for a plain
+    /// single-channel IP camera. Set when a camera is added from a multi-channel NVR/DVR's
+    /// discovered channel list, so re-onboarding (edit, server restart) keeps reconnecting to
+    /// the same physical channel instead of whichever one GetChannelsAsync happens to list first.
+    /// </summary>
+    public string? OnvifVideoSourceToken { get; set; }
+
     // NOTE: plaintext for the 1-camera MVP. Before adding real camera fleets,
     // this must move to DPAPI/secret-store encryption at rest (VMS.Core owns
     // AccessControlManager, so credential encryption belongs here too).

@@ -22,6 +22,29 @@ namespace VMS.Core.Data.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("VMS.Core.Domain.AlarmAcknowledgement", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("AcknowledgedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("AcknowledgedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("DetectionEventId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DetectionEventId")
+                        .IsUnique();
+
+                    b.ToTable("AlarmAcknowledgements");
+                });
+
             modelBuilder.Entity("VMS.Core.Domain.AuditLogEntry", b =>
                 {
                     b.Property<Guid>("Id")
@@ -101,6 +124,9 @@ namespace VMS.Core.Data.Migrations
                     b.Property<string>("OnvifUsername")
                         .HasColumnType("text");
 
+                    b.Property<string>("OnvifVideoSourceToken")
+                        .HasColumnType("text");
+
                     b.Property<Guid?>("RetentionPolicyId")
                         .HasColumnType("uuid");
 
@@ -116,6 +142,145 @@ namespace VMS.Core.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Cameras");
+                });
+
+            modelBuilder.Entity("VMS.Core.Domain.CameraCountingLine", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CameraCode")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<bool>("LeftToRightIsIn")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("PointsJson")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CameraCode")
+                        .IsUnique();
+
+                    b.ToTable("CameraCountingLines");
+                });
+
+            modelBuilder.Entity("VMS.Core.Domain.CameraGroup", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CameraGroups");
+                });
+
+            modelBuilder.Entity("VMS.Core.Domain.CameraGroupMember", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CameraGroupId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CameraId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CameraGroupId");
+
+                    b.ToTable("CameraGroupMembers");
+                });
+
+            modelBuilder.Entity("VMS.Core.Domain.EMap", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ImageFileName")
+                        .IsRequired()
+                        .HasMaxLength(260)
+                        .HasColumnType("character varying(260)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("EMaps");
+                });
+
+            modelBuilder.Entity("VMS.Core.Domain.EMapPin", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CameraId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("EMapId")
+                        .HasColumnType("uuid");
+
+                    b.Property<double>("X")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("Y")
+                        .HasColumnType("double precision");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EMapId");
+
+                    b.ToTable("EMapPins");
+                });
+
+            modelBuilder.Entity("VMS.Core.Domain.KnownPerson", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("EnrolledAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.PrimitiveCollection<float[]>("FaceEmbedding")
+                        .IsRequired()
+                        .HasColumnType("real[]");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("KnownPersons");
                 });
 
             modelBuilder.Entity("VMS.Core.Domain.RetentionPolicy", b =>
@@ -149,6 +314,9 @@ namespace VMS.Core.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("AdditionalPermissionsCsv")
+                        .HasColumnType("text");
+
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -176,6 +344,78 @@ namespace VMS.Core.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("VMS.Core.Domain.VideoWallCell", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("CameraId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Column")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ColumnSpan")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Row")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RowSpan")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("VideoWallLayoutId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CameraId");
+
+                    b.HasIndex("VideoWallLayoutId");
+
+                    b.ToTable("VideoWallCells");
+                });
+
+            modelBuilder.Entity("VMS.Core.Domain.VideoWallLayout", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Columns")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("Rows")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("VideoWallLayouts");
+                });
+
+            modelBuilder.Entity("VMS.Core.Domain.VideoWallCell", b =>
+                {
+                    b.HasOne("VMS.Core.Domain.Camera", null)
+                        .WithMany()
+                        .HasForeignKey("CameraId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("VMS.Core.Domain.VideoWallLayout", null)
+                        .WithMany()
+                        .HasForeignKey("VideoWallLayoutId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

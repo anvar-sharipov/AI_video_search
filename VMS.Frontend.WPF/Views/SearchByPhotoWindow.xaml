@@ -1,7 +1,7 @@
 <Window x:Class="VMS.Frontend.WPF.Views.SearchByPhotoWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="{DynamicResource Win_SearchByPhoto_Title}" Height="440" Width="360"
+        Title="{DynamicResource Win_SearchByPhoto_Title}" Height="560" Width="360"
         Background="{StaticResource BgWindow}"
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
     <Grid Margin="16">
@@ -11,6 +11,12 @@
             <RowDefinition Height="12"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="12"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="16"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="8"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="8"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
@@ -23,5 +29,24 @@
         <TextBlock Grid.Row="3" Text="{Binding ErrorMessage}" Foreground="{StaticResource TextError}" TextWrapping="Wrap"/>
 
         <Button Grid.Row="5" Style="{StaticResource AccentButtonStyle}" Content="{DynamicResource SearchByPhoto_SearchButton}" Height="32" Click="OnSearchClick"/>
+
+        <Separator Grid.Row="6" VerticalAlignment="Center"/>
+
+        <TextBlock Grid.Row="7" Text="{DynamicResource SearchByPhoto_EnrollLabel}" Foreground="{StaticResource TextSecondary}" FontSize="11" TextWrapping="Wrap"/>
+
+        <Grid Grid.Row="9">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="8"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBox Grid.Column="0" Height="28" VerticalContentAlignment="Center"
+                     Text="{Binding EnrollName, UpdateSourceTrigger=PropertyChanged}"
+                     ToolTip="{DynamicResource SearchByPhoto_EnrollNamePlaceholder}"/>
+            <Button Grid.Column="2" Content="{DynamicResource SearchByPhoto_EnrollButton}" Height="28" Width="120"
+                    Command="{Binding EnrollCommand}"/>
+        </Grid>
+
+        <TextBlock Grid.Row="11" Text="{Binding EnrollMessage}" Foreground="{StaticResource TextSecondary}" TextWrapping="Wrap"/>
     </Grid>
 </Window>

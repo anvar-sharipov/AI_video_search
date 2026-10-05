@@ -1,0 +1,40 @@
+<Window x:Class="VMS.Frontend.WPF.Views.EditCameraGroupWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="{DynamicResource Win_EditCameraGroup_Title}" Height="500" Width="380"
+        Background="{StaticResource BgWindow}"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="8"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*" MinHeight="200"/>
+            <RowDefinition Height="12"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="8"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="{DynamicResource EditCameraGroup_NameLabel}" Foreground="{StaticResource TextSecondary}"/>
+        <TextBox Grid.Row="1" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"/>
+
+        <TextBlock Grid.Row="3" Text="{DynamicResource EditCameraGroup_CamerasLabel}" Foreground="{StaticResource TextSecondary}"/>
+        <ScrollViewer Grid.Row="4" VerticalScrollBarVisibility="Auto">
+            <ItemsControl ItemsSource="{Binding Cameras}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <CheckBox IsChecked="{Binding IsChecked}" Margin="0,4" Foreground="{StaticResource TextPrimary}">
+                            <TextBlock Text="{Binding Camera.Name}"/>
+                        </CheckBox>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <TextBlock Grid.Row="6" Text="{Binding ErrorMessage}" Foreground="{StaticResource TextError}" TextWrapping="Wrap"/>
+
+        <Button Grid.Row="8" Style="{StaticResource AccentButtonStyle}" Content="{DynamicResource EditCameraGroup_Submit}" Height="32" Click="OnSaveClick"/>
+    </Grid>
+</Window>

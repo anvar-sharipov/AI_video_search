@@ -29,7 +29,7 @@ public static class ArchiveEndpoints
         {
             try
             {
-                accessControl.Authorize(http.User.GetRole(), Permission.ViewArchive);
+                accessControl.Authorize(http.User, Permission.ViewArchive);
             }
             catch (UnauthorizedAccessException)
             {
@@ -51,7 +51,7 @@ public static class ArchiveEndpoints
         {
             try
             {
-                accessControl.Authorize(http.User.GetRole(), Permission.ManageCameras);
+                accessControl.Authorize(http.User, Permission.ManageCameras);
             }
             catch (UnauthorizedAccessException)
             {
@@ -83,7 +83,7 @@ public static class ArchiveEndpoints
             // check happens inside immutableManager.Delete once we know the file exists.
             try
             {
-                accessControl.Authorize(http.User.GetRole(), Permission.DeleteStandardArchive);
+                accessControl.Authorize(http.User, Permission.DeleteStandardArchive);
             }
             catch (UnauthorizedAccessException)
             {

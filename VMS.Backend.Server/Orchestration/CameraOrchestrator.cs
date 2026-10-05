@@ -26,6 +26,9 @@ public sealed class CameraOrchestrator(
     IMetadataIndexer indexer,
     IObjectDetector detector,
     IFaceEmbedder faceEmbedder,
+    IKnownPersonMatcher knownPersonMatcher,
+    IPlateOcrReader plateOcrReader,
+    ICountingLineProvider countingLineProvider,
     IOptions<VmsOptions> vmsOptions,
     ILoggerFactory loggerFactory) : IAsyncDisposable
 {
@@ -66,7 +69,8 @@ public sealed class CameraOrchestrator(
         }
 
         var connection = await discovery.ConnectAsync(
-            camera.IpAddress, camera.OnvifUsername!, camera.OnvifPasswordPlaintext!, camera.OnvifPort, ct);
+            camera.IpAddress, camera.OnvifUsername!, camera.OnvifPasswordPlaintext!, camera.OnvifPort,
+            camera.OnvifVideoSourceToken, ct);
 
         var recorder = new RtspRecorder(
             _options.FfmpegPath, connection.MainStreamRtspUri, camera.Code, _options.ArchiveRootPath,
@@ -78,7 +82,8 @@ public sealed class CameraOrchestrator(
             loggerFactory.CreateLogger($"Sampler:{camera.Code}"), interval: TimeSpan.FromSeconds(5));
 
         var detectionLogger = loggerFactory.CreateLogger($"Detection:{camera.Code}");
-        var detectionWorker = new DetectionWorker(camera.Code, detector, faceEmbedder, indexer, _options.ArchiveRootPath, detectionLogger);
+        var detectionWorker = new DetectionWorker(
+            camera.Code, detector, faceEmbedder, knownPersonMatcher, plateOcrReader, countingLineProvider, indexer, _options.ArchiveRootPath, detectionLogger);
         sampler.SnapshotCaptured += path => _ = RunDetectionSafelyAsync(detectionWorker, path, detectionLogger);
         sampler.Start();
 

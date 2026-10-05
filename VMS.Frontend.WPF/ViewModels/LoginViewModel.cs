@@ -1,13 +1,16 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using VMS.Core.Domain;
+using VMS.Core.Security;
 using VMS.Frontend.WPF.Api;
 using VMS.Frontend.WPF.Services;
 
 namespace VMS.Frontend.WPF.ViewModels;
 
-public partial class LoginViewModel(ApiClient api, SessionService session, LocalizationService localization) : ObservableObject
+public partial class LoginViewModel(ApiClient api, SessionService session, LocalizationService localization, ThemeService theme) : ObservableObject
 {
+    public ThemeService Theme => theme;
+
     [ObservableProperty]
     private string _username = string.Empty;
 
@@ -31,7 +34,11 @@ public partial class LoginViewModel(ApiClient api, SessionService session, Local
             var result = await api.LoginAsync(Username, password);
             api.SetToken(result.Token);
             var role = Enum.TryParse<UserRole>(result.Role, out var parsed) ? parsed : UserRole.Viewer;
-            session.SetLoggedIn(result.Username, role);
+            var additionalPermissions = result.AdditionalPermissions
+                .Select(p => Enum.TryParse<Permission>(p, out var perm) ? (Permission?)perm : null)
+                .Where(p => p is not null)
+                .Select(p => p!.Value);
+            session.SetLoggedIn(result.Username, role, additionalPermissions);
             LoginSucceeded?.Invoke();
         }
         catch (ApiException ex)
@@ -50,4 +57,7 @@ public partial class LoginViewModel(ApiClient api, SessionService session, Local
 
     [RelayCommand]
     private void SetLanguage(string languageCode) => localization.SetLanguage(languageCode);
+
+    [RelayCommand]
+    private void ToggleTheme() => theme.ToggleTheme();
 }

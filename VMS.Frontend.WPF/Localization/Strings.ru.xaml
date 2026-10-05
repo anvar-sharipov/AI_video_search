@@ -2,8 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:sys="clr-namespace:System;assembly=mscorlib">
 
-    <sys:String x:Key="Win_Login_Title">VMS — Вход</sys:String>
-    <sys:String x:Key="Win_Main_Title">VMS — Живой просмотр</sys:String>
+    <sys:String x:Key="Win_Login_Title">Туркментелеком — Вход</sys:String>
+    <sys:String x:Key="Win_Main_Title">Туркментелеком — Живой просмотр</sys:String>
     <sys:String x:Key="Win_AddCamera_Title">Добавить камеру</sys:String>
     <sys:String x:Key="Win_SearchByPhoto_Title">Поиск по фото</sys:String>
     <sys:String x:Key="Win_OperationLog_Title">Журнал операций</sys:String>
@@ -23,14 +23,18 @@
     <sys:String x:Key="AddCamera_OnvifPassword">Пароль ONVIF</sys:String>
     <sys:String x:Key="AddCamera_Submit">Сохранить и подключить</sys:String>
     <sys:String x:Key="AddCamera_RequiredError">Код и IP-адрес обязательны.</sys:String>
+    <sys:String x:Key="Win_EditCamera_Title">Редактировать камеру</sys:String>
+    <sys:String x:Key="EditCamera_UsernameHint">Оставьте пустым, чтобы не менять</sys:String>
+    <sys:String x:Key="EditCamera_PasswordHint">Оставьте пустым, чтобы не менять</sys:String>
+    <sys:String x:Key="EditCamera_IsEnabledLabel">Камера включена</sys:String>
+    <sys:String x:Key="EditCamera_Submit">Сохранить</sys:String>
+    <sys:String x:Key="EditCamera_RequiredError">IP-адрес обязателен.</sys:String>
 
     <sys:String x:Key="Main_AddCameraButton">+ Камера</sys:String>
-    <sys:String x:Key="Main_LayoutPresetsTooltip">Сохранённые раскладки (пока недоступно)</sys:String>
-    <sys:String x:Key="Main_SequenceTooltip">Циклический просмотр камер (пока недоступно)</sys:String>
-    <sys:String x:Key="Main_LockTooltip">Заблокировать сессию (пока недоступно)</sys:String>
 
     <sys:String x:Key="Tile_SelectTooltip">Клик — выбрать камеру</sys:String>
     <sys:String x:Key="Tile_ExpandTooltip">Качественный поток на весь экран в отдельном окне</sys:String>
+    <sys:String x:Key="Tile_ReconnectTooltip">Поток завис — нажмите для переподключения</sys:String>
 
     <sys:String x:Key="Search_PlaceholderTooltip">Например: red car, person</sys:String>
     <sys:String x:Key="Search_Button">Найти</sys:String>
@@ -41,28 +45,90 @@
     <sys:String x:Key="SearchByPhoto_ChooseFileButton">Выбрать файл...</sys:String>
     <sys:String x:Key="SearchByPhoto_SearchButton">Искать</sys:String>
     <sys:String x:Key="SearchByPhoto_ChooseFileFirstError">Сначала выберите фотографию.</sys:String>
+    <sys:String x:Key="SearchByPhoto_EnrollLabel">Знаете, кто это? Зарегистрируйте, чтобы будущие совпадения показывали имя. Совет: зарегистрируйте 2-3 фото этого же человека (анфас, немного сбоку) под одним и тем же именем — точность распознавания заметно вырастет.</sys:String>
+    <sys:String x:Key="SearchByPhoto_EnrollNamePlaceholder">Имя человека</sys:String>
+    <sys:String x:Key="SearchByPhoto_EnrollButton">Зарегистрировать</sys:String>
+    <sys:String x:Key="SearchByPhoto_EnrollNameRequiredError">Сначала введите имя.</sys:String>
+    <sys:String x:Key="SearchByPhoto_EnrollSuccess">«{0}» зарегистрирован(а) — будущие совпадения будут показывать это имя.</sys:String>
     <sys:String x:Key="OperationLog_ColumnTimestamp">Время</sys:String>
     <sys:String x:Key="OperationLog_ColumnUser">Пользователь</sys:String>
     <sys:String x:Key="OperationLog_ColumnAction">Действие</sys:String>
     <sys:String x:Key="OperationLog_ColumnTarget">Объект</sys:String>
     <sys:String x:Key="OperationLog_ColumnDetails">Детали</sys:String>
     <sys:String x:Key="OperationLog_ColumnResult">Успех</sys:String>
+
+    <sys:String x:Key="Win_CameraManagement_Title">Управление устройствами</sys:String>
+    <sys:String x:Key="CameraManagement_ColumnCode">Код</sys:String>
+    <sys:String x:Key="CameraManagement_ColumnName">Название</sys:String>
+    <sys:String x:Key="CameraManagement_ColumnIp">IP-адрес</sys:String>
+    <sys:String x:Key="CameraManagement_ColumnPort">Порт</sys:String>
+    <sys:String x:Key="CameraManagement_ColumnEnabled">Включена</sys:String>
+    <sys:String x:Key="CameraManagement_ColumnRunning">Работает</sys:String>
+    <sys:String x:Key="CameraManagement_EditButton">Изменить</sys:String>
+    <sys:String x:Key="CameraManagement_DeleteButton">Удалить</sys:String>
+    <sys:String x:Key="CameraManagement_ConfirmDeleteTitle">Подтверждение удаления</sys:String>
+    <sys:String x:Key="CameraManagement_ConfirmDeleteText">Удалить камеру "{0}"? Это действие необратимо.</sys:String>
+    <sys:String x:Key="CameraManagement_Status_Loading">Загрузка камер…</sys:String>
+    <sys:String x:Key="CameraManagement_Status_Loaded">Камер: {0}</sys:String>
+    <sys:String x:Key="CameraManagement_Status_Deleted">Камера "{0}" удалена.</sys:String>
+    <sys:String x:Key="CameraManagement_ColumnStatus">Статус</sys:String>
+    <sys:String x:Key="CameraManagement_StatusOnline">В сети</sys:String>
+    <sys:String x:Key="CameraManagement_StatusOffline">Не в сети</sys:String>
+    <sys:String x:Key="CameraManagement_StatusDisabled">Отключена</sys:String>
+    <sys:String x:Key="CameraManagement_SearchTooltip">Поиск по коду, названию или IP-адресу</sys:String>
+    <sys:String x:Key="CameraManagement_SelectCameraFirst">Сначала выберите камеру.</sys:String>
+    <sys:String x:Key="CameraManagement_SelectOneForEdit">Выберите ровно одну камеру для редактирования.</sys:String>
+    <sys:String x:Key="CameraManagement_ConfirmDeleteMultipleText">Удалить камер: {0}? Это действие необратимо.</sys:String>
+    <sys:String x:Key="CameraManagement_RefreshButton">Обновить</sys:String>
+    <sys:String x:Key="CameraManagement_ColumnModel">Модель</sys:String>
+    <sys:String x:Key="CameraManagement_SelectDeviceFirst">Сначала выберите устройство.</sys:String>
+    <sys:String x:Key="CameraManagement_SelectOneDeviceToAdd">Выберите ровно одно устройство для добавления.</sys:String>
+    <sys:String x:Key="CameraManagement_Status_Discovering">Поиск в сети…</sys:String>
+    <sys:String x:Key="CameraManagement_Status_DiscoveredCount">Найдено устройств в сети: {0}</sys:String>
+    <sys:String x:Key="Win_AddDiscoveredCamera_Title">Добавить найденную камеру</sys:String>
+    <sys:String x:Key="AddDiscoveredCamera_RequiredError">Логин и пароль обязательны.</sys:String>
     <sys:String x:Key="Archive_CameraLabel">Камера:</sys:String>
     <sys:String x:Key="Archive_DateLabel">Дата:</sys:String>
     <sys:String x:Key="Archive_TimeLabel">Время:</sys:String>
     <sys:String x:Key="Archive_PlayButton">Воспроизвести</sys:String>
-    <sys:String x:Key="Archive_CoverageLabel">Есть запись:</sys:String>
-    <sys:String x:Key="Archive_NoCoverage">нет записей за этот день</sys:String>
     <sys:String x:Key="Archive_InvalidTimeError">Введите время в формате ЧЧ:ММ.</sys:String>
-    <sys:String x:Key="Archive_PreviousButton">◀ 15 мин</sys:String>
+    <sys:String x:Key="Archive_PreviousButton">◀ 15 сек</sys:String>
     <sys:String x:Key="Archive_PauseButton">Пауза</sys:String>
     <sys:String x:Key="Archive_ResumeButton">Продолжить</sys:String>
-    <sys:String x:Key="Archive_NextButton">15 мин ▶</sys:String>
+    <sys:String x:Key="Archive_NextButton">15 сек ▶</sys:String>
+    <sys:String x:Key="Archive_StepFrameButton">Кадр</sys:String>
+    <sys:String x:Key="Archive_SpeedLabel">Скорость:</sys:String>
+    <sys:String x:Key="Archive_SnapshotButton">Снимок...</sys:String>
+    <sys:String x:Key="Archive_NothingToSnapshotError">Пока нечего снимать — ничего не загружено.</sys:String>
+    <sys:String x:Key="Archive_Tab_Person">По имени</sys:String>
+    <sys:String x:Key="Archive_Tab_Attributes">По атрибутам</sys:String>
+    <sys:String x:Key="Archive_Tab_ReverseImage">По фото</sys:String>
+    <sys:String x:Key="Archive_PersonNameLabel">Зарегистрированный человек:</sys:String>
+    <sys:String x:Key="Archive_ObjectTypeLabel">Тип объекта:</sys:String>
+    <sys:String x:Key="Archive_ColorLabel">Цвет:</sys:String>
+    <sys:String x:Key="Archive_PlateLabel">Гос. номер:</sys:String>
+    <sys:String x:Key="Archive_SearchButton">Найти</sys:String>
+    <sys:String x:Key="Archive_DropPhotoHint">Перетащите сюда фото, выберите файл или вырежьте кадр из плеера.</sys:String>
+    <sys:String x:Key="Archive_ChoosePhotoButton">Выбрать файл...</sys:String>
+    <sys:String x:Key="Archive_CropFromPlayerButton">Кадр из плеера</sys:String>
+    <sys:String x:Key="Archive_SimilarityThresholdLabel">Порог схожести:</sys:String>
+    <sys:String x:Key="Archive_Search_EnterNameError">Сначала введите или выберите имя.</sys:String>
+    <sys:String x:Key="Archive_Search_NoFiltersError">Выберите хотя бы один фильтр.</sys:String>
+    <sys:String x:Key="Archive_Search_ChoosePhotoError">Сначала выберите или вырежьте фото.</sys:String>
+    <sys:String x:Key="Archive_Search_NoResults">Совпадений не найдено.</sys:String>
+    <sys:String x:Key="Win_ImageCrop_Title">Выделение области</sys:String>
+    <sys:String x:Key="ImageCrop_Instructions">Выделите прямоугольником человека или лицо для поиска, затем нажмите «Использовать выделение».</sys:String>
+    <sys:String x:Key="ImageCrop_CancelButton">Отмена</sys:String>
+    <sys:String x:Key="ImageCrop_UseSelectionButton">Использовать выделение</sys:String>
 
-    <sys:String x:Key="Sidebar_CamerasTooltip">Камеры (пока недоступно)</sys:String>
-    <sys:String x:Key="Sidebar_LayoutsTooltip">Раскладки экрана (пока недоступно)</sys:String>
-    <sys:String x:Key="Sidebar_ArchiveTooltip">Архив по времени (пока недоступно)</sys:String>
+    <sys:String x:Key="Sidebar_GroupsTooltip">Группы камер</sys:String>
+    <sys:String x:Key="Sidebar_QuickSwitchTooltip">Переключить группу камер</sys:String>
+    <sys:String x:Key="Sidebar_AlarmFilterTooltip">Показать только тревожные камеры (неизвестный человек / транспорт)</sys:String>
     <sys:String x:Key="Sidebar_SearchPlaceholder">Поиск камер...</sys:String>
+    <sys:String x:Key="Tree_AssignHintTooltip">Клик — выбрать; двойной клик — поместить в выбранную ячейку сетки</sys:String>
+    <sys:String x:Key="Slot_SelectFirst">Сначала выберите ячейку сетки</sys:String>
+    <sys:String x:Key="Slot_OnlyInFixedLayout">Назначение камеры доступно только при фиксированной раскладке (1x1–4x4)</sys:String>
+    <sys:String x:Key="Slot_EmptyPlaceholderHint">Выберите камеру слева</sys:String>
 
     <sys:String x:Key="Bottom_StopAllTooltip">Остановить все камеры</sys:String>
     <sys:String x:Key="Bottom_SnapshotTooltip">Снимок кадра выбранной камеры</sys:String>
@@ -73,6 +139,27 @@
     <sys:String x:Key="Bottom_FullscreenTooltip">Развернуть выбранную камеру на весь экран</sys:String>
 
     <sys:String x:Key="Layout_Auto">Авто</sys:String>
+    <sys:String x:Key="Layout_GridSizeTooltip">Размер сетки</sys:String>
+
+    <!-- Camera Groups -->
+    <sys:String x:Key="Win_CameraGroups_Title">Группы камер</sys:String>
+    <sys:String x:Key="Win_EditCameraGroup_Title">Группа камер</sys:String>
+    <sys:String x:Key="Win_QuickGroupSwitch_Title">Переключить группу камер</sys:String>
+    <sys:String x:Key="CameraGroups_AddButton">Добавить</sys:String>
+    <sys:String x:Key="CameraGroups_ColumnName">Название</sys:String>
+    <sys:String x:Key="CameraGroups_ColumnCameras">Камеры</sys:String>
+    <sys:String x:Key="CameraGroups_Status_Loading">Загрузка групп...</sys:String>
+    <sys:String x:Key="CameraGroups_Status_Loaded">Групп: {0}</sys:String>
+    <sys:String x:Key="CameraGroups_SelectGroupFirst">Сначала выберите группу.</sys:String>
+    <sys:String x:Key="CameraGroups_SelectOneForEdit">Выберите ровно одну группу для изменения.</sys:String>
+    <sys:String x:Key="CameraGroups_ConfirmDeleteTitle">Удалить группу(ы)?</sys:String>
+    <sys:String x:Key="CameraGroups_ConfirmDeleteText">Удалить выбранные группы ({0})?</sys:String>
+    <sys:String x:Key="EditCameraGroup_NameLabel">Название группы</sys:String>
+    <sys:String x:Key="EditCameraGroup_CamerasLabel">Камеры в этой группе</sys:String>
+    <sys:String x:Key="EditCameraGroup_Submit">Сохранить</sys:String>
+    <sys:String x:Key="EditCameraGroup_NameRequiredError">Введите название группы.</sys:String>
+    <sys:String x:Key="QuickGroupSwitch_AllCameras">Все камеры</sys:String>
+    <sys:String x:Key="QuickGroupSwitch_Loading">Загрузка групп...</sys:String>
 
     <sys:String x:Key="Expand_CloseButton">✕ Свернуть (Esc)</sys:String>
 
@@ -91,13 +178,16 @@
     <sys:String x:Key="Status_RecordingFailed">Не удалось начать запись — нет сигнала с камеры.</sys:String>
 
     <sys:String x:Key="Api_LoginFailed">Неверный логин или пароль.</sys:String>
+    <sys:String x:Key="Api_SessionExpired">Сессия истекла. Пожалуйста, войдите снова.</sys:String>
     <sys:String x:Key="Api_Forbidden">Недостаточно прав для этого действия.</sys:String>
     <sys:String x:Key="Api_ServerError">Ошибка сервера: {0}</sys:String>
 
     <sys:String x:Key="Crash_Title">Ошибка</sys:String>
     <sys:String x:Key="Crash_MessageFormat">Произошла ошибка (программа продолжит работу):&#10;&#10;{0}&#10;&#10;Подробности записаны в {1}</sys:String>
 
-    <sys:String x:Key="Common_NotAvailableYet">Пока недоступно</sys:String>
+    <sys:String x:Key="Common_LogOut">Выйти</sys:String>
+    <sys:String x:Key="Theme_SwitchToLight">☀ Светлая</sys:String>
+    <sys:String x:Key="Theme_SwitchToDark">🌙 Тёмная</sys:String>
 
     <sys:String x:Key="Tab_ControlPanel">Панель управления</sys:String>
     <sys:String x:Key="Tab_LiveView">Живой просмотр</sys:String>
@@ -122,14 +212,177 @@
     <sys:String x:Key="Card_DeviceManagement_Desc">Добавление, изменение, удаление и настройка устройств.</sys:String>
     <sys:String x:Key="Card_FaceRecognition_Title">Распознавание лиц</sys:String>
     <sys:String x:Key="Card_FaceRecognition_Desc">Просмотр видео и снимков с камер распознавания лиц.</sys:String>
+    <sys:String x:Key="Card_PersonSightingReport_Title">Отчёт по людям</sys:String>
+    <sys:String x:Key="Card_PersonSightingReport_Desc">Сколько людей (известных/неизвестных) видела камера — по дням.</sys:String>
+    <sys:String x:Key="Card_UserManagement_Desc">Учётные записи, роли и права доступа.</sys:String>
+    <sys:String x:Key="Card_OperationLog_Desc">История действий пользователей в системе.</sys:String>
 
-    <sys:String x:Key="Sidebar2_BasicHeading">Базовые</sys:String>
-    <sys:String x:Key="Nav_View">Просмотр</sys:String>
-    <sys:String x:Key="Nav_AlarmConfig">Настройка тревог</sys:String>
-    <sys:String x:Key="Nav_SystemConfig">Настройка системы</sys:String>
-    <sys:String x:Key="Nav_SequenceResource">Циклический ресурс</sys:String>
     <sys:String x:Key="Nav_UserManagement">Управление пользователями</sys:String>
-    <sys:String x:Key="Nav_RecordingSchedule">Расписание записи</sys:String>
     <sys:String x:Key="Nav_OperationLog">Журнал операций</sys:String>
+
+    <!-- User Management -->
+    <sys:String x:Key="Win_UserManagement_Title">Управление пользователями</sys:String>
+    <sys:String x:Key="Win_AddUser_Title">Добавить пользователя</sys:String>
+    <sys:String x:Key="Win_EditUser_Title">Изменить пользователя</sys:String>
+    <sys:String x:Key="UserManagement_SearchTooltip">Поиск по имени пользователя</sys:String>
+    <sys:String x:Key="UserManagement_AddButton">Добавить</sys:String>
+    <sys:String x:Key="UserManagement_EditButton">Изменить</sys:String>
+    <sys:String x:Key="UserManagement_DeleteButton">Удалить</sys:String>
+    <sys:String x:Key="UserManagement_ColumnUsername">Логин</sys:String>
+    <sys:String x:Key="UserManagement_ColumnRole">Роль</sys:String>
+    <sys:String x:Key="UserManagement_ColumnActive">Активен</sys:String>
+    <sys:String x:Key="UserManagement_ColumnCreated">Создан</sys:String>
+    <sys:String x:Key="UserManagement_ColumnLastLogin">Последний вход</sys:String>
+    <sys:String x:Key="UserManagement_Status_Loading">Загрузка пользователей...</sys:String>
+    <sys:String x:Key="UserManagement_Status_Loaded">Пользователей: {0}</sys:String>
+    <sys:String x:Key="UserManagement_SelectUserFirst">Сначала выберите пользователя.</sys:String>
+    <sys:String x:Key="UserManagement_SelectOneForEdit">Выберите ровно одного пользователя для изменения.</sys:String>
+    <sys:String x:Key="UserManagement_ConfirmDeleteTitle">Удалить пользователя(ей)?</sys:String>
+    <sys:String x:Key="UserManagement_ConfirmDeleteText">Удалить выбранных пользователей ({0})? Это действие необратимо.</sys:String>
+    <sys:String x:Key="AddUser_Username">Имя пользователя</sys:String>
+    <sys:String x:Key="AddUser_Password">Пароль</sys:String>
+    <sys:String x:Key="AddUser_Role">Роль</sys:String>
+    <sys:String x:Key="AddUser_Submit">Создать</sys:String>
+    <sys:String x:Key="AddUser_RequiredError">Введите имя пользователя и пароль.</sys:String>
+    <sys:String x:Key="EditUser_NewPassword">Новый пароль</sys:String>
+    <sys:String x:Key="EditUser_NewPasswordHint">Оставьте пустым, чтобы сохранить текущий пароль</sys:String>
+    <sys:String x:Key="EditUser_IsActiveLabel">Активен (может входить в систему)</sys:String>
+    <sys:String x:Key="EditUser_Submit">Сохранить</sys:String>
+
+    <!-- Дополнительные функции пользователя (сверх роли) -->
+    <sys:String x:Key="AddUser_Permissions">Функции</sys:String>
+    <sys:String x:Key="AddUser_PermissionsHint">Отмеченные и затемнённые пункты уже включены выбранной ролью. Выдать можно только ту функцию, которая есть у вас самих.</sys:String>
+    <sys:String x:Key="Permission_ViewLiveStream">Живой просмотр</sys:String>
+    <sys:String x:Key="Permission_ViewArchive">Просмотр архива</sys:String>
+    <sys:String x:Key="Permission_SearchMetadata">Поиск</sys:String>
+    <sys:String x:Key="Permission_SearchByFace">Поиск по фото</sys:String>
+    <sys:String x:Key="Permission_ManageKnownPersons">Распознавание лиц (регистрация людей)</sys:String>
+    <sys:String x:Key="Permission_ExportClip">Экспорт клипов</sys:String>
+    <sys:String x:Key="Permission_ManageCameras">Управление камерами</sys:String>
+    <sys:String x:Key="Permission_ManageRetentionPolicy">Политика хранения</sys:String>
+    <sys:String x:Key="Permission_DeleteStandardArchive">Удаление файлов архива</sys:String>
+    <sys:String x:Key="Permission_ManageSystemConfig">Настройка системы / журнал операций</sys:String>
+    <sys:String x:Key="Permission_ManageUsers">Управление пользователями</sys:String>
+
+    <!-- Подсчёт людей -->
+    <sys:String x:Key="Win_PeopleCounting_Title">Подсчёт людей</sys:String>
+    <sys:String x:Key="PeopleCounting_CameraLabel">Камера</sys:String>
+    <sys:String x:Key="PeopleCounting_LineHint">Перетаскивайте маркеры, чтобы изменить линию подсчёта (зелёный — начало, синий — конец). Клик по пустому месту изображения добавляет новую точку, клик правой кнопкой по маркеру удаляет его (минимум 2 точки).</sys:String>
+    <sys:String x:Key="PeopleCounting_RemovePointTooltip">Клик правой кнопкой — удалить эту точку</sys:String>
+    <sys:String x:Key="PeopleCounting_LeftToRightIsIn">Пересечение слева направо считается «Вход»</sys:String>
+    <sys:String x:Key="PeopleCounting_SaveLineButton">Сохранить линию</sys:String>
+    <sys:String x:Key="PeopleCounting_DeleteLineButton">Удалить линию</sys:String>
+    <sys:String x:Key="PeopleCounting_QueryButton">Запросить</sys:String>
+    <sys:String x:Key="PeopleCounting_InLabel">Вход: </sys:String>
+    <sys:String x:Key="PeopleCounting_OutLabel">Выход: </sys:String>
+    <sys:String x:Key="PeopleCounting_LineSaved">Линия подсчёта сохранена.</sys:String>
+    <sys:String x:Key="PeopleCounting_LineDeleted">Линия подсчёта удалена.</sys:String>
+
+    <!-- Отчёт по людям ("считать каждого человека в кадре + сохранять скриншот") -->
+    <sys:String x:Key="Win_PersonSightingReport_Title">Отчёт по людям</sys:String>
+    <sys:String x:Key="Overlay_UnknownPerson">Неизвестный</sys:String>
+    <sys:String x:Key="PersonSightingReport_CamerasLabel">Камеры</sys:String>
+    <sys:String x:Key="PersonSightingReport_CameraColumn">Камера</sys:String>
+    <sys:String x:Key="PersonSightingReport_DateColumn">Дата</sys:String>
+    <sys:String x:Key="PersonSightingReport_TotalColumn">Всего</sys:String>
+    <sys:String x:Key="PersonSightingReport_KnownColumn">Известные</sys:String>
+    <sys:String x:Key="PersonSightingReport_UnknownColumn">Неизвестные</sys:String>
+    <sys:String x:Key="PersonSightingReport_DrillDownHint">Дважды щёлкните по строке, чтобы увидеть сохранённые скриншоты за этот день по этой камере.</sys:String>
+    <sys:String x:Key="PersonSightingReport_NoCameraSelected">Выберите хотя бы одну камеру.</sys:String>
+    <sys:String x:Key="PersonSightingReport_NoData">Нет данных за выбранные камеры/даты.</sys:String>
+    <sys:String x:Key="PersonSightingReport_SelectAll">Выбрать все</sys:String>
+    <sys:String x:Key="PersonSightingReport_CamerasHint">Совет: слишком широкий диапазон дат по многим камерам будет отклонён — сузьте выбор для быстрого отчёта.</sys:String>
+    <sys:String x:Key="PersonSightingReport_Loading">Запрос...</sys:String>
+    <sys:String x:Key="PersonSightingGallery_Loading">Загрузка скриншотов...</sys:String>
+    <sys:String x:Key="PersonSightingGallery_NoImage">Нет изображения</sys:String>
+    <sys:String x:Key="PersonSightingGallery_DownloadButton">Скачать</sys:String>
+    <sys:String x:Key="PersonSightingGallery_ChooseFolderTitle">Выберите папку для сохранения скриншотов</sys:String>
+    <sys:String x:Key="PersonSightingGallery_ExportSuccess">Сохранено {0} скриншот(ов) в {1} (разложено по папкам Known/&lt;имя&gt; и Unknown).</sys:String>
+    <sys:String x:Key="PersonSightingGallery_DeleteTooltip">Удалить это появление</sys:String>
+    <sys:String x:Key="PersonSightingGallery_ConfirmDeleteTitle">Удалить запись?</sys:String>
+    <sys:String x:Key="PersonSightingGallery_ConfirmDeleteText">Удалить этот сохранённый скриншот? Это необратимо.</sys:String>
+
+    <!-- Электронная карта -->
+    <sys:String x:Key="Win_EMap_Title">Электронная карта</sys:String>
+    <sys:String x:Key="EMap_MapsLabel">Карты</sys:String>
+    <sys:String x:Key="EMap_DeleteMapButton">Удалить выбранную карту</sys:String>
+    <sys:String x:Key="EMap_NewMapNameLabel">Название новой карты</sys:String>
+    <sys:String x:Key="EMap_ChooseImageButton">Выбрать изображение...</sys:String>
+    <sys:String x:Key="EMap_UploadButton">Загрузить карту</sys:String>
+    <sys:String x:Key="EMap_CameraToPinLabel">Камера для метки</sys:String>
+    <sys:String x:Key="EMap_PlacePinButton">Разместить метку</sys:String>
+    <sys:String x:Key="EMap_PlacePinHint">Кликните в любом месте карты, чтобы разместить метку. Левый клик по метке — перейти к камере; правый клик — удалить метку.</sys:String>
+    <sys:String x:Key="EMap_NameAndImageRequired">Сначала введите название и выберите изображение.</sys:String>
+    <sys:String x:Key="EMap_ChooseCameraFirst">Сначала выберите камеру для метки.</sys:String>
+
+    <!-- Журнал тревог -->
+    <sys:String x:Key="Win_AlarmRecords_Title">Журнал тревог</sys:String>
+    <sys:String x:Key="AlarmRecords_RefreshButton">Обновить</sys:String>
+    <sys:String x:Key="AlarmRecords_AcknowledgeButton">Подтвердить</sys:String>
+    <sys:String x:Key="AlarmRecords_AcknowledgedLabel">Подтверждено</sys:String>
+
+    <!-- Распознавание лиц -->
+    <sys:String x:Key="Win_FaceRecognition_Title">Распознавание лиц</sys:String>
+    <sys:String x:Key="FaceRecognition_KnownPersonsHeading">Известные люди</sys:String>
+    <sys:String x:Key="FaceRecognition_RecognizedHeading">Недавние совпадения</sys:String>
+
+    <!-- Аудио -->
+    <sys:String x:Key="Win_Audio_Title">Аудио</sys:String>
+    <sys:String x:Key="Audio_CameraLabel">Камера</sys:String>
+    <sys:String x:Key="Audio_ListenButton">Слушать</sys:String>
+    <sys:String x:Key="Audio_StopButton">Стоп</sys:String>
+    <sys:String x:Key="Audio_TalkButton">Говорить</sys:String>
+    <sys:String x:Key="Audio_TalkNotSupportedTooltip">Двусторонняя связь требует фирменного протокола камеры (например, Hikvision ISAPI), который этот проект пока не поддерживает — недоступно ни для одной камеры.</sys:String>
+    <sys:String x:Key="Audio_CameraNotRunning">Эта камера сейчас не работает.</sys:String>
+    <sys:String x:Key="Audio_ArchiveHeading">Архив</sys:String>
+    <sys:String x:Key="Audio_ArchiveHint">Выберите дату и промежуток времени, чтобы прослушать или скачать звук из архивной записи.</sys:String>
+    <sys:String x:Key="Audio_ArchiveDateLabel">Дата</sys:String>
+    <sys:String x:Key="Audio_ArchiveFromLabel">С (ЧЧ:ММ)</sys:String>
+    <sys:String x:Key="Audio_ArchiveToLabel">До (ЧЧ:ММ)</sys:String>
+    <sys:String x:Key="Audio_ListenArchiveButton">Прослушать</sys:String>
+    <sys:String x:Key="Audio_DownloadButton">Скачать</sys:String>
+    <sys:String x:Key="Audio_SelectCameraError">Сначала выберите камеру.</sys:String>
+    <sys:String x:Key="Audio_ArchiveRangeInvalid">Время «До» должно быть позже времени «С».</sys:String>
+    <sys:String x:Key="Audio_DownloadSaved">Файл сохранён: {0}</sys:String>
+
+    <!-- Видеостена -->
+    <sys:String x:Key="Win_VideoWall_Title">Видеостена</sys:String>
+    <sys:String x:Key="VideoWall_MonitorLabel">Монитор</sys:String>
+    <sys:String x:Key="VideoWall_Hint">Открывает ту же живую сетку камер, что и «Живой просмотр», на весь экран выбранного монитора. Esc — закрыть.</sys:String>
+    <sys:String x:Key="VideoWall_OpenButton">Открыть</sys:String>
+    <sys:String x:Key="VideoWall_LayoutLabel">Раскладка</sys:String>
+    <sys:String x:Key="VideoWall_MirrorLiveView">Зеркало «Живого просмотра»</sys:String>
+    <sys:String x:Key="VideoWall_ManageLayoutsButton">Управление раскладками…</sys:String>
+
+    <!-- Раскладки видеостены -->
+    <sys:String x:Key="Win_VideoWallLayouts_Title">Раскладки видеостены</sys:String>
+    <sys:String x:Key="VideoWallLayouts_AddButton">Добавить</sys:String>
+    <sys:String x:Key="VideoWallLayouts_ColumnName">Название</sys:String>
+    <sys:String x:Key="VideoWallLayouts_ColumnSize">Размер</sys:String>
+    <sys:String x:Key="VideoWallLayouts_ColumnCameras">Камеры</sys:String>
+    <sys:String x:Key="VideoWallLayouts_Status_Loading">Загрузка раскладок...</sys:String>
+    <sys:String x:Key="VideoWallLayouts_Status_Loaded">Раскладок: {0}</sys:String>
+    <sys:String x:Key="VideoWallLayouts_SelectLayoutFirst">Сначала выберите раскладку.</sys:String>
+    <sys:String x:Key="VideoWallLayouts_SelectOneForEdit">Выберите ровно одну раскладку для изменения.</sys:String>
+    <sys:String x:Key="VideoWallLayouts_ConfirmDeleteTitle">Удалить раскладку(и)?</sys:String>
+    <sys:String x:Key="VideoWallLayouts_ConfirmDeleteText">Удалить выбранные раскладки ({0})?</sys:String>
+
+    <sys:String x:Key="Win_EditVideoWallLayout_Title">Раскладка видеостены</sys:String>
+    <sys:String x:Key="VideoWallLayout_NameLabel">Название раскладки</sys:String>
+    <sys:String x:Key="VideoWallLayout_RowsLabel">Строк</sys:String>
+    <sys:String x:Key="VideoWallLayout_ColumnsLabel">Столбцов</sys:String>
+    <sys:String x:Key="VideoWallLayout_ApplySizeButton">Применить размер</sys:String>
+    <sys:String x:Key="VideoWallLayout_MergeRightButton">Объединить вправо</sys:String>
+    <sys:String x:Key="VideoWallLayout_MergeDownButton">Объединить вниз</sys:String>
+    <sys:String x:Key="VideoWallLayout_SplitButton">Разделить</sys:String>
+    <sys:String x:Key="VideoWallLayout_SplitTooltip">Вернуть ячейку к отдельным клеткам 1x1. Назначенная камера будет снята.</sys:String>
+    <sys:String x:Key="VideoWallLayout_ResetGridConfirm">Изменение числа строк/столбцов сбросит всю сетку — объединения и назначенные камеры будут потеряны. Продолжить?</sys:String>
+    <sys:String x:Key="VideoWallLayout_InvalidSizeError">Число строк и столбцов должно быть больше нуля.</sys:String>
+    <sys:String x:Key="VideoWallLayout_SelectCellFirstError">Сначала выберите ячейку в сетке.</sys:String>
+    <sys:String x:Key="VideoWallLayout_NameRequiredError">Введите название раскладки.</sys:String>
+    <sys:String x:Key="VideoWallLayout_CamerasLabel">Камеры</sys:String>
+    <sys:String x:Key="VideoWallLayout_AssignHint">Выберите ячейку слева, затем дважды щёлкните камеру, чтобы назначить её в эту ячейку.</sys:String>
+    <sys:String x:Key="VideoWallLayout_CancelButton">Отмена</sys:String>
+    <sys:String x:Key="VideoWallLayout_SaveButton">Сохранить</sys:String>
 
 </ResourceDictionary>

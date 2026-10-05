@@ -1,0 +1,92 @@
+<Window x:Class="VMS.Frontend.WPF.Views.EMapWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:VMS.Frontend.WPF.ViewModels"
+        xmlns:api="clr-namespace:VMS.Frontend.WPF.Api"
+        xmlns:conv="clr-namespace:VMS.Frontend.WPF.Converters"
+        Title="{DynamicResource Win_EMap_Title}" Height="760" Width="1100"
+        Background="{StaticResource BgWindow}"
+        WindowStartupLocation="CenterOwner">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <conv:FractionToPixelConverter x:Key="FractionToPixel"/>
+    </Window.Resources>
+    <Grid Margin="16">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="280"/>
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0" Background="Black" BorderBrush="{StaticResource BorderSubtle}" BorderThickness="1">
+            <Grid x:Name="MapGrid" ClipToBounds="True">
+                <Image x:Name="MapImage" Stretch="Uniform"/>
+                <Canvas x:Name="PinCanvas" Background="Transparent" MouseLeftButtonDown="PinCanvas_MouseLeftButtonDown">
+                    <ItemsControl ItemsSource="{Binding Pins}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <Canvas/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="{x:Type api:EMapPinDto}">
+                                <StackPanel Cursor="Hand" MouseLeftButtonDown="Pin_MouseLeftButtonDown"
+                                            MouseRightButtonDown="Pin_MouseRightButtonDown">
+                                    <Canvas.Left>
+                                        <MultiBinding Converter="{StaticResource FractionToPixel}">
+                                            <Binding Path="X"/>
+                                            <Binding ElementName="PinCanvas" Path="ActualWidth"/>
+                                        </MultiBinding>
+                                    </Canvas.Left>
+                                    <Canvas.Top>
+                                        <MultiBinding Converter="{StaticResource FractionToPixel}">
+                                            <Binding Path="Y"/>
+                                            <Binding ElementName="PinCanvas" Path="ActualHeight"/>
+                                        </MultiBinding>
+                                    </Canvas.Top>
+                                    <TextBlock Text="📹" FontSize="22" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="{Binding CameraName}" Foreground="White" FontSize="10"
+                                               Background="#88000000" HorizontalAlignment="Center" Padding="2,0"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Canvas>
+            </Grid>
+        </Border>
+
+        <StackPanel Grid.Column="1" Margin="12,0,0,0">
+            <TextBlock Text="{DynamicResource EMap_MapsLabel}" Foreground="{StaticResource TextSecondary}" FontSize="11" Margin="0,0,0,4"/>
+            <ComboBox Height="30" ItemsSource="{Binding Maps}" SelectedItem="{Binding SelectedMap}" Margin="0,0,0,8">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Name}"/>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+            <Button Content="{DynamicResource EMap_DeleteMapButton}" Height="26" Command="{Binding DeleteMapCommand}" Margin="0,0,0,12"/>
+
+            <Separator Margin="0,0,0,12"/>
+
+            <TextBlock Text="{DynamicResource EMap_NewMapNameLabel}" Foreground="{StaticResource TextSecondary}" FontSize="11" Margin="0,0,0,4"/>
+            <TextBox Height="28" Text="{Binding NewMapName, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,8"/>
+            <Button Content="{DynamicResource EMap_ChooseImageButton}" Height="26" Click="OnChooseImageClick" Margin="0,0,0,8"/>
+            <Button Content="{DynamicResource EMap_UploadButton}" Height="28" Command="{Binding UploadMapCommand}" Margin="0,0,0,16"/>
+
+            <Separator Margin="0,0,0,12"/>
+
+            <TextBlock Text="{DynamicResource EMap_CameraToPinLabel}" Foreground="{StaticResource TextSecondary}" FontSize="11" Margin="0,0,0,4"/>
+            <ComboBox Height="30" ItemsSource="{Binding Cameras}" SelectedItem="{Binding CameraToPin}" Margin="0,0,0,8">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Name}"/>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+            <ToggleButton Content="{DynamicResource EMap_PlacePinButton}" Height="28" IsChecked="{Binding IsPlacingPin}" Margin="0,0,0,4"/>
+            <TextBlock Text="{DynamicResource EMap_PlacePinHint}" Foreground="{StaticResource TextSecondary}" FontSize="10" TextWrapping="Wrap"
+                       Visibility="{Binding IsPlacingPin, Converter={StaticResource BoolToVis}}"/>
+
+            <TextBlock Text="{Binding StatusMessage}" Foreground="{StaticResource TextError}" TextWrapping="Wrap" Margin="0,16,0,0"/>
+        </StackPanel>
+    </Grid>
+</Window>

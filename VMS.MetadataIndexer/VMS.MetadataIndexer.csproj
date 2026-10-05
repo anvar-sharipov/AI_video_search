@@ -21,6 +21,14 @@
     <PackageReference Include="OpenCvSharp4" Version="4.10.0.20241108" />
     <PackageReference Include="OpenCvSharp4.runtime.win" Version="4.10.0.20241108" />
     <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.23.0" />
+
+    <!--
+      Plate OCR: there's no dedicated plate-detector model in this project (see
+      PlateOcrReader's own doc comment for the honest accuracy caveat this implies),
+      so Tesseract just reads whatever plate-shaped crop the heuristic hands it.
+      Needs tessdata/eng.traineddata at runtime — see scripts/setup-tools.ps1.
+    -->
+    <PackageReference Include="Tesseract" Version="5.2.0" />
   </ItemGroup>
 
   <PropertyGroup>

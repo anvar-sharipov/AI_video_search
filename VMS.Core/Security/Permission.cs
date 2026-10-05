@@ -6,6 +6,7 @@ public enum Permission
     ViewArchive,
     SearchMetadata,
     SearchByFace,
+    ManageKnownPersons,
     ExportClip,
     ManageCameras,
     ManageSystemConfig,

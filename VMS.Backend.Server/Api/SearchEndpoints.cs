@@ -15,22 +15,26 @@ public static class SearchEndpoints
             DateTimeOffset? from,
             DateTimeOffset? to,
             int? size,
+            string? personName,
             HttpContext http,
             IAccessControlManager accessControl,
             IMetadataIndexer indexer) =>
         {
             try
             {
-                accessControl.Authorize(http.User.GetRole(), Permission.SearchMetadata);
+                accessControl.Authorize(http.User, Permission.SearchMetadata);
             }
             catch (UnauthorizedAccessException)
             {
                 return Results.Forbid();
             }
 
-            var query = SearchQueryParser.Parse(q, cameraId, from, to, size ?? 50);
+            // personName is an explicit, exact filter (Named Person search tab, picked from
+            // the enrolled KnownPersons list) layered onto whatever SearchQueryParser derived
+            // from q — distinct from q's own fuzzy free-text name/plate matching.
+            var query = SearchQueryParser.Parse(q, cameraId, from, to, size ?? 50) with { PersonName = personName };
             var results = await indexer.SearchAsync(query);
-            return Results.Ok(results);
+            return Results.Ok(results.Select(e => SearchResultMapper.ToDto(e, matchScore: null)));
         }).RequireAuthorization();
 
         // Search-by-photo: independent of SearchQueryParser's text/color keyword matching —
@@ -41,6 +45,14 @@ public static class SearchEndpoints
         app.MapPost("/api/search/by-face", async (
             IFormFile photo,
             int? size,
+            // Optional crop rectangle (pixels, in the uploaded photo's own coordinate space) —
+            // set when the photo came from "crop from player" (a rough person/face selection
+            // over a paused live-archive frame) rather than a dedicated reference photo, so the
+            // embedder looks inside the selection instead of the whole frame.
+            int? cropX,
+            int? cropY,
+            int? cropWidth,
+            int? cropHeight,
             HttpContext http,
             IAccessControlManager accessControl,
             IFaceEmbedder faceEmbedder,
@@ -48,12 +60,16 @@ public static class SearchEndpoints
         {
             try
             {
-                accessControl.Authorize(http.User.GetRole(), Permission.SearchByFace);
+                accessControl.Authorize(http.User, Permission.SearchByFace);
             }
             catch (UnauthorizedAccessException)
             {
                 return Results.Forbid();
             }
+
+            var cropBox = cropX is not null && cropY is not null && cropWidth is not null && cropHeight is not null
+                ? new DetectionBoundingBox(cropX.Value, cropY.Value, cropWidth.Value, cropHeight.Value)
+                : null;
 
             var tempPath = Path.Combine(Path.GetTempPath(), $"face-search-{Guid.NewGuid():N}{Path.GetExtension(photo.FileName)}");
             try
@@ -63,14 +79,14 @@ public static class SearchEndpoints
                     await photo.CopyToAsync(stream);
                 }
 
-                var embedding = await faceEmbedder.TryGetEmbeddingAsync(tempPath, cropBox: null);
+                var embedding = await faceEmbedder.TryGetEmbeddingAsync(tempPath, cropBox);
                 if (embedding is null)
                 {
                     return Results.BadRequest("No face was found in the uploaded photo.");
                 }
 
                 var results = await indexer.SearchByFaceAsync(embedding, size ?? 50);
-                return Results.Ok(results);
+                return Results.Ok(results.Select(r => SearchResultMapper.ToDto(r.Event, r.Score)));
             }
             finally
             {

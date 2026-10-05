@@ -12,6 +12,10 @@ public partial class SearchByPhotoViewModel(ApiClient api) : ObservableObject
     [ObservableProperty] private string _errorMessage = string.Empty;
     [ObservableProperty] private bool _isBusy;
 
+    [ObservableProperty] private string _enrollName = string.Empty;
+    [ObservableProperty] private string _enrollMessage = string.Empty;
+    [ObservableProperty] private bool _isEnrolling;
+
     /// <summary>Fired once the server returns matches — the window closes and MainViewModel.ApplySearchByFaceResults populates the shared results list.</summary>
     public event Action<List<SearchResultDto>>? Found;
 
@@ -45,6 +49,41 @@ public partial class SearchByPhotoViewModel(ApiClient api) : ObservableObject
         finally
         {
             IsBusy = false;
+        }
+    }
+
+    /// <summary>Enrolls the currently-loaded photo under a name, so future matching faces get tagged with it (see KnownPersonMatcher) — makes "search by name" possible without re-uploading a photo each time.</summary>
+    [RelayCommand]
+    private async Task EnrollAsync()
+    {
+        EnrollMessage = string.Empty;
+
+        if (string.IsNullOrWhiteSpace(PhotoPath))
+        {
+            EnrollMessage = LocalizationService.Get("SearchByPhoto_ChooseFileFirstError");
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(EnrollName))
+        {
+            EnrollMessage = LocalizationService.Get("SearchByPhoto_EnrollNameRequiredError");
+            return;
+        }
+
+        IsEnrolling = true;
+        try
+        {
+            var person = await api.RegisterKnownPersonAsync(EnrollName.Trim(), PhotoPath);
+            EnrollMessage = LocalizationService.Get("SearchByPhoto_EnrollSuccess", person.Name);
+            EnrollName = string.Empty;
+        }
+        catch (ApiException ex)
+        {
+            EnrollMessage = ex.Message;
+        }
+        finally
+        {
+            IsEnrolling = false;
         }
     }
 }

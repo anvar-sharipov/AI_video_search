@@ -1,0 +1,29 @@
+<Window x:Class="VMS.Frontend.WPF.Views.ImageCropWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="{DynamicResource Win_ImageCrop_Title}"
+        Background="{StaticResource BgWindow}"
+        SizeToContent="WidthAndHeight"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
+    <StackPanel Margin="16">
+        <TextBlock Text="{DynamicResource ImageCrop_Instructions}" Foreground="{StaticResource TextSecondary}"
+                   Margin="0,0,0,10" TextWrapping="Wrap" MaxWidth="800"/>
+
+        <Border BorderBrush="{StaticResource BorderSubtle}" BorderThickness="1" Background="Black">
+            <Canvas x:Name="ImageCanvas" Cursor="Cross"
+                    MouseLeftButtonDown="Canvas_MouseLeftButtonDown"
+                    MouseMove="Canvas_MouseMove"
+                    MouseLeftButtonUp="Canvas_MouseLeftButtonUp">
+                <Image x:Name="PhotoImage" Stretch="Fill"/>
+                <Rectangle x:Name="SelectionRect" Stroke="{StaticResource AccentAmber}" StrokeThickness="2"
+                           Fill="#332F8FEF" Visibility="Collapsed" IsHitTestVisible="False"/>
+            </Canvas>
+        </Border>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+            <Button Content="{DynamicResource ImageCrop_CancelButton}" Width="110" Margin="0,0,8,0" Click="OnCancelClick"/>
+            <Button x:Name="OkButton" Content="{DynamicResource ImageCrop_UseSelectionButton}" Width="140"
+                    Style="{StaticResource AccentButtonStyle}" IsEnabled="False" Click="OnUseSelectionClick"/>
+        </StackPanel>
+    </StackPanel>
+</Window>

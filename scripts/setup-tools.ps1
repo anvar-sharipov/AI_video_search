@@ -3,7 +3,8 @@
     One-time provisioning of external tools/models needed by the VMS:
     - ffmpeg/ffprobe (static Windows build) -> tools/ffmpeg/
     - YOLOv8n ONNX detection model (exported via Ultralytics, opset 17) -> models/
-    - Haar cascade face detector + SFace face embedder ONNX model -> models/
+    - Haar cascade face + eye detectors + SFace face embedder ONNX model -> models/
+    - Tesseract eng.traineddata (best-effort plate OCR) -> tessdata/
 
     Requires internet access. Run once per machine. Everything produced here
     is used fully offline at runtime (AI inference and recording never call out).
@@ -78,6 +79,17 @@ if (Test-Path $faceDetectorPath) {
     Write-Host "Haar cascade face detector installed to $faceDetectorPath"
 }
 
+# Eye cascade (2-point level alignment before embedding — see OnnxFaceEmbedder.AlignByEyes).
+$eyeDetectorPath = Join-Path $modelsDir "haarcascade_eye.xml"
+if (Test-Path $eyeDetectorPath) {
+    Write-Host "Haar cascade eye detector already present at $eyeDetectorPath, skipping download."
+} else {
+    $eyeCascadeUrl = "https://raw.githubusercontent.com/opencv/opencv/4.x/data/haarcascades/haarcascade_eye.xml"
+    Write-Host "Downloading Haar cascade eye detector from $eyeCascadeUrl ..."
+    Invoke-WebRequest -Uri $eyeCascadeUrl -OutFile $eyeDetectorPath
+    Write-Host "Haar cascade eye detector installed to $eyeDetectorPath"
+}
+
 # SFace embedding model still comes from opencv_zoo, which tracks .onnx files via Git
 # LFS — raw.githubusercontent.com only serves the LFS pointer text (~130 bytes),
 # media.githubusercontent.com resolves the real blob. Fed through a plain ONNX Runtime
@@ -92,8 +104,23 @@ if (Test-Path $faceEmbedderPath) {
     Write-Host "SFace face embedder installed to $faceEmbedderPath"
 }
 
+# --- Tesseract OCR language data (best-effort plate reading — see TesseractPlateOcrReader) ---
+$tessDataDir = Join-Path $root "tessdata"
+New-Item -ItemType Directory -Force -Path $tessDataDir | Out-Null
+$tessDataPath = Join-Path $tessDataDir "eng.traineddata"
+if (Test-Path $tessDataPath) {
+    Write-Host "Tesseract eng.traineddata already present at $tessDataPath, skipping download."
+} else {
+    $tessDataUrl = "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/main/eng.traineddata"
+    Write-Host "Downloading Tesseract eng.traineddata from $tessDataUrl ..."
+    Invoke-WebRequest -Uri $tessDataUrl -OutFile $tessDataPath
+    Write-Host "Tesseract eng.traineddata installed to $tessDataPath"
+}
+
 Write-Host "`nSetup complete."
 Write-Host "  ffmpeg:        $toolsDir"
 Write-Host "  YOLO model:    $modelPath"
 Write-Host "  face detector: $faceDetectorPath"
+Write-Host "  eye detector:  $eyeDetectorPath"
 Write-Host "  face embedder: $faceEmbedderPath"
+Write-Host "  tessdata:      $tessDataPath"

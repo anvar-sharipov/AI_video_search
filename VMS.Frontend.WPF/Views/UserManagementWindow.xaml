@@ -1,0 +1,56 @@
+<Window x:Class="VMS.Frontend.WPF.Views.UserManagementWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="{DynamicResource Win_UserManagement_Title}" Height="560" Width="720"
+        Background="{StaticResource BgWindow}"
+        WindowStartupLocation="CenterOwner" Loaded="OnLoaded">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Margin="0,0,0,8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Foreground="{StaticResource TextSecondary}" VerticalAlignment="Center"
+                       Text="{Binding StatusMessage}" TextWrapping="Wrap"/>
+            <TextBox Grid.Column="1" Width="200" VerticalContentAlignment="Center" Height="28"
+                     Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                     ToolTip="{DynamicResource UserManagement_SearchTooltip}"/>
+        </Grid>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,8">
+            <Button Padding="10,6" Margin="0,0,4,0" Content="{DynamicResource UserManagement_AddButton}" Click="OnAddClick"/>
+            <Button Padding="10,6" Margin="0,0,4,0" Command="{Binding EditSelectedCommand}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="✏" Margin="0,0,6,0"/>
+                    <TextBlock Text="{DynamicResource UserManagement_EditButton}"/>
+                </StackPanel>
+            </Button>
+            <Button Padding="10,6" Command="{Binding DeleteSelectedCommand}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="🗑" Margin="0,0,6,0"/>
+                    <TextBlock Text="{DynamicResource UserManagement_DeleteButton}"/>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+
+        <DataGrid Grid.Row="2" ItemsSource="{Binding UsersView}" AutoGenerateColumns="False"
+                  GridLinesVisibility="Horizontal" HeadersVisibility="Column"
+                  CanUserAddRows="False" CanUserDeleteRows="False"
+                  PreviewMouseLeftButtonDown="OnCheckBoxCellPreviewMouseLeftButtonDown">
+            <DataGrid.Columns>
+                <DataGridCheckBoxColumn Binding="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}" Width="32" IsReadOnly="False"/>
+                <DataGridTextColumn Header="{DynamicResource UserManagement_ColumnUsername}" Binding="{Binding User.Username}" Width="160" IsReadOnly="True"/>
+                <DataGridTextColumn Header="{DynamicResource UserManagement_ColumnRole}" Binding="{Binding User.Role}" Width="110" IsReadOnly="True"/>
+                <DataGridTextColumn Header="{DynamicResource UserManagement_ColumnActive}" Binding="{Binding User.IsActive}" Width="70" IsReadOnly="True"/>
+                <DataGridTextColumn Header="{DynamicResource UserManagement_ColumnCreated}" Binding="{Binding User.CreatedAt, StringFormat={}{0:yyyy-MM-dd}}" Width="110" IsReadOnly="True"/>
+                <DataGridTextColumn Header="{DynamicResource UserManagement_ColumnLastLogin}" Binding="{Binding User.LastLoginAt, StringFormat={}{0:yyyy-MM-dd HH:mm}}" Width="*" IsReadOnly="True"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Window>

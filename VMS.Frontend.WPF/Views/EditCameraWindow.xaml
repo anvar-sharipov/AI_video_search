@@ -1,0 +1,45 @@
+<Window x:Class="VMS.Frontend.WPF.Views.EditCameraWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="{DynamicResource Win_EditCamera_Title}" Height="500" Width="360"
+        Background="{StaticResource BgWindow}"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+            <RowDefinition Height="8"/><RowDefinition Height="Auto"/>
+            <RowDefinition Height="16"/><RowDefinition Height="Auto"/>
+            <RowDefinition Height="12"/><RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="{DynamicResource AddCamera_Code}" Foreground="{StaticResource TextSecondary}"/>
+        <TextBlock Grid.Row="1" Text="{Binding Code}" Margin="0,0,0,8" Foreground="{StaticResource TextDisabled}"/>
+
+        <TextBlock Grid.Row="2" Text="{DynamicResource AddCamera_Name}" Foreground="{StaticResource TextSecondary}"/>
+        <TextBox Grid.Row="3" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,8"/>
+
+        <TextBlock Grid.Row="4" Text="{DynamicResource AddCamera_IpAddress}" Foreground="{StaticResource TextSecondary}"/>
+        <TextBox Grid.Row="5" Text="{Binding IpAddress, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,8"/>
+
+        <TextBlock Grid.Row="6" Text="{DynamicResource AddCamera_OnvifPort}" Foreground="{StaticResource TextSecondary}"/>
+        <TextBox Grid.Row="7" Text="{Binding OnvifPort, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,8"/>
+
+        <TextBlock Grid.Row="8" Text="{DynamicResource AddCamera_OnvifUsername}" Foreground="{StaticResource TextSecondary}"/>
+        <TextBox Grid.Row="9" Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}"
+                 ToolTip="{DynamicResource EditCamera_UsernameHint}" Margin="0,0,0,8"/>
+
+        <TextBlock Grid.Row="10" Text="{DynamicResource AddCamera_OnvifPassword}" Foreground="{StaticResource TextSecondary}"/>
+        <PasswordBox x:Name="PasswordBox" Grid.Row="11" ToolTip="{DynamicResource EditCamera_PasswordHint}" Margin="0,0,0,8"/>
+
+        <CheckBox Grid.Row="13" Content="{DynamicResource EditCamera_IsEnabledLabel}" IsChecked="{Binding IsEnabled}"/>
+
+        <TextBlock Grid.Row="15" Text="{Binding ErrorMessage}" Foreground="{StaticResource TextError}" TextWrapping="Wrap"/>
+
+        <Button Grid.Row="17" Style="{StaticResource AccentButtonStyle}" Content="{DynamicResource EditCamera_Submit}" Height="32" Click="OnSaveClick"/>
+    </Grid>
+</Window>

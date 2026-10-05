@@ -122,6 +122,64 @@
         </Setter>
     </Style>
 
+    <!-- TabItem: same story as ComboBox above — the default theme's tab header background is
+         baked into the control template (a fixed light-gray gradient), so a plain Background
+         setter never reaches it. First used by the Archive/Playback search drawer's 3 tabs. -->
+    <Style TargetType="TabItem">
+        <!-- Header text wraps within the tab's fixed Width instead of forcing the TabControl
+             (and everything laid out beside it) wider — matters a lot once localized headers
+             (e.g. Turkmen) run longer than the English text the layout was eyeballed against. -->
+        <Setter Property="HeaderTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <TextBlock Text="{Binding}" TextWrapping="Wrap" TextAlignment="Center"/>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TabItem">
+                    <Border x:Name="Bd" Background="{StaticResource BgTree}" BorderBrush="{StaticResource BorderSubtle}"
+                            BorderThickness="1,1,1,0" Margin="0,0,2,0" Padding="12,8">
+                        <ContentPresenter x:Name="Content" ContentSource="Header"
+                                          HorizontalAlignment="Center" VerticalAlignment="Center"
+                                          TextElement.Foreground="{StaticResource TextSecondary}"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource BgPanel}"/>
+                            <Setter TargetName="Content" Property="TextElement.Foreground" Value="{StaticResource TextPrimary}"/>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource BgToolbar}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="TabControl">
+        <Setter Property="Background" Value="{StaticResource BgPanel}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BorderSubtle}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TabControl">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TabPanel Grid.Row="0" IsItemsHost="True" Background="Transparent" Panel.ZIndex="1"/>
+                        <Border Grid.Row="1" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1">
+                            <ContentPresenter ContentSource="SelectedContent"/>
+                        </Border>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style TargetType="DataGrid">
         <Setter Property="Background" Value="{StaticResource BgTree}"/>
         <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>
@@ -150,9 +208,24 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
-                    <Border Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
-                                           TextElement.Foreground="{TemplateBinding Foreground}"/>
+                    <Border Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" CornerRadius="8">
+                        <!-- A plain string Content is auto-wrapped in a TextBlock by WPF, and that
+                             generated TextBlock still resolves the app-wide implicit
+                             `<Style TargetType="TextBlock">` above — an implicit Style Setter beats
+                             plain property-value inheritance, so TextElement.Foreground here (an
+                             inherited attached property) would otherwise be silently overridden
+                             back to TextPrimary. Scoping an implicit TextBlock style to this
+                             ContentPresenter's own Resources intercepts that lookup first, so hover/
+                             disabled/accent Foreground changes on the Button actually reach its
+                             text (this only showed up once LightTheme gave TextPrimary a dark
+                             color — DarkTheme's light-ish TextPrimary had been masking it). -->
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <ContentPresenter.Resources>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"/>
+                                </Style>
+                            </ContentPresenter.Resources>
+                        </ContentPresenter>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
@@ -168,15 +241,36 @@
         </Setter>
     </Style>
 
-    <!-- Accent blue button — primary actions (Войти/Сохранить/Найти). -->
+    <!-- Accent button — primary actions (Войти/Сохранить/Найти), styled as a pill like
+         Türkmentelekom's "Şahsy otag"/"VDS panel" nav buttons. Its own Template (rather than just
+         inheriting FlatDarkButtonStyle's) exists solely to use a much larger CornerRadius. -->
     <Style x:Key="AccentButtonStyle" TargetType="Button" BasedOn="{StaticResource FlatDarkButtonStyle}">
         <Setter Property="Background" Value="{StaticResource AccentBlue}"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
-        <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Opacity" Value="0.9"/>
-            </Trigger>
-        </Style.Triggers>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" CornerRadius="20">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <ContentPresenter.Resources>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"/>
+                                </Style>
+                            </ContentPresenter.Resources>
+                        </ContentPresenter>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Opacity" Value="0.9"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="{StaticResource TextDisabled}"/>
+                            <Setter Property="Cursor" Value="Arrow"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <!-- Small square icon-glyph button — icon rail / toolbar icons, most of which start out
@@ -189,5 +283,206 @@
     </Style>
 
     <Style TargetType="Button" BasedOn="{StaticResource FlatDarkButtonStyle}"/>
+
+    <!-- DatePicker + Calendar: like ComboBox/TabItem above, the built-in template's colors are
+         hardcoded (not tied to any ambient Background/Foreground setter), so every date field in
+         this app (People Counting, the Person Seen Report, Archive) showed a plain white/system
+         box and a white calendar popup until this got its own template. -->
+    <Style TargetType="DatePickerTextBox">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="DatePickerTextBox">
+                    <!-- Only the visual chrome is overridden here — PART_TextBox keeps its
+                         normal un-bound Text: DatePickerTextBox's own code-behind finds this
+                         named part and wires typing/parsing/watermark to it internally, the
+                         same way this file's other custom templates (ComboBox, PersonSighting
+                         Report's editable person-name box) reuse a framework-managed PART_
+                         name instead of re-implementing that logic. -->
+                    <Border Background="{StaticResource BgTree}" BorderBrush="{StaticResource BorderSubtle}" BorderThickness="1">
+                        <TextBox x:Name="PART_TextBox" Background="Transparent" BorderThickness="0"
+                                 Foreground="{StaticResource TextPrimary}" CaretBrush="{StaticResource TextPrimary}"
+                                 Padding="6,4" VerticalContentAlignment="Center"
+                                 Text="{Binding Path=Text, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Structural parts only (PART_Root/PART_TextBox/PART_Button/PART_Popup/PART_Calendar) — no
+         manual IsOpen/SelectedDate/DisplayDate bindings here: DatePicker.OnApplyTemplate finds
+         these by name and wires that synchronization itself (documented TemplatePart contract),
+         the same "framework already does this once the part is named right" reasoning as the
+         DatePickerTextBox and ComboBox templates above. -->
+    <Style TargetType="DatePicker">
+        <Setter Property="Background" Value="{StaticResource BgTree}"/>
+        <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BorderSubtle}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="DatePicker">
+                    <Grid x:Name="PART_Root">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="22"/>
+                        </Grid.ColumnDefinitions>
+                        <DatePickerTextBox x:Name="PART_TextBox" Grid.Column="0"/>
+                        <Button x:Name="PART_Button" Grid.Column="1" Focusable="False">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{StaticResource BgTree}" BorderBrush="{StaticResource BorderSubtle}" BorderThickness="0,1,1,1">
+                                        <TextBlock Text="📅" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                        <Popup x:Name="PART_Popup" Grid.Column="0" Placement="Bottom" StaysOpen="False"
+                               AllowsTransparency="True" PopupAnimation="Slide">
+                            <Border Background="{StaticResource BgTree}" BorderBrush="{StaticResource BorderSubtle}" BorderThickness="1">
+                                <Calendar x:Name="PART_Calendar"/>
+                            </Border>
+                        </Popup>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="CalendarDayButton">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="CalendarDayButton">
+                    <Border x:Name="Bd" Background="{StaticResource BgTree}" BorderBrush="Transparent" BorderThickness="1" Margin="1">
+                        <TextBlock x:Name="Txt" Text="{TemplateBinding Content}" Foreground="{StaticResource TextPrimary}"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsInactive" Value="True">
+                            <Setter TargetName="Txt" Property="Foreground" Value="{StaticResource TextDisabled}"/>
+                        </Trigger>
+                        <Trigger Property="IsToday" Value="True">
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource AccentBlue}"/>
+                        </Trigger>
+                        <Trigger Property="IsBlackedOut" Value="True">
+                            <Setter TargetName="Txt" Property="Foreground" Value="{StaticResource TextDisabled}"/>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource BgToolbar}"/>
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource AccentBlue}"/>
+                            <Setter TargetName="Txt" Property="Foreground" Value="White"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="CalendarButton">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="CalendarButton">
+                    <Border x:Name="Bd" Background="{StaticResource BgTree}" BorderBrush="Transparent" BorderThickness="1" Margin="1">
+                        <TextBlock x:Name="Txt" Text="{TemplateBinding Content}" Foreground="{StaticResource TextPrimary}"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center" Margin="4"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsInactive" Value="True">
+                            <Setter TargetName="Txt" Property="Foreground" Value="{StaticResource TextDisabled}"/>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource BgToolbar}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="CalendarItem">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="CalendarItem">
+                    <Border Background="{StaticResource BgTree}" Padding="6">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <Grid Grid.Row="0" Margin="0,0,0,4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <!-- Like FlatDarkButtonStyle's ContentPresenter fix, but more direct: these three
+                                     PART_ buttons don't use FlatDarkButtonStyle at all (Calendar's own code
+                                     assigns their Content), and empirically their default Button chrome/text
+                                     renders in a fixed system gray regardless of Foreground set here — an
+                                     explicit Border+TextBlock template (same pattern CalendarButton below
+                                     already uses successfully) sidesteps whatever that default is, instead of
+                                     fighting it. -->
+                                <Button x:Name="PART_PreviousButton" Grid.Column="0" Content="◀" Width="24" Height="24" Padding="0" BorderThickness="0">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <TextBlock Text="{TemplateBinding Content}" Foreground="{StaticResource TextSecondary}"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+                                <Button x:Name="PART_HeaderButton" Grid.Column="1" BorderThickness="0">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <TextBlock Text="{TemplateBinding Content}" Foreground="{StaticResource TextPrimary}" FontWeight="SemiBold"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+                                <Button x:Name="PART_NextButton" Grid.Column="2" Content="▶" Width="24" Height="24" Padding="0" BorderThickness="0">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <TextBlock Text="{TemplateBinding Content}" Foreground="{StaticResource TextSecondary}"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+                            </Grid>
+
+                            <!-- Wrapping Grid.Resources (a plain element property, not a Style
+                                 Setter — Setter.Property requires a DependencyProperty, and
+                                 FrameworkElement.Resources isn't one, so this can't be done from
+                                 the Style above; it has to sit on a real element inside the
+                                 template). The day-of-week header row (Пн Вт Ср...) is generated
+                                 internally by CalendarItem's own code straight into PART_MonthView
+                                 as plain TextBlocks, not through any named template part — so
+                                 that's unreachable directly, and empirically renders in a fixed,
+                                 low-contrast system gray regardless of any Foreground set
+                                 elsewhere. An implicit TextBlock style on this wrapper is the
+                                 nearest point in the resource-lookup chain that still reaches
+                                 those generated TextBlocks. -->
+                            <Grid Grid.Row="1">
+                                <Grid.Resources>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>
+                                        <Setter Property="Opacity" Value="1"/>
+                                    </Style>
+                                </Grid.Resources>
+                                <Grid x:Name="PART_MonthView" Visibility="Visible"/>
+                                <Grid x:Name="PART_YearView" Visibility="Collapsed"/>
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="Calendar">
+        <Setter Property="Background" Value="{StaticResource BgTree}"/>
+        <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BorderSubtle}"/>
+    </Style>
 
 </ResourceDictionary>

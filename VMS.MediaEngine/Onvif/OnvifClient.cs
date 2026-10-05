@@ -4,8 +4,40 @@ using System.Xml.Linq;
 
 namespace VMS.MediaEngine.Onvif;
 
-public class OnvifRequestException(string serviceUri, HttpStatusCode statusCode, string responseBody)
-    : Exception($"ONVIF request to '{serviceUri}' failed with {statusCode}: {responseBody}");
+public class OnvifRequestException : Exception
+{
+    public OnvifRequestException(string serviceUri, HttpStatusCode statusCode, string responseBody)
+        : base(BuildMessage(serviceUri, statusCode, responseBody))
+    {
+    }
+
+    /// <summary>
+    /// A SOAP fault's body is mostly namespace boilerplate — the actual human-readable reason
+    /// lives in one small &lt;Reason&gt;&lt;Text&gt; element. Surface just that when present (this is
+    /// what onboarding failures/API error responses show to the user), falling back to the raw
+    /// body only when it isn't a recognizable SOAP fault at all.
+    /// </summary>
+    private static string BuildMessage(string serviceUri, HttpStatusCode statusCode, string responseBody)
+    {
+        var reason = TryExtractFaultReason(responseBody);
+        return reason is not null
+            ? $"ONVIF request to '{serviceUri}' failed: {reason}"
+            : $"ONVIF request to '{serviceUri}' failed with {statusCode}: {responseBody}";
+    }
+
+    private static string? TryExtractFaultReason(string responseBody)
+    {
+        try
+        {
+            return XDocument.Parse(responseBody).Descendants()
+                .FirstOrDefault(e => e.Name.LocalName == "Text")?.Value;
+        }
+        catch (Exception)
+        {
+            return null;
+        }
+    }
+}
 
 /// <summary>
 /// Minimal ONVIF SOAP client covering exactly what camera onboarding needs:
@@ -46,12 +78,15 @@ public class OnvifClient(HttpClient httpClient, string deviceServiceUri, string 
                 var resolution = p.Descendants().FirstOrDefault(e => e.Name.LocalName == "Resolution");
                 var width = ParseInt(resolution?.Elements().FirstOrDefault(e => e.Name.LocalName == "Width")?.Value);
                 var height = ParseInt(resolution?.Elements().FirstOrDefault(e => e.Name.LocalName == "Height")?.Value);
+                var videoSourceToken = p.Descendants().FirstOrDefault(e => e.Name.LocalName == "VideoSourceConfiguration")?
+                    .Elements().FirstOrDefault(e => e.Name.LocalName == "SourceToken")?.Value ?? string.Empty;
 
                 return new OnvifProfile(
                     Token: p.Attribute("token")?.Value ?? string.Empty,
                     Name: p.Elements().FirstOrDefault(e => e.Name.LocalName == "Name")?.Value ?? string.Empty,
                     Width: width,
-                    Height: height);
+                    Height: height,
+                    VideoSourceToken: videoSourceToken);
             })
             .ToList();
     }

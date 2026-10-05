@@ -34,4 +34,17 @@ public partial class ExpandedCameraWindow : Window
             vm.CloseCommand.Execute(null);
         }
     }
+
+    private void VideoView_Loaded(object sender, RoutedEventArgs e)
+    {
+        if (sender is LibVLCSharp.WPF.VideoView videoView)
+        {
+            VideoViewFillHelper.EnableFill(videoView);
+        }
+
+        if (DataContext is ExpandedCameraViewModel vm)
+        {
+            vm.StartPlayback();
+        }
+    }
 }

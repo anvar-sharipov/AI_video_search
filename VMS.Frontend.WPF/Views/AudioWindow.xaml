@@ -1,0 +1,83 @@
+<Window x:Class="VMS.Frontend.WPF.Views.AudioWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:conv="clr-namespace:VMS.Frontend.WPF.Converters"
+        Title="{DynamicResource Win_Audio_Title}" Height="560" Width="440"
+        Background="{StaticResource BgWindow}"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
+    <Window.Resources>
+        <conv:InverseBooleanConverter x:Key="InverseBool"/>
+    </Window.Resources>
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="16"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="16"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="16"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="8"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="{DynamicResource Audio_CameraLabel}" Foreground="{StaticResource TextSecondary}" FontSize="11" Margin="0,0,0,4"/>
+        <ComboBox Grid.Row="1" Height="30" ItemsSource="{Binding Cameras}" SelectedItem="{Binding SelectedCamera}">
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Name}"/>
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
+
+        <StackPanel Grid.Row="3" Orientation="Horizontal">
+            <Button Content="{DynamicResource Audio_ListenButton}" Width="120" Height="30" Margin="0,0,8,0" Command="{Binding ListenCommand}"/>
+            <Button Content="{DynamicResource Audio_StopButton}" Width="120" Height="30" Command="{Binding StopListeningCommand}" IsEnabled="{Binding IsListening}"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="5" Orientation="Horizontal">
+            <Button Content="{DynamicResource Audio_TalkButton}" Width="120" Height="30" IsEnabled="{Binding CanBroadcast}"
+                    ToolTip="{DynamicResource Audio_TalkNotSupportedTooltip}"/>
+            <TextBlock Text="{DynamicResource Audio_TalkNotSupportedTooltip}" Foreground="{StaticResource TextSecondary}"
+                       FontSize="11" TextWrapping="Wrap" Margin="8,0,0,0" VerticalAlignment="Center" MaxWidth="240"/>
+        </StackPanel>
+
+        <Separator Grid.Row="6"/>
+
+        <StackPanel Grid.Row="7">
+            <TextBlock Text="{DynamicResource Audio_ArchiveHeading}" FontWeight="Bold" Margin="0,0,0,4"/>
+            <TextBlock Text="{DynamicResource Audio_ArchiveHint}" Foreground="{StaticResource TextSecondary}"
+                       FontSize="11" TextWrapping="Wrap" Margin="0,0,0,8"/>
+
+            <TextBlock Text="{DynamicResource Audio_ArchiveDateLabel}" Foreground="{StaticResource TextSecondary}" FontSize="11" Margin="0,0,0,4"/>
+            <DatePicker SelectedDate="{Binding ArchiveDate}" Margin="0,0,0,8"/>
+
+            <Grid Margin="0,0,0,8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="8"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="{DynamicResource Audio_ArchiveFromLabel}" Foreground="{StaticResource TextSecondary}" FontSize="11" Margin="0,0,0,4"/>
+                    <TextBox Text="{Binding ArchiveFromTime, UpdateSourceTrigger=PropertyChanged}"/>
+                </StackPanel>
+                <StackPanel Grid.Column="2">
+                    <TextBlock Text="{DynamicResource Audio_ArchiveToLabel}" Foreground="{StaticResource TextSecondary}" FontSize="11" Margin="0,0,0,4"/>
+                    <TextBox Text="{Binding ArchiveToTime, UpdateSourceTrigger=PropertyChanged}"/>
+                </StackPanel>
+            </Grid>
+
+            <StackPanel Orientation="Horizontal">
+                <Button Content="{DynamicResource Audio_ListenArchiveButton}" Width="120" Height="30" Margin="0,0,8,0"
+                        Command="{Binding ListenToArchiveCommand}" IsEnabled="{Binding IsArchiveBusy, Converter={StaticResource InverseBool}}"/>
+                <Button x:Name="DownloadButton" Content="{DynamicResource Audio_DownloadButton}" Width="120" Height="30" Click="OnDownloadClick"
+                        IsEnabled="{Binding IsArchiveBusy, Converter={StaticResource InverseBool}}"/>
+            </StackPanel>
+        </StackPanel>
+
+        <TextBlock Grid.Row="10" Text="{Binding StatusMessage}" Foreground="{StaticResource TextError}" TextWrapping="Wrap" VerticalAlignment="Bottom"/>
+    </Grid>
+</Window>

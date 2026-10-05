@@ -44,7 +44,9 @@ public static class AuthEndpoints
                 IsSuccess = true
             });
 
-            return Results.Ok(new LoginResponse(token, user.Username, user.Role.ToString(), expiresAt));
+            return Results.Ok(new LoginResponse(
+                token, user.Username, user.Role.ToString(), expiresAt,
+                user.GetAdditionalPermissions().Select(p => p.ToString()).ToList()));
         }).AllowAnonymous();
     }
 }

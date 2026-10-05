@@ -31,6 +31,6 @@
             </Grid>
         </Button>
 
-        <vlc:VideoView Grid.Row="1" MediaPlayer="{Binding Player}"/>
+        <vlc:VideoView Grid.Row="1" MediaPlayer="{Binding Player}" Loaded="VideoView_Loaded"/>
     </Grid>
 </Window>
