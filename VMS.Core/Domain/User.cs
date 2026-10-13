@@ -13,6 +13,15 @@ public class User
     public DateTimeOffset? LastLoginAt { get; set; }
 
     /// <summary>
+    /// Bumped by every admin-initiated change to this account (role, active flag, additional
+    /// permissions, password reset). Embedded in each issued JWT as a claim and checked against
+    /// the current DB value on every request (see Program.cs's OnTokenValidated) — without this,
+    /// a JWT issued before a demotion/deactivation stays fully valid until its own expiry, since a
+    /// JWT is otherwise a self-contained, stateless credential the server never re-checks.
+    /// </summary>
+    public int TokenVersion { get; set; }
+
+    /// <summary>
     /// Individual permissions granted to this user ON TOP OF whatever their Role already gives
     /// (e.g. a Viewer who's also been granted SearchByFace, without promoting them all the way
     /// to Operator) — comma-separated Permission enum names, or null for "no extras". Deliberately

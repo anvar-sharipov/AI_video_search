@@ -14,10 +14,18 @@ public sealed class PersonPresenceTracker
     // diagonal of an existing track is "the same person", not a new one.
     private const double MaxMatchDistance = 0.35;
 
-    // How many consecutive snapshots a track may go unmatched (person briefly turned/occluded,
-    // or simply missed one sampling interval) before it's dropped and a later reappearance
-    // counts as a new sighting.
-    private const int MaxMissedFrames = 2;
+    // How many consecutive snapshots a track may go unmatched (stepped out of frame, turned
+    // away, briefly occluded) before it's dropped and a later reappearance counts as a new
+    // sighting. At the 5s snapshot cadence CameraOrchestrator samples at, 6 is ~30s of grace —
+    // tuned up from an original value of 2 (~10s), which was timing out and double-counting
+    // people on perfectly normal brief absences (stepping just out of frame to open a door,
+    // pausing to talk to someone off to the side). This is a tradeoff, not a fix: too high a
+    // value risks merging two *different* people into one track if a second person happens to
+    // stand near where the first one was within the grace window — there's no appearance-based
+    // re-identification here, just position, so some amount of double-counting (absence exceeds
+    // this) or under-counting (a different person treated as the same track) is unavoidable
+    // without adding a real re-id embedding, which this tracker intentionally doesn't attempt.
+    private const int MaxMissedFrames = 6;
 
     private sealed class Track
     {

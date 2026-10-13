@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    # windows-latest, not ubuntu: VMS.Frontend.WPF targets net10.0-windows, and
+    # VMS.StorageEngine's immutable-archive code calls Windows-only ACL APIs — the whole
+    # solution only ever builds on Windows.
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Restore
+        run: dotnet restore VMS.slnx
+
+      - name: Build
+        run: dotnet build VMS.slnx --no-restore --configuration Release
+
+      - name: Test (VMS.Core.Tests)
+        run: dotnet test VMS.Core.Tests --no-build --configuration Release --verbosity normal
+
+      - name: Test (VMS.Backend.Server.Tests)
+        run: dotnet test VMS.Backend.Server.Tests --no-build --configuration Release --verbosity normal

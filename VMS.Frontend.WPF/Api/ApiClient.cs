@@ -14,14 +14,23 @@ public class ApiClient
 {
     private readonly HttpClient _http;
     private string? _token;
+    private string? _refreshToken;
+    private System.Threading.Timer? _refreshTimer;
 
     public string BaseAddress { get; }
 
-    /// <summary>Raised when any authenticated request comes back 401 — the JWT the app is holding
-    /// is no longer valid (expired, or the account was deactivated mid-session). The app has no
-    /// refresh-token flow, so the only correct response is to drop back to the login screen rather
-    /// than leave whichever window made the call stuck showing a raw "Unauthorized" error.</summary>
+    /// <summary>Raised when the session is truly over (refresh token missing/expired/revoked, or
+    /// the account was deactivated) — the server-side JWT check (see Program.cs's
+    /// OnTokenValidated) means this can also fire mid-request well before the access token's own
+    /// expiry, e.g. right after an admin deactivates this account. Either way, every open window
+    /// shares this one ApiClient, so the only correct response is to drop back to the login
+    /// screen instead of leaving whichever window made the call stuck on a raw error.</summary>
     public event Action? SessionExpired;
+
+    /// <summary>Raised after a silent background token refresh succeeds — lets SessionService
+    /// pick up a role/permission change made server-side mid-session (see
+    /// SessionService.ApplyLogin) instead of only ever reflecting what the role was at login.</summary>
+    public event Action<LoginResponseDto>? TokenRefreshed;
 
     public ApiClient(string baseAddress)
     {
@@ -29,12 +38,30 @@ public class ApiClient
         _http = new HttpClient { BaseAddress = new Uri(BaseAddress) };
     }
 
-    public void SetToken(string? token)
+    /// <summary>Call with a non-null token after login/refresh (expiresAt/refreshToken required
+    /// then, to arm the next silent background refresh); call with null on logout/session-expiry
+    /// to clear everything and stop that background refresh.</summary>
+    public void SetToken(string? token, DateTimeOffset? expiresAt = null, string? refreshToken = null)
     {
         _token = token;
         _http.DefaultRequestHeaders.Authorization = token is null
             ? null
             : new AuthenticationHeaderValue("Bearer", token);
+
+        _refreshTimer?.Dispose();
+        _refreshTimer = null;
+
+        if (token is null)
+        {
+            _refreshToken = null;
+            return;
+        }
+
+        _refreshToken = refreshToken ?? _refreshToken;
+        if (expiresAt is { } exp)
+        {
+            ScheduleRefresh(exp);
+        }
     }
 
     public async Task<LoginResponseDto> LoginAsync(string username, string password, CancellationToken ct = default)
@@ -46,6 +73,58 @@ public class ApiClient
         }
 
         return (await response.Content.ReadFromJsonAsync<LoginResponseDto>(cancellationToken: ct))!;
+    }
+
+    /// <summary>Fires well before the access token expires (see VmsOptions.JwtExpiryMinutes on
+    /// the server — deliberately short) so a normal request should never actually hit a 401 for
+    /// plain expiry; a 401 still reaching EnsureSuccessAsync means something else is wrong
+    /// (revoked, clock skew, the refresh below failing) and SessionExpired is the right call.</summary>
+    private void ScheduleRefresh(DateTimeOffset expiresAt)
+    {
+        var delay = (expiresAt - DateTimeOffset.UtcNow) * 0.7;
+        if (delay < TimeSpan.FromSeconds(10))
+        {
+            delay = TimeSpan.FromSeconds(10);
+        }
+
+        _refreshTimer = new System.Threading.Timer(_ => _ = RefreshTokenSilentlyAsync(), null, delay, Timeout.InfiniteTimeSpan);
+    }
+
+    private async Task RefreshTokenSilentlyAsync()
+    {
+        if (_refreshToken is null)
+        {
+            return;
+        }
+
+        HttpResponseMessage response;
+        try
+        {
+            response = await _http.PostAsJsonAsync("/api/auth/refresh", new { refreshToken = _refreshToken });
+        }
+        catch
+        {
+            // Transient network failure, not an invalid session — don't force a logout for this;
+            // the reactive 401 path in EnsureSuccessAsync still catches a truly dead session on
+            // the next real request.
+            return;
+        }
+
+        if (!response.IsSuccessStatusCode)
+        {
+            SessionExpired?.Invoke();
+            return;
+        }
+
+        var dto = await response.Content.ReadFromJsonAsync<LoginResponseDto>();
+        if (dto is null)
+        {
+            SessionExpired?.Invoke();
+            return;
+        }
+
+        SetToken(dto.Token, dto.ExpiresAt, dto.RefreshToken);
+        TokenRefreshed?.Invoke(dto);
     }
 
     public async Task<List<CameraDto>> GetCamerasAsync(CancellationToken ct = default)
@@ -396,6 +475,16 @@ public class ApiClient
     {
         var url = $"/api/archive/protect?cameraId={Uri.EscapeDataString(cameraId)}&fileName={Uri.EscapeDataString(fileName)}";
         var response = await _http.PostAsync(url, content: null, ct);
+        await EnsureSuccessAsync(response);
+    }
+
+    /// <summary>Admin+ for a standard file, SuperAdmin for a protected one — the server enforces
+    /// which via ImmutableArchiveManager.Delete; a Forbid comes back as a normal ApiException
+    /// with no special handling needed here.</summary>
+    public async Task DeleteArchiveFileAsync(string cameraId, string fileName, CancellationToken ct = default)
+    {
+        var url = $"/api/archive?cameraId={Uri.EscapeDataString(cameraId)}&fileName={Uri.EscapeDataString(fileName)}";
+        var response = await _http.DeleteAsync(url, ct);
         await EnsureSuccessAsync(response);
     }
 

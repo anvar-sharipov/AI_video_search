@@ -88,6 +88,17 @@ scripts/setup-tools.ps1  — one-time ffmpeg download, YOLO ONNX export, and fac
 - **Clip auth**: LibVLC can't attach an `Authorization` header, so `/api/clips/{file}` also
   accepts the JWT via `?access_token=` — the same pattern ASP.NET Core uses for SignalR
   over WebSockets.
+- **Session security**: access tokens (JWTs) are deliberately short-lived (30 min) rather than
+  the session-length credential they used to be — `POST /api/auth/refresh` lets the WPF client
+  silently exchange a long-lived refresh token for a new one shortly before expiry
+  (`ApiClient`'s background timer), so this is invisible to the operator. Refresh tokens are
+  single-use and rotated on every call (old one revoked, new one issued), and only their SHA-256
+  hash is ever stored (`RefreshToken.TokenHash`), so a stolen database dump can't be replayed into
+  a live session. Separately, `User.TokenVersion` is embedded in every JWT and re-checked against
+  the live DB value on every request (`Program.cs`'s `OnTokenValidated`) — an admin
+  demoting/deactivating a user, or resetting their password, bumps it, so that change takes
+  effect on the very next request instead of only once the user's existing token happens to
+  expire on its own.
 - **Server-crash resilience**: ffmpeg child processes are assigned to a Windows Job Object with
   kill-on-close — if the backend dies any way at all (crash, `Stop-Process -Force`, Task
   Manager), the OS kills every camera's ffmpeg process automatically instead of leaving them
@@ -98,6 +109,7 @@ scripts/setup-tools.ps1  — one-time ffmpeg download, YOLO ONNX export, and fac
 ## Requirements
 
 - .NET SDK 10
+- Inno Setup 6 - only to build the offline installer (see below)
 - Docker (for PostgreSQL and Elasticsearch)
 - Python 3.11+ with `pip` (one-time YOLO ONNX export)
 - Windows (WPF client, Windows ACL for the immutable archive)
@@ -141,13 +153,130 @@ dotnet run --project VMS.Frontend.WPF
 On first run the server seeds a `superadmin` user and logs a one-time password —
 use it to log in from the WPF client.
 
+## Offline installer for another PC
+
+Everything above is the development setup (Docker, `dotnet run`). To install on an ordinary
+computer there is a single file, `dist\VMS-Full-Setup.exe`, which installs the whole system and
+needs no internet, .NET, Java, Docker or any developer tooling on the target PC.
+
+### What it installs
+
+| Component | Location | Windows service |
+| --- | --- | --- |
+| Backend (REST API + recording + detection) | `C:\Program Files\Turkmentelekom VMS\backend` | `VMSBackend`, auto-start |
+| WPF client | `C:\Program Files\Turkmentelekom VMS\frontend` | — (Start-menu and desktop shortcut) |
+| PostgreSQL 16 | `C:\Program Files\PostgreSQL\16` | `VMS-Postgres`, auto-start |
+| Elasticsearch 9 (single node) | `C:\ProgramData\VMS\elasticsearch` | `elasticsearch-service-x64`, auto-start |
+| ffmpeg, the YOLO/SFace/Haar models, tessdata | `C:\Program Files\Turkmentelekom VMS\{tools,models,tessdata}` | — |
+| Archive, clips, snapshots, HLS, e-maps, ES index | `C:\ProgramData\VMS\` | — |
+
+Data deliberately lives outside `Program Files`: a video archive doesn't belong there, and
+Elasticsearch's Windows service wrapper (procrun) is unreliable when `ES_HOME` contains spaces.
+
+Ports are picked automatically — the first free of `5080/5081/5082` for the API,
+`5432/5434/5435` for PostgreSQL, `9200/9201/9202` for Elasticsearch — so the install doesn't
+collide with a PostgreSQL or Elasticsearch already on that PC. The chosen ports, the database
+password and the JWT signing key are generated during installation and kept in
+`C:\ProgramData\VMS\config\secrets.json` (readable only by SYSTEM and local administrators).
+Elasticsearch and the API listen on `127.0.0.1` only.
+
+The keys that encrypt camera passwords (ASP.NET Data Protection) are kept in
+`C:\ProgramData\VMS\dp-keys`, protected with machine-scoped DPAPI — that is the new
+`Vms:DataProtectionKeysPath` option. Without it the default key ring is tied to a user profile:
+the service (LocalSystem) and the same exe started from a console by an administrator would get
+different keys, leaving the console run unable to decrypt the camera passwords the service
+wrote. In development the option is empty and the default behaviour is unchanged.
+
+### Target PC requirements
+
+- Windows 10 / 11, x64
+- administrator rights (it installs services)
+- ≥ 12 GB free on the system drive (checked before installing), plus room for the video archive
+- ≥ 8 GB RAM (Elasticsearch takes a 1 GB heap)
+- **no internet**
+
+### First login
+
+The installer runs the backend once to apply the migrations and create the `superadmin` user,
+and saves its one-time password to `VMS-superadmin-parol.txt` on the Desktop (and in
+`C:\ProgramData\VMS\`). That password is shown only once — change it right after the first
+login. Full install log: `C:\ProgramData\VMS\logs\install.log`.
+
+### Building the installer (on the development machine)
+
+```powershell
+# 1. One-time: Inno Setup 6 (https://jrsoftware.org/isdl.php) and scripts\setup-tools.ps1
+
+# 2. One-time: fetch the two third-party distributions into installer\downloads\
+#    (~860 MB, not committed). Prints resumable download commands:
+.\scripts\build-installer.ps1 -ShowDownloadUrls
+
+# 3. Build (publishes both apps, then packages — 10-25 minutes)
+.\scripts\build-installer.ps1
+```
+
+The result is `dist\VMS-Full-Setup.exe` (~1.2-1.4 GB). Copy that one file to the target PC and
+run it as administrator. Don't invoke `ISCC.exe` by hand — the payload has to be staged first,
+which is what the script does. `-SkipPublish` reuses an existing `installer\payload`, and is
+only for iterating on the `.iss` or the install scripts.
+
+The build script deliberately deletes `appsettings.local.json` from the published backend:
+`dotnet publish` copies it into the output (it matches the SDK's default `appsettings*.json`
+glob), and on a developer machine that file holds a real camera's credentials, which must not
+ship inside a setup.exe.
+
+### Reinstalling and uninstalling
+
+The installer can be run again over an existing installation: it stops the service, refreshes
+the files, reuses `secrets.json` and **leaves** the existing database and archive alone.
+`install.ps1` can also be re-run by hand if an install was interrupted:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File "C:\Program Files\Turkmentelekom VMS\scripts\install.ps1" -AppDir "C:\Program Files\Turkmentelekom VMS"
+```
+
+Uninstalling (via Apps & features) removes the `VMSBackend` service and stops PostgreSQL and
+Elasticsearch, switching both to a manual start, but **does not delete any data** — neither
+`C:\ProgramData\VMS` nor the `vms` database. Losing the video archive to a plain uninstall would
+be a far worse surprise than a leftover folder, and keeping the data means a reinstall picks the
+existing archive back up. Instructions for a full wipe are left in `VMS-UDALENIE-OSTALNOGO.txt`
+on the Desktop.
+
+### Pointing the client at a different server
+
+The client defaults to `http://localhost:5080`. To use another address (for example, the client
+on an operator workstation and the server on a separate machine), put a `vms-client.json` next
+to `VMS.Frontend.WPF.exe`:
+
+```json
+{ "BackendBaseAddress": "http://192.168.1.10:5080" }
+```
+
+The installer writes this file itself, with whichever port the API actually got. It is read from
+the executable's own directory rather than the working directory, because a shortcut launches
+the `.exe` with an arbitrary working directory.
+
+### Backups on an installed PC
+
+`scripts/backup-database.ps1` targets the development environment and calls `pg_dump` through
+`docker exec`. On an installed PC the database is native, so dump it directly:
+
+```powershell
+$env:PGPASSWORD = (Get-Content 'C:\ProgramData\VMS\config\secrets.json' | ConvertFrom-Json).VmsDbPassword
+& 'C:\Program Files\PostgreSQL\16\bin\pg_dump.exe' -U vms -h 127.0.0.1 -p 5432 -d vms -f vms_backup.sql
+```
+
+(use the port recorded as `PgPort` in `secrets.json`).
+
 ## REST API
 
-Every endpoint except `/api/auth/login` requires a JWT (`Authorization: Bearer ...`).
+Every endpoint except `/api/auth/login` and `/api/auth/refresh` requires a JWT
+(`Authorization: Bearer ...`).
 
 | Method | Path | Requires | Description |
 |---|---|---|---|
-| POST | `/api/auth/login` | — | Log in, issues a JWT |
+| POST | `/api/auth/login` | — | Log in, issues a short-lived JWT (30 min) plus a long-lived refresh token |
+| POST | `/api/auth/refresh` | — | Exchange a still-valid refresh token for a new JWT + rotated refresh token, without re-entering a password |
 | GET | `/api/cameras` | Viewer+ | List cameras |
 | POST | `/api/cameras` | Admin+ | Add a camera (onboards it immediately) |
 | PUT | `/api/cameras/{code}` | Admin+ | Update a camera (name, IP, ONVIF port, credentials, enabled flag) — restarts its capture pipeline |
@@ -227,14 +356,36 @@ escape hatch for the single most destructive permission in the system.
   remaining active SuperAdmin — the one screen where a careless click could otherwise lock every
   admin out of the system
 
+## Operations
+
+- **Database backups**: `scripts/backup-database.ps1` dumps PostgreSQL (users, RBAC, audit log,
+  camera configs, known persons, camera groups, video wall layouts, refresh tokens — everything
+  except the Elasticsearch index and the archive/clips/snapshots files on disk) to a timestamped,
+  plain-SQL file under `backups/` (gitignored — a dump contains password hashes), pruning to the
+  last 14 by default. Intended to run on a schedule (Windows Task Scheduler). Restore with:
+  ```powershell
+  docker exec -i vms-postgres psql -U vms -d vms < backups/vms_<timestamp>.sql
+  ```
+- **API docs**: a Swagger UI is served at `/swagger` when the server runs in the `Development`
+  environment (`ASPNETCORE_ENVIRONMENT=Development`, the `dotnet run` default) — not exposed in
+  production, since this is an operator-facing admin API, not a public one.
+
 ## Known limitations of this MVP
 
-- The CUDA execution provider for YOLO isn't installed (the ~600MB NVIDIA runtime download
-  repeatedly failed on this network) — detection runs on CPU. Swapping in GPU is a one-line change.
-- Camera ONVIF credentials are stored in plaintext in the database (needs DPAPI/secret-store
-  encryption before production use).
-- The WPF client has a "Protect" button (Admin+) but no "Delete archive file" button yet —
-  deletion is only available directly via the API (`DELETE /api/archive`).
+- The CUDA execution provider for YOLO isn't installed — detection runs on CPU. The GPU itself
+  is present and driver-ready (confirmed via `nvidia-smi`); the blocker is purely
+  `Microsoft.ML.OnnxRuntime.Gpu.{Windows,Linux}` (~200-240MB each, pulled in transitively by
+  `YoloDotNet.ExecutionProvider.Cuda`) failing to restore from nuget.org on this network —
+  `dotnet add package` repeatedly fails partway through both files with "the response ended
+  prematurely," re-confirmed on a retry. `YoloDotNetDetector` already takes a `useCuda` flag and
+  branches on it, currently just to log a warning and fall back to CPU — swapping that branch for
+  a real `CudaExecutionProvider` is a few lines once the package can actually restore on some
+  other network; nothing else in the pipeline (`IObjectDetector` is the only contract callers
+  depend on) needs to change.
+- The WPF client's search-results list has both "Protect" and "Delete" buttons next to each
+  result now (`DeleteArchiveFileCommand`, gated on `Session.CanDeleteStandardArchive` — Admin+;
+  a protected file still needs SuperAdmin, enforced server-side same as the API) — a confirmation
+  prompt guards the delete, same pattern as the People Seen Report gallery's per-screenshot delete.
 - Live View's bottom toolbar — Stop All, Snapshot, Manual Record, Pause/Play, and Fullscreen —
   is wired up (all act on the selected tile except Stop All, which stops every tile at once);
   snapshots save under `Pictures\VMS Snapshots`, recordings under `Videos\VMS Recordings`. The
@@ -282,8 +433,12 @@ escape hatch for the single most destructive permission in the system.
 - The People Seen Report ("count every person seen + remember with a screenshot",
   `PersonPresenceTracker`) counts a *new track*, not a unique physical person — it's the same
   nearest-centroid matching between consecutive AI snapshots (not continuous video) as People
-  Counting's line-crossing tracker, so someone who steps briefly out of frame and back can be
-  counted twice, and two people crossing paths closely can be miscounted. The report itself runs
+  Counting's line-crossing tracker, with no appearance-based re-identification at all, just
+  position. `MaxMissedFrames` (how many consecutive missed snapshots a track survives before a
+  reappearance counts as a new sighting) is tuned to 6 — about 30s at the 5s snapshot cadence —
+  which cuts down on the most common false double-count (stepping just out of frame briefly) vs.
+  the original value of 2 (~10s), but this is a tradeoff, not a fix: too generous a grace window
+  risks merging two *different* people into one track instead. The report itself runs
   one Elasticsearch query per camera per day rather than a single aggregation (this codebase's
   existing pattern for count queries — see `GetPeopleCountAsync`), which is fine for a handful of
   cameras over a normal reporting window but gets slow across many cameras and a long date range.
@@ -332,9 +487,44 @@ escape hatch for the single most destructive permission in the system.
   `POST /api/admin/backfill-face-embeddings` (Admin+, no UI button — trigger manually) has been
   run; it re-derives a frame from the archived video per detection, so it also can't recover
   detections whose archive segment the retention policy already deleted.
+- Windows-only, by design, not by oversight: `VMS.Frontend.WPF` is a WPF desktop app, and
+  `ImmutableArchiveManager`'s write-protection relies on Windows ACLs (`FileSystemAccessRule`) —
+  there's no Linux/macOS equivalent of either in this codebase. Porting the desktop client to a
+  cross-platform UI framework and swapping the immutability mechanism for something like
+  filesystem-level immutable flags or object-storage lock policies would both be substantial,
+  separate rewrites, not configuration changes.
+- Elasticsearch is a real 3-node cluster now (`vms-es01`/`02`/`03` in `docker-compose.yml`,
+  `cluster.name: vms-cluster`), not single-node — the detection index gets 1 replica shard by
+  default, placed on a different node than the primary, so the cluster keeps serving search/
+  writes if any one node goes down (verified: `GET /_cat/shards/vms-object-events` shows the
+  primary and replica on two different nodes, cluster status `green`). All three still run on
+  one physical machine for this MVP (a real deployment would put each on its own host) — it's a
+  genuine cluster, just not yet a genuinely *distributed* one. PostgreSQL still has no streaming
+  replication, but does have point-in-time recovery via `scripts/backup-database.ps1` (see
+  Operations above) — Elasticsearch's detection index still has no automated snapshot (in
+  practice it's treated as a rebuildable search cache, not a system of record, since detections
+  are also implicitly reconstructable from the archive via the AI pipeline, just not quickly).
+- `Dockerfile` (repo root) builds `VMS.Backend.Server` into a Windows container image
+  (`mcr.microsoft.com/dotnet/aspnet:10.0-nanoserver-ltsc2022`) — a Linux one would build but then
+  crash the moment anything touched the archive, since `ImmutableArchiveManager` calls
+  Windows-only ACL APIs. Requires Docker Desktop in "Windows containers" mode, which cannot run
+  side-by-side with this repo's own `docker-compose.yml` (ordinary Linux containers for Postgres/
+  Elasticsearch) — not build-tested in this repo's own dev environment for exactly that reason;
+  review it as a documented, honest first draft, not a verified image. `VMS.Frontend.WPF` has no
+  Dockerfile and isn't a candidate for one — it's an interactive desktop app, not a service.
 
 ## Tests
 
 ```powershell
-dotnet test VMS.Core.Tests
+dotnet test VMS.Core.Tests            # RBAC, auth
+dotnet test VMS.Backend.Server.Tests  # camera credential encryption, refresh-token generation, JWT claims, presence-tracker dedup
 ```
+
+Run on every push/PR to `main` via GitHub Actions (`.github/workflows/ci.yml`) — see the CI badge
+at the top of this README. Coverage is deliberately narrow: pure logic in `VMS.Core` and
+`VMS.Backend.Server` that doesn't need real infrastructure to test. `VMS.MediaEngine` (real
+ffmpeg processes, real RTSP streams), `VMS.MetadataIndexer` (real ONNX models), and
+`VMS.Frontend.WPF` (a real UI) are exercised by manual end-to-end verification against real
+hardware instead (see the Status section) — none of the three lend themselves to a fast, hermetic
+unit test, and a flaky integration test that depends on a live camera or a loaded ML model would
+be worse than no automated test at all.

@@ -32,6 +32,9 @@ appsettings.*.local.json
 ## Docker volumes
 docker/data/
 
+## Database backups (scripts/backup-database.ps1) - contain password hashes, never commit
+backups/
+
 ## IDE
 .vs/
 .vscode/

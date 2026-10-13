@@ -8,6 +8,8 @@ Built solo, end-to-end, in C#/.NET — validated live against **3 real ONVIF cam
 
 [🇷🇺 Читать на русском](README.ru.md) · [📖 Full technical docs](readme_eng.md) · [📄 Полная документация (RU)](readme_rus.md)
 
+![CI](https://github.com/anvar-sharipov/AI_video_search/actions/workflows/ci.yml/badge.svg)
+![License: MIT](https://img.shields.io/badge/license-MIT-green)
 ![.NET 10](https://img.shields.io/badge/.NET-10-512BD4?logo=dotnet&logoColor=white)
 ![C#](https://img.shields.io/badge/C%23-WPF%20%7C%20ASP.NET%20Core-239120?logo=csharp&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-EF%20Core-336791?logo=postgresql&logoColor=white)
@@ -121,6 +123,12 @@ dotnet ef database update --project VMS.Core --startup-project VMS.Core
 dotnet run --project VMS.Backend.Server --urls http://localhost:5080
 dotnet run --project VMS.Frontend.WPF
 ```
+
+To install on an ordinary PC instead of running it from source, build the single offline
+installer — `.\scriptsuild-installer.ps1` produces `dist\VMS-Full-Setup.exe`, which installs
+the backend as a Windows service plus the client, PostgreSQL and Elasticsearch, with no internet
+needed on the target machine. See
+[the installer docs](readme_eng.md#offline-installer-for-another-pc).
 
 A test camera is configured via a gitignored `VMS.Backend.Server/appsettings.local.json` — see the
 [full docs](readme_eng.md#quick-start) for its exact shape and for the complete REST API table,

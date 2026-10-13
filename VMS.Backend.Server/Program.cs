@@ -1,9 +1,12 @@
-using System.Text;
+﻿using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
 using VMS.Backend.Server.Api;
 using VMS.Backend.Server.Orchestration;
+using VMS.Backend.Server.Security;
 using VMS.Backend.Server.Startup;
 using VMS.Core.Auditing;
 using VMS.Core.Data;
@@ -46,8 +49,31 @@ builder.Services.AddSingleton<IAccessControlManager, AccessControlManager>();
 builder.Services.AddScoped<IAuditLogger, AuditLogger>();
 builder.Services.AddSingleton(new TokenService(vmsOptions.JwtSigningKey, vmsOptions.JwtExpiryMinutes));
 
+// Encrypts Camera.OnvifPasswordProtected at rest. No explicit key-storage config: on Windows
+// (this app's only supported host) ASP.NET Core Data Protection defaults to a DPAPI-encrypted
+// key ring under the running user's profile — zero extra infra, same mechanism already used
+// for ASP.NET's own auth cookies/antiforgery tokens elsewhere.
+var dataProtection = builder.Services.AddDataProtection();
+if (!string.IsNullOrWhiteSpace(vmsOptions.DataProtectionKeysPath))
+{
+    // An installed deployment normally runs this exe as a Windows Service (LocalSystem), but an
+    // admin also occasionally starts it from a console to troubleshoot — two different user
+    // profiles, so the per-profile default key ring would leave the console run unable to
+    // decrypt the camera passwords the service encrypted. A fixed directory protected with
+    // machine-scoped DPAPI gives both the same keys. Unset (dev) keeps the default behaviour.
+    Directory.CreateDirectory(vmsOptions.DataProtectionKeysPath);
+    dataProtection
+        .PersistKeysToFileSystem(new DirectoryInfo(vmsOptions.DataProtectionKeysPath))
+        .ProtectKeysWithDpapi(protectToLocalMachine: true);
+}
+builder.Services.AddSingleton<ICameraCredentialProtector, CameraCredentialProtector>();
+
 // --- MediaEngine: ONVIF ---
-builder.Services.AddHttpClient(nameof(OnvifClient));
+// Default HttpClient timeout is 100s — far too long for a request the WPF camera add/edit
+// dialogs await synchronously (they do show a "Connecting..." indicator now, but a near-two-
+// minute wait on an unreachable device still reads as a hung window). 15s is generous for a
+// device actually on the LAN; an unreachable one fails fast enough to feel responsive instead.
+builder.Services.AddHttpClient(nameof(OnvifClient), c => c.Timeout = TimeSpan.FromSeconds(15));
 builder.Services.AddSingleton<OnvifCameraDiscoveryService>();
 builder.Services.AddSingleton<OnvifDiscoveryClient>();
 
@@ -117,12 +143,64 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     context.Token = accessToken;
                 }
                 return Task.CompletedTask;
+            },
+
+            // A JWT's claims are otherwise frozen at issue time — without this, demoting or
+            // deactivating a user (or resetting their password) via PUT /api/users/{id} has no
+            // effect until their existing token happens to expire on its own. User.TokenVersion
+            // is bumped on every such change (see UserEndpoints) and embedded as a claim at issue
+            // time, so comparing it against the live DB value on every request makes that change
+            // take effect on the very next call instead.
+            OnTokenValidated = async context =>
+            {
+                var userId = context.Principal?.GetUserId();
+                if (userId is null)
+                {
+                    context.Fail("Missing subject claim.");
+                    return;
+                }
+
+                var db = context.HttpContext.RequestServices.GetRequiredService<VmsDbContext>();
+                var user = await db.Users.AsNoTracking()
+                    .Where(u => u.Id == userId)
+                    .Select(u => new { u.IsActive, u.TokenVersion })
+                    .FirstOrDefaultAsync();
+
+                if (user is null || !user.IsActive || user.TokenVersion != context.Principal!.GetTokenVersion())
+                {
+                    context.Fail("Token has been revoked.");
+                }
             }
         };
     });
 builder.Services.AddAuthorization();
 
+// API docs — Development-only (see app.UseSwagger below): this is an operator-facing admin API,
+// not a public one, so there's no reason to ship an API explorer in production.
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo { Title = "VMS API", Version = "v1" });
+
+    // Lets you click "Authorize" in the Swagger UI and paste a JWT from POST /api/auth/login —
+    // without this every other endpoint's "Try it out" just 401s with no indication why.
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Paste the JWT returned by POST /api/auth/login (without the \"Bearer \" prefix)."
+    });
+});
+
 var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 await DbInitializer.InitializeAsync(app.Services, app.Services.GetRequiredService<ILogger<Program>>());
 app.Services.GetRequiredService<LiveHlsRelayManager>().StartIdleSweep();

@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using VMS.Backend.Server.Security;
 using VMS.Backend.Server.Startup;
 using VMS.Core.Data;
 using VMS.Core.Domain;
@@ -29,6 +30,7 @@ public sealed class CameraOrchestrator(
     IKnownPersonMatcher knownPersonMatcher,
     IPlateOcrReader plateOcrReader,
     ICountingLineProvider countingLineProvider,
+    ICameraCredentialProtector credentialProtector,
     IOptions<VmsOptions> vmsOptions,
     ILoggerFactory loggerFactory) : IAsyncDisposable
 {
@@ -69,7 +71,7 @@ public sealed class CameraOrchestrator(
         }
 
         var connection = await discovery.ConnectAsync(
-            camera.IpAddress, camera.OnvifUsername!, camera.OnvifPasswordPlaintext!, camera.OnvifPort,
+            camera.IpAddress, camera.OnvifUsername!, credentialProtector.Unprotect(camera.OnvifPasswordProtected!), camera.OnvifPort,
             camera.OnvifVideoSourceToken, ct);
 
         var recorder = new RtspRecorder(

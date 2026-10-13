@@ -561,16 +561,22 @@
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
                                         <TextBlock Grid.Column="0" Text="{Binding Summary}" TextWrapping="Wrap" VerticalAlignment="Center"/>
                                         <Button Grid.Column="1" Content="{DynamicResource Search_ClipButton}" Width="50" Margin="0,0,4,0"
                                                 Command="{Binding DataContext.ViewClipCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
                                                 CommandParameter="{Binding}"/>
-                                        <Button Grid.Column="2" Content="{DynamicResource Search_ProtectButton}" Width="70"
+                                        <Button Grid.Column="2" Content="{DynamicResource Search_ProtectButton}" Width="70" Margin="0,0,4,0"
                                                 ToolTip="{DynamicResource Search_ProtectTooltip}"
                                                 Command="{Binding DataContext.ProtectCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
                                                 CommandParameter="{Binding}"
                                                 Visibility="{Binding DataContext.Session.CanManageCameras, RelativeSource={RelativeSource AncestorType=ListBox}, Converter={StaticResource BoolToVis}}"/>
+                                        <Button Grid.Column="3" Content="{DynamicResource Search_DeleteButton}" Width="70"
+                                                ToolTip="{DynamicResource Search_DeleteTooltip}"
+                                                Command="{Binding DataContext.DeleteArchiveFileCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                                CommandParameter="{Binding}"
+                                                Visibility="{Binding DataContext.Session.CanDeleteStandardArchive, RelativeSource={RelativeSource AncestorType=ListBox}, Converter={StaticResource BoolToVis}}"/>
                                     </Grid>
                                 </Border>
                             </DataTemplate>

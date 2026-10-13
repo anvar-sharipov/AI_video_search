@@ -17,21 +17,62 @@ services:
       timeout: 5s
       retries: 10
 
-  vms-elasticsearch:
+  # Three-node Elasticsearch cluster (not single-node) so the detection index actually gets a
+  # replica shard on a different node instead of living on one disk — that replica is what lets
+  # the cluster keep serving search/writes if any one node goes down, which "single-node" could
+  # never do no matter how it's tuned. All three run on this one machine (fine for a portfolio
+  # demo/dev box); a real deployment would put each on its own host instead. Only vms-es01's
+  # HTTP port is published — the app only ever needs one node's address
+  # (Vms:ElasticsearchUri = http://localhost:9200) to reach the whole cluster, same as how a
+  # client only needs one Postgres connection string even behind a load balancer.
+  vms-es01:
     image: docker.elastic.co/elasticsearch/elasticsearch:9.0.4
-    container_name: vms-elasticsearch
+    container_name: vms-es01
     restart: unless-stopped
     environment:
-      discovery.type: single-node
+      node.name: vms-es01
+      cluster.name: vms-cluster
+      discovery.seed_hosts: vms-es02,vms-es03
+      cluster.initial_master_nodes: vms-es01,vms-es02,vms-es03
       xpack.security.enabled: "false"
       xpack.security.http.ssl.enabled: "false"
       ES_JAVA_OPTS: "-Xms512m -Xmx512m"
     ports:
       - "9200:9200"
     volumes:
-      - ./docker/data/elasticsearch:/usr/share/elasticsearch/data
+      - ./docker/data/elasticsearch1:/usr/share/elasticsearch/data
     healthcheck:
       test: ["CMD-SHELL", "curl -sf http://localhost:9200/_cluster/health || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 20
+
+  vms-es02:
+    image: docker.elastic.co/elasticsearch/elasticsearch:9.0.4
+    container_name: vms-es02
+    restart: unless-stopped
+    environment:
+      node.name: vms-es02
+      cluster.name: vms-cluster
+      discovery.seed_hosts: vms-es01,vms-es03
+      cluster.initial_master_nodes: vms-es01,vms-es02,vms-es03
+      xpack.security.enabled: "false"
+      xpack.security.http.ssl.enabled: "false"
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+    volumes:
+      - ./docker/data/elasticsearch2:/usr/share/elasticsearch/data
+
+  vms-es03:
+    image: docker.elastic.co/elasticsearch/elasticsearch:9.0.4
+    container_name: vms-es03
+    restart: unless-stopped
+    environment:
+      node.name: vms-es03
+      cluster.name: vms-cluster
+      discovery.seed_hosts: vms-es01,vms-es02
+      cluster.initial_master_nodes: vms-es01,vms-es02,vms-es03
+      xpack.security.enabled: "false"
+      xpack.security.http.ssl.enabled: "false"
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+    volumes:
+      - ./docker/data/elasticsearch3:/usr/share/elasticsearch/data

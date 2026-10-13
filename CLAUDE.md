@@ -26,7 +26,8 @@ and `LoginWindow`) actually cover the whole app instead of silently missing new 
 ```powershell
 # Build / test
 dotnet build
-dotnet test VMS.Core.Tests
+dotnet test VMS.Core.Tests             # RBAC, auth
+dotnet test VMS.Backend.Server.Tests   # camera credential encryption, refresh tokens, JWT claims
 dotnet test VMS.Core.Tests --filter "FullyQualifiedName~AccessControlManagerTests"   # single test class
 dotnet test VMS.Core.Tests --filter "FullyQualifiedName~Only_SuperAdmin_can_delete_immutable_archives"  # single test
 

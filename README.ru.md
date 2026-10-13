@@ -8,6 +8,8 @@
 
 [🇬🇧 Read in English](README.md) · [📖 Полная техническая документация](readme_rus.md) · [📄 Full docs (EN)](readme_eng.md)
 
+![CI](https://github.com/anvar-sharipov/AI_video_search/actions/workflows/ci.yml/badge.svg)
+![License: MIT](https://img.shields.io/badge/license-MIT-green)
 ![.NET 10](https://img.shields.io/badge/.NET-10-512BD4?logo=dotnet&logoColor=white)
 ![C#](https://img.shields.io/badge/C%23-WPF%20%7C%20ASP.NET%20Core-239120?logo=csharp&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-EF%20Core-336791?logo=postgresql&logoColor=white)
@@ -122,6 +124,12 @@ dotnet ef database update --project VMS.Core --startup-project VMS.Core
 dotnet run --project VMS.Backend.Server --urls http://localhost:5080
 dotnet run --project VMS.Frontend.WPF
 ```
+
+Чтобы поставить систему на обычный компьютер, а не запускать из исходников, собирается один
+офлайн-установщик: `.\scriptsuild-installer.ps1` даёт `dist\VMS-Full-Setup.exe`, который
+ставит бэкенд как службу Windows, клиент, PostgreSQL и Elasticsearch — интернет на целевом ПК
+не нужен. Подробности — в
+[разделе про установщик](readme_rus.md#офлайн-установщик-для-другого-пк).
 
 Тестовая камера настраивается через гитигнорируемый
 `VMS.Backend.Server/appsettings.local.json` — точный формат, полная таблица REST API, матрица

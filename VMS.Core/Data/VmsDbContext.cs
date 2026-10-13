@@ -18,6 +18,7 @@ public class VmsDbContext(DbContextOptions<VmsDbContext> options) : DbContext(op
     public DbSet<CameraGroupMember> CameraGroupMembers => Set<CameraGroupMember>();
     public DbSet<VideoWallLayout> VideoWallLayouts => Set<VideoWallLayout>();
     public DbSet<VideoWallCell> VideoWallCells => Set<VideoWallCell>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -101,6 +102,13 @@ public class VmsDbContext(DbContextOptions<VmsDbContext> options) : DbContext(op
         modelBuilder.Entity<AlarmAcknowledgement>(e =>
         {
             e.HasIndex(a => a.DetectionEventId).IsUnique();
+        });
+
+        modelBuilder.Entity<RefreshToken>(e =>
+        {
+            e.HasIndex(r => r.TokenHash).IsUnique();
+            e.HasIndex(r => r.UserId);
+            e.Property(r => r.TokenHash).HasMaxLength(88); // base64 of a SHA-256 digest
         });
     }
 }

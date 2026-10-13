@@ -1,6 +1,6 @@
 namespace VMS.Frontend.WPF.Api;
 
-public record LoginResponseDto(string Token, string Username, string Role, DateTimeOffset ExpiresAt, List<string> AdditionalPermissions);
+public record LoginResponseDto(string Token, string Username, string Role, DateTimeOffset ExpiresAt, List<string> AdditionalPermissions, string RefreshToken);
 
 public record CameraDto(Guid Id, string Code, string Name, string IpAddress, int OnvifPort, bool IsEnabled, bool Running);
 

@@ -32,10 +32,11 @@ public class Camera
     /// </summary>
     public string? OnvifVideoSourceToken { get; set; }
 
-    // NOTE: plaintext for the 1-camera MVP. Before adding real camera fleets,
-    // this must move to DPAPI/secret-store encryption at rest (VMS.Core owns
-    // AccessControlManager, so credential encryption belongs here too).
-    public string? OnvifPasswordPlaintext { get; set; }
+    // Encrypted at rest via ASP.NET Core Data Protection (see Backend.Server's
+    // ICameraCredentialProtector) — Core itself stays web-framework-agnostic, so this is just an
+    // opaque ciphertext blob as far as this type is concerned, same as OnvifUsername is a plain
+    // string regardless of who happens to encrypt it.
+    public string? OnvifPasswordProtected { get; set; }
 
     public bool IsEnabled { get; set; } = true;
     public Guid? RetentionPolicyId { get; set; }

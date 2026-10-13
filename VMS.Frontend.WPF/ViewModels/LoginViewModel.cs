@@ -1,7 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using VMS.Core.Domain;
-using VMS.Core.Security;
 using VMS.Frontend.WPF.Api;
 using VMS.Frontend.WPF.Services;
 
@@ -32,13 +30,8 @@ public partial class LoginViewModel(ApiClient api, SessionService session, Local
         try
         {
             var result = await api.LoginAsync(Username, password);
-            api.SetToken(result.Token);
-            var role = Enum.TryParse<UserRole>(result.Role, out var parsed) ? parsed : UserRole.Viewer;
-            var additionalPermissions = result.AdditionalPermissions
-                .Select(p => Enum.TryParse<Permission>(p, out var perm) ? (Permission?)perm : null)
-                .Where(p => p is not null)
-                .Select(p => p!.Value);
-            session.SetLoggedIn(result.Username, role, additionalPermissions);
+            api.SetToken(result.Token, result.ExpiresAt, result.RefreshToken);
+            session.ApplyLogin(result);
             LoginSucceeded?.Invoke();
         }
         catch (ApiException ex)

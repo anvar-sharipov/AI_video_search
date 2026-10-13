@@ -168,6 +168,12 @@ public static class UserEndpoints
                 user.PasswordHash = auth.HashPassword(request.NewPassword);
             }
 
+            // Invalidates any JWT already issued to this account — see User.TokenVersion and
+            // Program.cs's OnTokenValidated. Bumped unconditionally rather than only when a field
+            // actually changed, same "don't diff, just make it correct" tradeoff CameraEndpoints
+            // makes for restarting a camera's pipeline on every edit.
+            user.TokenVersion++;
+
             await db.SaveChangesAsync();
 
             await auditLogger.AppendAsync(new AuditLogEntry

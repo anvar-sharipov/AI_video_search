@@ -22,6 +22,7 @@
     <sys:String x:Key="AddCamera_OnvifUsername">ONVIF ulanyjy ady</sys:String>
     <sys:String x:Key="AddCamera_OnvifPassword">ONVIF paroly</sys:String>
     <sys:String x:Key="AddCamera_Submit">Ýatda sakla we birikdir</sys:String>
+    <sys:String x:Key="Dialog_Connecting">Kamera birikdirilýär… kamera elýeterli bolmasa, ~15 sekunda çenli.</sys:String>
     <sys:String x:Key="AddCamera_RequiredError">Kod we IP salgysy hökmanydyr.</sys:String>
     <sys:String x:Key="Win_EditCamera_Title">Kamerany üýtgetmek</sys:String>
     <sys:String x:Key="EditCamera_UsernameHint">Üýtgetmek islemeseňiz boş goýuň</sys:String>
@@ -41,6 +42,10 @@
     <sys:String x:Key="Search_ClipButton">Klip</sys:String>
     <sys:String x:Key="Search_ProtectButton">Gora</sys:String>
     <sys:String x:Key="Search_ProtectTooltip">Pozmakdan goramak (diňe Admin+)</sys:String>
+    <sys:String x:Key="Search_DeleteButton">Poz</sys:String>
+    <sys:String x:Key="Search_DeleteTooltip">Arhiw faýlyny pozmak (Admin+; goralan faýllar üçin diňe SuperAdmin)</sys:String>
+    <sys:String x:Key="Search_ConfirmDeleteArchiveFileTitle">Arhiw faýlyny pozmalymy?</sys:String>
+    <sys:String x:Key="Search_ConfirmDeleteArchiveFileText">"{0}" arhiw faýlyny pozmalymy? Bu yzyna gaýtarylmaz.</sys:String>
     <sys:String x:Key="SearchByPhoto_ButtonTooltip">Surat boýunça gözlemek (diňe Operator+)</sys:String>
     <sys:String x:Key="SearchByPhoto_ChooseFileButton">Faýl saýla...</sys:String>
     <sys:String x:Key="SearchByPhoto_SearchButton">Gözle</sys:String>
@@ -170,6 +175,7 @@
     <sys:String x:Key="Status_Searching">Gözlenýär...</sys:String>
     <sys:String x:Key="Status_FoundCount">Tapyldy: {0}</sys:String>
     <sys:String x:Key="Status_ProtectedFile">Faýl pozmakdan goraldy: {0}</sys:String>
+    <sys:String x:Key="Status_DeletedArchiveFile">Arhiw faýly pozuldy: {0}</sys:String>
     <sys:String x:Key="Status_AllCamerasStopped">Ähli kameralar duruzyldy.</sys:String>
     <sys:String x:Key="Status_SnapshotSaved">Surat ýatda saklandy: {0}</sys:String>
     <sys:String x:Key="Status_SnapshotFailed">Surat alyp bolmady — kameradan signal ýok.</sys:String>

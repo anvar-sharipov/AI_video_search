@@ -1,0 +1,14 @@
+**/bin/
+**/obj/
+**/.vs/
+Archive/
+Clips/
+Snapshots/
+EMaps/
+LiveHls/
+backups/
+docker/data/
+installer/
+dist/
+*.log
+.git/

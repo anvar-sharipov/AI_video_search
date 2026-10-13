@@ -1,4 +1,4 @@
-namespace VMS.Backend.Server.Startup;
+﻿namespace VMS.Backend.Server.Startup;
 
 public class VmsOptions
 {
@@ -28,9 +28,26 @@ public class VmsOptions
     public string TessDataPath { get; set; } = "../tessdata";
     public string ElasticsearchUri { get; set; } = "http://localhost:9200";
 
+    /// <summary>
+    /// Directory holding the ASP.NET Data Protection key ring that encrypts camera passwords at
+    /// rest. Empty (the default) keeps ASP.NET's per-user-profile DPAPI key ring, which is right
+    /// for development; the installer sets this to a fixed machine-wide directory so the service
+    /// account and a console run share one key ring — see Program.cs.
+    /// </summary>
+    public string DataProtectionKeysPath { get; set; } = string.Empty;
+
     /// <summary>Dev-only symmetric signing key for issued login JWTs — must move to a real secret store before production.</summary>
     public string JwtSigningKey { get; set; } = "dev-only-signing-key-change-me-before-production-0123456789";
-    public int JwtExpiryMinutes { get; set; } = 480;
+
+    /// <summary>
+    /// Deliberately short: a leaked access token is only useful for this long. The client never
+    /// has to re-prompt for a password because of this — ApiClient silently exchanges the refresh
+    /// token (RefreshTokenExpiryDays below) for a new access token well before it expires.
+    /// </summary>
+    public int JwtExpiryMinutes { get; set; } = 30;
+
+    /// <summary>How long an issued refresh token stays usable. Rotated (not reused) on every refresh — see AuthEndpoints' /api/auth/refresh.</summary>
+    public int RefreshTokenExpiryDays { get; set; } = 14;
 
     /// <summary>
     /// Bootstrap-only: seeds a single Camera row from this on first run (empty

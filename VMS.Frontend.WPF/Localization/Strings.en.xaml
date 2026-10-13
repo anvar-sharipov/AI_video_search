@@ -22,6 +22,7 @@
     <sys:String x:Key="AddCamera_OnvifUsername">ONVIF username</sys:String>
     <sys:String x:Key="AddCamera_OnvifPassword">ONVIF password</sys:String>
     <sys:String x:Key="AddCamera_Submit">Save and connect</sys:String>
+    <sys:String x:Key="Dialog_Connecting">Connecting to camera… up to ~15 seconds if the camera is unreachable.</sys:String>
     <sys:String x:Key="AddCamera_RequiredError">Code and IP address are required.</sys:String>
     <sys:String x:Key="Win_EditCamera_Title">Edit Camera</sys:String>
     <sys:String x:Key="EditCamera_UsernameHint">Leave blank to keep current</sys:String>
@@ -41,6 +42,10 @@
     <sys:String x:Key="Search_ClipButton">Clip</sys:String>
     <sys:String x:Key="Search_ProtectButton">Protect</sys:String>
     <sys:String x:Key="Search_ProtectTooltip">Protect from deletion (Admin+ only)</sys:String>
+    <sys:String x:Key="Search_DeleteButton">Delete</sys:String>
+    <sys:String x:Key="Search_DeleteTooltip">Delete the archive file (Admin+; protected files need SuperAdmin)</sys:String>
+    <sys:String x:Key="Search_ConfirmDeleteArchiveFileTitle">Delete archive file?</sys:String>
+    <sys:String x:Key="Search_ConfirmDeleteArchiveFileText">Delete archive file "{0}"? This cannot be undone.</sys:String>
     <sys:String x:Key="SearchByPhoto_ButtonTooltip">Search by photo (Operator+ only)</sys:String>
     <sys:String x:Key="SearchByPhoto_ChooseFileButton">Choose file...</sys:String>
     <sys:String x:Key="SearchByPhoto_SearchButton">Search</sys:String>
@@ -170,6 +175,7 @@
     <sys:String x:Key="Status_Searching">Searching...</sys:String>
     <sys:String x:Key="Status_FoundCount">Found: {0}</sys:String>
     <sys:String x:Key="Status_ProtectedFile">File protected from deletion: {0}</sys:String>
+    <sys:String x:Key="Status_DeletedArchiveFile">Archive file deleted: {0}</sys:String>
     <sys:String x:Key="Status_AllCamerasStopped">All cameras stopped.</sys:String>
     <sys:String x:Key="Status_SnapshotSaved">Snapshot saved: {0}</sys:String>
     <sys:String x:Key="Status_SnapshotFailed">Could not take a snapshot — no signal from the camera.</sys:String>

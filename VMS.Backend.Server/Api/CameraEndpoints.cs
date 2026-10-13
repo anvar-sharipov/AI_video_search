@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using VMS.Backend.Server.Orchestration;
+using VMS.Backend.Server.Security;
 using VMS.Backend.Server.Startup;
 using VMS.Core.Auditing;
 using VMS.Core.Data;
@@ -82,7 +83,8 @@ public static class CameraEndpoints
             VmsDbContext db,
             IAccessControlManager accessControl,
             CameraOrchestrator orchestrator,
-            IAuditLogger auditLogger) =>
+            IAuditLogger auditLogger,
+            ICameraCredentialProtector credentialProtector) =>
         {
             try
             {
@@ -105,7 +107,7 @@ public static class CameraEndpoints
                 IpAddress = request.IpAddress,
                 OnvifPort = request.OnvifPort,
                 OnvifUsername = request.Username,
-                OnvifPasswordPlaintext = request.Password,
+                OnvifPasswordProtected = credentialProtector.Protect(request.Password),
                 RetentionPolicyId = request.RetentionPolicyId,
                 IsEnabled = true
             };
@@ -147,7 +149,8 @@ public static class CameraEndpoints
             VmsDbContext db,
             IAccessControlManager accessControl,
             CameraOrchestrator orchestrator,
-            IAuditLogger auditLogger) =>
+            IAuditLogger auditLogger,
+            ICameraCredentialProtector credentialProtector) =>
         {
             try
             {
@@ -175,7 +178,7 @@ public static class CameraEndpoints
             }
             if (!string.IsNullOrWhiteSpace(request.Password))
             {
-                camera.OnvifPasswordPlaintext = request.Password;
+                camera.OnvifPasswordProtected = credentialProtector.Protect(request.Password);
             }
             await db.SaveChangesAsync();
 
@@ -242,7 +245,8 @@ public static class CameraEndpoints
             IAccessControlManager accessControl,
             OnvifCameraDiscoveryService discovery,
             CameraOrchestrator orchestrator,
-            IAuditLogger auditLogger) =>
+            IAuditLogger auditLogger,
+            ICameraCredentialProtector credentialProtector) =>
         {
             try
             {
@@ -282,7 +286,7 @@ public static class CameraEndpoints
                     IpAddress = request.IpAddress,
                     OnvifPort = request.OnvifPort,
                     OnvifUsername = request.Username,
-                    OnvifPasswordPlaintext = request.Password,
+                    OnvifPasswordProtected = credentialProtector.Protect(request.Password),
                     RetentionPolicyId = request.RetentionPolicyId,
                     IsEnabled = true
                 };
@@ -323,7 +327,7 @@ public static class CameraEndpoints
                     IpAddress = request.IpAddress,
                     OnvifPort = request.OnvifPort,
                     OnvifUsername = request.Username,
-                    OnvifPasswordPlaintext = request.Password,
+                    OnvifPasswordProtected = credentialProtector.Protect(request.Password),
                     OnvifVideoSourceToken = channel.VideoSourceToken,
                     RetentionPolicyId = request.RetentionPolicyId,
                     IsEnabled = true

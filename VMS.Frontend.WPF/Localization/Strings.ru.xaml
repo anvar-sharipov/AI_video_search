@@ -22,6 +22,11 @@
     <sys:String x:Key="AddCamera_OnvifUsername">Логин ONVIF</sys:String>
     <sys:String x:Key="AddCamera_OnvifPassword">Пароль ONVIF</sys:String>
     <sys:String x:Key="AddCamera_Submit">Сохранить и подключить</sys:String>
+    <!-- Shown instead of the error text while the Save button's ONVIF connect attempt is in
+         flight — camera add/edit otherwise gives zero visual feedback for however long an
+         unreachable device's connection actually takes to time out (seconds to ~100s), which
+         reads as a frozen window. -->
+    <sys:String x:Key="Dialog_Connecting">Подключение к камере… до ~15 секунд, если камера недоступна.</sys:String>
     <sys:String x:Key="AddCamera_RequiredError">Код и IP-адрес обязательны.</sys:String>
     <sys:String x:Key="Win_EditCamera_Title">Редактировать камеру</sys:String>
     <sys:String x:Key="EditCamera_UsernameHint">Оставьте пустым, чтобы не менять</sys:String>
@@ -41,6 +46,10 @@
     <sys:String x:Key="Search_ClipButton">Клип</sys:String>
     <sys:String x:Key="Search_ProtectButton">Защитить</sys:String>
     <sys:String x:Key="Search_ProtectTooltip">Защитить от удаления (только Admin+)</sys:String>
+    <sys:String x:Key="Search_DeleteButton">Удалить</sys:String>
+    <sys:String x:Key="Search_DeleteTooltip">Удалить файл архива (Admin+, для защищённых файлов — только SuperAdmin)</sys:String>
+    <sys:String x:Key="Search_ConfirmDeleteArchiveFileTitle">Удалить файл архива?</sys:String>
+    <sys:String x:Key="Search_ConfirmDeleteArchiveFileText">Удалить файл архива "{0}"? Это необратимо.</sys:String>
     <sys:String x:Key="SearchByPhoto_ButtonTooltip">Искать по фото (только Operator+)</sys:String>
     <sys:String x:Key="SearchByPhoto_ChooseFileButton">Выбрать файл...</sys:String>
     <sys:String x:Key="SearchByPhoto_SearchButton">Искать</sys:String>
@@ -170,6 +179,7 @@
     <sys:String x:Key="Status_Searching">Поиск...</sys:String>
     <sys:String x:Key="Status_FoundCount">Найдено: {0}</sys:String>
     <sys:String x:Key="Status_ProtectedFile">Файл защищён от удаления: {0}</sys:String>
+    <sys:String x:Key="Status_DeletedArchiveFile">Файл архива удалён: {0}</sys:String>
     <sys:String x:Key="Status_AllCamerasStopped">Все камеры остановлены.</sys:String>
     <sys:String x:Key="Status_SnapshotSaved">Снимок сохранён: {0}</sys:String>
     <sys:String x:Key="Status_SnapshotFailed">Не удалось сделать снимок — нет сигнала с камеры.</sys:String>

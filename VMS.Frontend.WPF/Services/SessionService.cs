@@ -37,6 +37,20 @@ public partial class SessionService : ObservableObject
     /// <summary>Effective check (Role baseline OR an additional grant) — the same rule AccessControlManager enforces server-side, so UI gating never disagrees with what the server will actually allow.</summary>
     public bool HasPermission(Permission permission) => _accessControl.HasPermission(Role, AdditionalPermissions, permission);
 
+    /// <summary>Applies a login or token-refresh response's identity claims — shared so a silent
+    /// background refresh (ApiClient.TokenRefreshed) picks up a role/permission change exactly
+    /// the same way an explicit login would, instead of only ever reflecting whatever the role
+    /// was at the moment the user originally logged in.</summary>
+    public void ApplyLogin(LoginResponseDto result)
+    {
+        var role = Enum.TryParse<UserRole>(result.Role, out var parsed) ? parsed : UserRole.Viewer;
+        var additionalPermissions = result.AdditionalPermissions
+            .Select(p => Enum.TryParse<Permission>(p, out var perm) ? (Permission?)perm : null)
+            .Where(p => p is not null)
+            .Select(p => p!.Value);
+        SetLoggedIn(result.Username, role, additionalPermissions);
+    }
+
     public void SetLoggedIn(string username, UserRole role, IEnumerable<Permission>? additionalPermissions = null)
     {
         Username = username;

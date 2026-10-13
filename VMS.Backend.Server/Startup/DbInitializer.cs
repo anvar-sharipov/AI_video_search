@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using VMS.Backend.Server.Security;
 using VMS.Core.Data;
 using VMS.Core.Domain;
 using VMS.Core.Security;
@@ -12,6 +13,8 @@ namespace VMS.Backend.Server.Startup;
 ///    (the generated password is logged once — change it immediately after first login)
 ///  - a default 30-day retention policy
 ///  - a Camera row from Vms:TestCamera, if configured and the Cameras table is empty
+/// It also re-encrypts any Camera.OnvifPasswordProtected row still holding plaintext from before
+/// that column was protected at rest (see ICameraCredentialProtector).
 /// </summary>
 public static class DbInitializer
 {
@@ -20,9 +23,29 @@ public static class DbInitializer
         using var scope = services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<VmsDbContext>();
         var auth = scope.ServiceProvider.GetRequiredService<IAuthService>();
+        var credentialProtector = scope.ServiceProvider.GetRequiredService<ICameraCredentialProtector>();
         var vmsOptions = scope.ServiceProvider.GetRequiredService<IOptions<VmsOptions>>().Value;
 
         await db.Database.MigrateAsync();
+
+        // One-time backfill for rows written before camera passwords were encrypted at rest —
+        // IsLegacyPlaintext is only ever true for a pre-existing row the very first time this
+        // runs after upgrading, since every write from here on goes through Protect().
+        var cameras = await db.Cameras.ToListAsync();
+        var reencrypted = 0;
+        foreach (var camera in cameras)
+        {
+            if (camera.OnvifPasswordProtected is { } stored && credentialProtector.IsLegacyPlaintext(stored))
+            {
+                camera.OnvifPasswordProtected = credentialProtector.Protect(stored);
+                reencrypted++;
+            }
+        }
+        if (reencrypted > 0)
+        {
+            await db.SaveChangesAsync();
+            logger.LogWarning("Encrypted {Count} pre-existing camera password(s) that were stored in plaintext.", reencrypted);
+        }
 
         if (!await db.Users.AnyAsync())
         {
@@ -58,7 +81,7 @@ public static class DbInitializer
                 IpAddress = testCamera.IpAddress,
                 OnvifPort = testCamera.OnvifPort,
                 OnvifUsername = testCamera.Username,
-                OnvifPasswordPlaintext = testCamera.Password,
+                OnvifPasswordProtected = credentialProtector.Protect(testCamera.Password),
                 RetentionPolicyId = defaultPolicy.Id,
                 IsEnabled = true
             });

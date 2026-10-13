@@ -1,5 +1,6 @@
-using System.IO;
+﻿using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Threading;
 using LibVLCSharp.Shared;
@@ -12,8 +13,12 @@ namespace VMS.Frontend.WPF;
 
 public partial class App : Application
 {
-    // Change this if the backend runs on another host/port.
-    private const string BackendBaseAddress = "http://localhost:5080";
+    // Where the backend lives. Defaults to this same machine, which is what the full installer
+    // produces (backend service + client on one PC). An operator workstation that talks to a
+    // server elsewhere on the LAN overrides it in vms-client.json next to the exe, so pointing
+    // the client at another server never needs a rebuild.
+    private const string DefaultBackendBaseAddress = "http://localhost:5080";
+    private const string ClientConfigFileName = "vms-client.json";
     private const string CrashLogPath = "crash.log";
 
     private ApiClient _api = null!;
@@ -44,8 +49,9 @@ public partial class App : Application
 
         LibVLCSharp.Shared.Core.Initialize();
 
-        _api = new ApiClient(BackendBaseAddress);
+        _api = new ApiClient(ResolveBackendBaseAddress());
         _api.SessionExpired += OnSessionExpired;
+        _api.TokenRefreshed += OnTokenRefreshed;
         _session = new SessionService();
         _localization = new LocalizationService();
         _localization.SetLanguage("ru");
@@ -70,6 +76,37 @@ public partial class App : Application
         {
             LogCrash(ex);
         }
+    }
+
+    /// <summary>
+    /// Reads BackendBaseAddress out of vms-client.json next to the exe, falling back to
+    /// localhost. Read from AppContext.BaseDirectory rather than the working directory: a
+    /// Start-menu/desktop shortcut launches the exe with an arbitrary working directory, so
+    /// anything relative to it would be found in development and missed once installed.
+    /// </summary>
+    private static string ResolveBackendBaseAddress()
+    {
+        try
+        {
+            var path = Path.Combine(AppContext.BaseDirectory, ClientConfigFileName);
+            if (File.Exists(path))
+            {
+                using var doc = JsonDocument.Parse(File.ReadAllText(path));
+                if (doc.RootElement.TryGetProperty("BackendBaseAddress", out var value)
+                    && value.ValueKind == JsonValueKind.String
+                    && !string.IsNullOrWhiteSpace(value.GetString()))
+                {
+                    return value.GetString()!.TrimEnd('/');
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            // A corrupt config file must not block login entirely — log it and use the default.
+            LogCrash(ex);
+        }
+
+        return DefaultBackendBaseAddress;
     }
 
     private static void LogCrash(Exception ex)
@@ -106,13 +143,14 @@ public partial class App : Application
     }
 
     /// <summary>
-    /// The app has no refresh-token flow, so a 401 on any authenticated call (see
-    /// ApiClient.SessionExpired) means the session is simply over — expired, or the account was
-    /// deactivated mid-session. Every open window (the main one and any secondary Archive/User
-    /// Management/etc. windows) becomes useless the moment that happens, since they all share the
-    /// one ApiClient whose token just got cleared, so this drops straight back to the login screen
-    /// instead of leaving whichever window happened to make that call stuck showing a raw
-    /// "Unauthorized" error.
+    /// ApiClient.SessionExpired firing means the session is truly over — the refresh token
+    /// itself is missing/expired/revoked, or the account was deactivated — not just that the
+    /// short-lived access token happened to expire (ApiClient refreshes that silently in the
+    /// background well before it would). Every open window (the main one and any secondary
+    /// Archive/User Management/etc. windows) becomes useless the moment this happens, since they
+    /// all share the one ApiClient whose token just got cleared, so this drops straight back to
+    /// the login screen instead of leaving whichever window happened to make that call stuck
+    /// showing a raw "Unauthorized" error.
     /// </summary>
     private void OnSessionExpired()
     {
@@ -146,6 +184,12 @@ public partial class App : Application
             }
         });
     }
+
+    /// <summary>Raised off a background timer thread (ApiClient's silent refresh), not the UI
+    /// thread — Dispatcher.Invoke here, same as OnSessionExpired above, since SessionService's
+    /// ObservableProperty setters must run on the UI thread.</summary>
+    private void OnTokenRefreshed(LoginResponseDto result) =>
+        Dispatcher.Invoke(() => _session.ApplyLogin(result));
 
     private void ShowMain()
     {

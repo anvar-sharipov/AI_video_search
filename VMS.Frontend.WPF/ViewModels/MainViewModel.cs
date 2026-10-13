@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Windows;
 using System.Windows.Data;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -696,6 +697,40 @@ public partial class MainViewModel : ObservableObject, IDisposable
         {
             await _api.ProtectArchiveFileAsync(result.CameraId, result.ArchiveFileName);
             StatusMessage = LocalizationService.Get("Status_ProtectedFile", result.ArchiveFileName);
+        }
+        catch (ApiException ex)
+        {
+            StatusMessage = ex.Message;
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task DeleteArchiveFileAsync(SearchResultViewModel? result)
+    {
+        if (result is null)
+        {
+            return;
+        }
+
+        var confirmed = MessageBox.Show(
+            LocalizationService.Get("Search_ConfirmDeleteArchiveFileText", result.ArchiveFileName),
+            LocalizationService.Get("Search_ConfirmDeleteArchiveFileTitle"),
+            MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
+        if (!confirmed)
+        {
+            return;
+        }
+
+        IsBusy = true;
+        try
+        {
+            await _api.DeleteArchiveFileAsync(result.CameraId, result.ArchiveFileName);
+            StatusMessage = LocalizationService.Get("Status_DeletedArchiveFile", result.ArchiveFileName);
+            SearchResults.Remove(result);
         }
         catch (ApiException ex)
         {

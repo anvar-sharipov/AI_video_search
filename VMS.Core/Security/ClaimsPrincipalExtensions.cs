@@ -16,6 +16,9 @@ public static class ClaimsPrincipalExtensions
     /// <summary>Comma-separated Permission names granted to this user on top of their Role — see User.AdditionalPermissionsCsv, encoded into the JWT at login so the server doesn't need a DB round trip per request to know them.</summary>
     public const string PermissionsClaimType = "vms_permissions";
 
+    /// <summary>Snapshot of User.TokenVersion at issue time — see User.TokenVersion and Program.cs's OnTokenValidated, which rejects a token whose claim no longer matches the current DB value.</summary>
+    public const string TokenVersionClaimType = "vms_token_version";
+
     public static UserRole GetRole(this ClaimsPrincipal principal)
     {
         var value = principal.FindFirst(RoleClaimType)?.Value;
@@ -30,6 +33,12 @@ public static class ClaimsPrincipalExtensions
     {
         var value = principal.FindFirst(SubjectClaimType)?.Value;
         return Guid.TryParse(value, out var id) ? id : null;
+    }
+
+    public static int GetTokenVersion(this ClaimsPrincipal principal)
+    {
+        var value = principal.FindFirst(TokenVersionClaimType)?.Value;
+        return int.TryParse(value, out var version) ? version : 0;
     }
 
     public static List<Permission> GetGrantedPermissions(this ClaimsPrincipal principal)

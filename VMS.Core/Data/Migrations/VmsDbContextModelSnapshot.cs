@@ -115,7 +115,7 @@ namespace VMS.Core.Data.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
-                    b.Property<string>("OnvifPasswordPlaintext")
+                    b.Property<string>("OnvifPasswordProtected")
                         .HasColumnType("text");
 
                     b.Property<int>("OnvifPort")
@@ -283,6 +283,39 @@ namespace VMS.Core.Data.Migrations
                     b.ToTable("KnownPersons");
                 });
 
+            modelBuilder.Entity("VMS.Core.Domain.RefreshToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("RevokedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasMaxLength(88)
+                        .HasColumnType("character varying(88)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TokenHash")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshTokens");
+                });
+
             modelBuilder.Entity("VMS.Core.Domain.RetentionPolicy", b =>
                 {
                     b.Property<Guid>("Id")
@@ -331,6 +364,9 @@ namespace VMS.Core.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<int>("Role")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TokenVersion")
                         .HasColumnType("integer");
 
                     b.Property<string>("Username")
